@@ -1,4 +1,4 @@
-# 📊 Aplicación Shiny - Pruebas de Hipótesis y Tamaños de Muestra
+# 📊 Aplicación Shiny - Proyecto Final Diseño de experimentos 
 
 Este proyecto tiene como propósito desarrollar una aplicación interactiva usando **Shiny en R**, con el objetivo de facilitar el aprendizaje y la aplicación de conceptos estadísticos abordados durante el curso. En particular, la app se centrará en:
 
