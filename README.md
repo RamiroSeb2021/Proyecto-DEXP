@@ -15,8 +15,8 @@ La carpeta del proyecto contiene los siguientes archivos y directorios:
 
 | Nombre              | Tipo       | Descripción |
 |---------------------|------------|-------------|
-| `T1/`               | Carpeta    | Contiene los scripts y materiales relacionados con el **primer tercio del curso**, enfocados en fundamentos y pruebas básicas. |
-| `T2/`               | Carpeta    | Contiene los scripts correspondientes al **tercer tercio del curso**, donde se abordan temas más avanzados y complementarios. |
+| `T1/`               | Carpeta    | Contiene los scripts y materiales relacionados con el **primer tercio del curso**. |
+| `T2/`               | Carpeta    | Contiene los scripts correspondientes al **segundo tercio del curso**.             |
 | `DataSets.zip`      | Archivo    | Archivo comprimido que contiene los **conjuntos de datos** utilizados en los códigos de las carpetas `T1` y `T2`. Se recomienda descomprimirlo para el correcto funcionamiento del proyecto. |
 | `ui.R`              | Script R   | Define la **interfaz gráfica** de la aplicación Shiny. Aquí se establece la organización visual, menús, inputs y outputs de la app. |
 | `server.R`          | Script R   | Contiene la **lógica del servidor** de la app. Aquí se programan los cálculos estadísticos, generación de gráficos y procesamiento de entradas del usuario. |
