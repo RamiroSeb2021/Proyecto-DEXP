@@ -1,20 +1,5 @@
-
-# Contar decimales --------------------------------------------------------
-
-
-contar_decimales <- function(x) {
-  # Manejo de números enteros
-  if (x %% 1 == 0) {
-    return(0)
-  }
-  # Convertir a texto sin notación científica
-  x_str <- format(x, scientific = FALSE)
-  # Separar por el punto decimal
-  partes <- strsplit(x_str, "\\.")[[1]]
-  # Contar cuántos dígitos hay después del punto
-  nchar(partes[2])
-}
-
+#' @import stats
+#' @importFrom stats qf qtukey ptukey qchisq qt
 
 # Calcular desviacion estandar y grados de libertad  ----------------------
 
