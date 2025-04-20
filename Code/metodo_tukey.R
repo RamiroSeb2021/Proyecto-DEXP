@@ -230,7 +230,7 @@ calcular_df2 <- function(t, d, r_inicial, df1, alpha, beta, S1_sq, max_error = 0
   }
   return(list(
     r = ceiling(r_est),   
-    S1 = S1_sq, 
+    S1 = sqrt(S1_sq), 
     df1 = df1,
     df2 = floor(df2),  
     dif = d, 
