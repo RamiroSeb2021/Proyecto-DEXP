@@ -365,23 +365,6 @@ calcular_r_MT <- function(T_, D, ro, S1, df1, alfa = 0.05, Beta = 0.1){
 }
 
 
-# Ejemplos libro ----------------------------------------------------------
-
-## Prueba ejemplo 5.12
-calcular_r_MT(T_ = 6, 
-              D = 20, 
-              ro = 6, 
-              S1 = sqrt(141.6), 
-              df1 = 40)
-
-## Prueba ejemplo 5.13
-calcular_r_MT(T_ = 8, 
-              D = 500, 
-              ro = 4, 
-              S1 = sqrt(90000), 
-              df1 = 200, 
-              alfa = 0.1, 
-              Beta = 0.25)
 
 
 
