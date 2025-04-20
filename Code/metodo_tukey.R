@@ -66,13 +66,6 @@ calcular_S1_df1 <- function(vector_interes,
 } 
 
 
-# Prueba1 
-
-set.seed(123)
-vector_ <- rnorm(1000, mean = 30, sd = 6)
-
-calcular_S1_df1(vector_interes = vector_, Si = 0.07, Ss = 0.12)
-
 # Calculo de A ------------------------------------------------------------
 
 #' Cálculo del valor A en intervalos de confianza para comparación de medias
@@ -108,6 +101,61 @@ calcular_A <- function(alfa, r, sigma){
 
 # Calcular_r_basico -------------------------------------------------------
 
+#' Cálculo del número de réplicas según fórmula básica corregida
+#'
+#' Esta función estima el número requerido de réplicas \code{r} en un diseño experimental 
+#' con múltiples tratamientos, usando una versión corregida de la fórmula 5.24. Se basa en 
+#' cuantiles de la distribución F (para potencia estadística) y de la distribución de Tukey 
+#' (para comparaciones múltiples), así como en la varianza experimental estimada.
+#'
+#' @param S1_sq Estimación de la varianza experimental (\code{S1^2}).
+#' @param df1 Grados de libertad del estimador de varianza experimental.
+#' @param df2 Grados de libertad del error.
+#' @param beta Nivel de error tipo II (es decir, \code{1 - potencia deseada}).
+#' @param alpha Nivel de significancia para las comparaciones múltiples.
+#' @param t Número de tratamientos.
+#' @param d Diferencia mínima detectable entre medias.
+#'
+#' @return Un valor numérico que representa el número estimado de réplicas \code{r} (no redondeado).
+#'
+#' @examples
+#' # Ejemplo directo con valores definidos
+#' calcular_r_B(
+#'   S1_sq = 141.6,
+#'   df1 = 40,
+#'   df2 = 48,
+#'   beta = 0.1,
+#'   alpha = 0.1,
+#'   t = 6,
+#'   d = 20
+#' )
+#'
+#' # Ejemplo extendido (como prueba)
+#' S1_sq_ <- 141.6
+#' Df1 <- 40
+#' D <- 20
+#' Df2 <- 48
+#' Beta <- 0.1
+#' Alpha <- 0.1
+#' T_ <- 6
+#'
+#' qf(1 - 0.10, df1 = 48, df2 = 40)
+#' qtukey(p = 0.90, nmeans = 5, df = 48)
+#' ptukey(q = 4.2, nmeans = 5, df = 48)
+#'
+#' calcular_r_B(
+#'   S1_sq = S1_sq_,
+#'   df1 = Df1, 
+#'   d = D,
+#'   df2 = Df2, 
+#'   beta = Beta, 
+#'   alpha = Alpha,
+#'   t = T_
+#' )
+#'
+#' @export
+
+
 calcular_r_B <- function(S1_sq, df1, df2, beta, alpha, t, d){
   # Cuantil F para potencia (1 - beta)
   F_crit <- qf(1 - beta, df2, df1)
@@ -117,30 +165,6 @@ calcular_r_B <- function(S1_sq, df1, df2, beta, alpha, t, d){
   r <- (F_crit * S1_sq * q_crit^2) / d^2
   return(r)
 }
-
-## Prueba
-
-S1_sq_ = 141.6
-Df1 = 40
-D = 20
-Df2 = 48
-Beta = 0.1
-Alpha =0.1
-T_ = 6
-
-qf(1 - 0.10, df1 = 48, df2 = 40)
-qtukey(p = 0.90, nmeans = 5, df = 48)
-ptukey(q = 4.2, nmeans = 5, df = 48)
-
-
-
-calcular_r_B(S1_sq = S1_sq_,
-             df1 = Df1, 
-             d = D,
-             df2 = Df2, 
-             beta = Beta, 
-             alpha = Alpha,
-             t = T_)
 
 # Calcular df2 ------------------------------------------------------------
 
@@ -175,6 +199,7 @@ calcular_r_B(S1_sq = S1_sq_,
 #' }
 #'
 #' @examples
+#' 
 #' calcular_df2(
 #'   t = 6, d = 20, r_inicial = 5, df1 = 40, 
 #'   alpha = 0.05, beta = 0.1, S1_sq = 141.6
@@ -239,10 +264,9 @@ calcular_df2 <- function(t, d, r_inicial, df1, alpha, beta, S1_sq, max_error = 0
 #' }
 #'
 #' @examples
-#' info <- calcular_df2(
-#'   t = 6, d = 20, r_inicial = 5, df1 = 40, 
-#'   alpha = 0.05, beta = 0.1, S1_sq = 141.6
-#' )
+#' 
+#' # Primero es necesario ejecutar calcular_r_MT
+#' info <- calcular_r_MT(parametros)
 #' revision_intervalo(info_r = info, des = 3)
 #'
 #' @export
@@ -287,13 +311,35 @@ revision_intervalo <- function(info_r, des = 5){
 #' }
 #'
 #' @examples
+#' # Ejemplo básico
 #' calcular_r_MT(
 #'   T_ = 6, D = 20, ro = 5, 
 #'   S1 = sqrt(141.6), df1 = 40,
 #'   alfa = 0.05, Beta = 0.1
 #' )
 #'
+#' # Prueba ejemplo 5.12
+#' calcular_r_MT(
+#'   T_ = 6, 
+#'   D = 20, 
+#'   ro = 6, 
+#'   S1 = sqrt(141.6), 
+#'   df1 = 40
+#' )
+#'
+#' # Prueba ejemplo 5.13
+#' calcular_r_MT(
+#'   T_ = 8, 
+#'   D = 500, 
+#'   ro = 4, 
+#'   S1 = sqrt(90000), 
+#'   df1 = 200, 
+#'   alfa = 0.1, 
+#'   Beta = 0.25
+#' )
+#'
 #' @export
+
 
 calcular_r_MT <- function(T_, D, ro, S1, df1, alfa = 0.05, Beta = 0.1){
 
