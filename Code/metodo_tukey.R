@@ -18,21 +18,42 @@ contar_decimales <- function(x) {
 
 # Calcular desviacion estandar y grados de libertad  ----------------------
 
+#' Estimación de la desviación estándar y sus grados de libertad
+#'
+#' Esta función estima la desviación estándar experimental \code{S1} y sus grados de libertad 
+#' (\code{df1}) a partir de los límites inferior y superior de un intervalo de confianza 
+#' para la desviación estándar de una variable cuantitativa. Utiliza cuantiles de la 
+#' distribución \code{chi-cuadrado} para encontrar el número de grados de libertad que 
+#' mejor reproduce el cociente entre los límites dados, dentro de un error relativo permitido.
+#'
+#' @param vector_interes Vector numérico que representa la variable bajo estudio.
+#' @param Si Límite inferior de la desviación estándar (en unidades relativas a la media).
+#' @param Ss Límite superior de la desviación estándar (en unidades relativas a la media).
+#' @param max_error Error relativo máximo permitido entre el cociente observado y el estimado (por defecto \code{0.01}).
+#' @param confianza Nivel de confianza del intervalo original (por defecto \code{0.95}). **(Nota: actualmente no se usa dentro del cálculo, pero puede ser útil para versiones futuras).**
+#'
+#' @return Una lista con los siguientes elementos:
+#' \describe{
+#'   \item{Media}{Media de la variable observada.}
+#'   \item{S1}{Estimación de la desviación estándar experimental.}
+#'   \item{grados_libertad}{Grados de libertad estimados (df1).}
+#'   \item{valor_x}{Cociente chi-cuadrado usado en la estimación.}
+#'   \item{error_relativo}{Error relativo del cociente estimado respecto al observado.}
+#' }
+#'
+#' @examples
+#' set.seed(123)
+#' vector_ <- rnorm(1000, mean = 30, sd = 6)
+#' calcular_S1_df1(vector_interes = vector_, Si = 0.07, Ss = 0.12)
+#'
+#' @export
 
 calcular_S1_df1 <- function(vector_interes, 
                             Si, 
                             Ss, 
                             max_error = 0.01,
                             confianza = 0.95){
-  ## Documentacion
-  # Vector_interes: Variable a contrastar mediante los
-  #                 tratamientos
-  # Si: Desviacion inferior de la desviacion estandar 
-  # Ss: Desviacion superior de la desviacion estandar 
-  # max_error: Max error permitido para df1 llegado el caso
-  #            no se encuentre el valor exacto   
-  # 
-  
+
   media <- mean(vector_interes)
   n <- length(vector_interes)
   media_sd <- media/sqrt(n)
@@ -60,11 +81,278 @@ calcular_S1_df1 <- function(vector_interes,
 } 
 
 
-# Prueba1 ------------------------------------------------------------------
+# Prueba1 
 
 set.seed(123)
 vector_ <- rnorm(1000, mean = 30, sd = 6)
 
 calcular_S1_df1(vector_interes = vector_, Si = 0.07, Ss = 0.12)
+
+# Calculo de A ------------------------------------------------------------
+
+#' Cálculo del valor A en intervalos de confianza para comparación de medias
+#'
+#' Esta función calcula el valor \code{A}, que representa una estimación ajustada 
+#' de la mitad de la longitud esperada del intervalo de confianza para comparar dos medias 
+#' en un diseño experimental. Es útil para evaluar si el número de réplicas \code{r} 
+#' genera un intervalo suficientemente estrecho, es decir, si \code{2A ≈ D}.
+#'
+#' @param alfa Nivel de significancia deseado.
+#' @param r Número de réplicas por tratamiento.
+#' @param sigma Desviación estándar estimada de la variable de interés.
+#'
+#' @return Un valor numérico que representa \code{A}, la mitad de la longitud esperada 
+#' del intervalo de confianza.
+#'
+#' @examples
+#' calcular_A(alfa = 0.05, r = 6, sigma = sqrt(141.6))
+#'
+#' @export
+
+calcular_A <- function(alfa, r, sigma){
+  # alfa: Nivel de significancia 
+  # t: Numero de tratamientos
+  # sigma: Desviacion estandar
+  
+  numerador <- qt(p = 1 - alfa, df = r - 1) * 2 * sigma * gamma(r/2)
+  denominador <- sqrt(r)*sqrt((r-1)) * gamma((r-1)/2)
+  
+  A <- numerador/denominador
+  return(A)
+}
+
+# Calcular_r_basico -------------------------------------------------------
+
+calcular_r_B <- function(S1_sq, df1, df2, beta, alpha, t, d){
+  # Cuantil F para potencia (1 - beta)
+  F_crit <- qf(1 - beta, df2, df1)
+  # Cuantil de Tukey para comparaciones múltiples (nivel de confianza 1 - alpha)
+  q_crit <- qtukey(1 - alpha, nmeans = t - 1, df = df2)
+  # Cálculo de r usando la fórmula 5.24 corregida (sin redondear)
+  r <- (F_crit * S1_sq * q_crit^2) / d^2
+  return(r)
+}
+
+## Prueba
+
+S1_sq_ = 141.6
+Df1 = 40
+D = 20
+Df2 = 48
+Beta = 0.1
+Alpha =0.1
+T_ = 6
+
+qf(1 - 0.10, df1 = 48, df2 = 40)
+qtukey(p = 0.90, nmeans = 5, df = 48)
+ptukey(q = 4.2, nmeans = 5, df = 48)
+
+
+
+calcular_r_B(S1_sq = S1_sq_,
+             df1 = Df1, 
+             d = D,
+             df2 = Df2, 
+             beta = Beta, 
+             alpha = Alpha,
+             t = T_)
+
+# Calcular df2 ------------------------------------------------------------
+
+#' Calcular número de réplicas y grados de libertad del error
+#'
+#' Esta función estima de forma iterativa el número de réplicas \code{r} y 
+#' los grados de libertad del error \code{df2} para un diseño con comparaciones 
+#' múltiples entre tratamientos. El algoritmo se basa en cuantiles de la 
+#' distribución F y la distribución de Tukey, y se detiene cuando el error 
+#' relativo entre iteraciones es menor que un umbral especificado.
+#'
+#' @param t Número de tratamientos.
+#' @param d Diferencia mínima detectable entre medias.
+#' @param r_inicial Estimación inicial para el número de réplicas.
+#' @param df1 Grados de libertad asociados al estimador de la varianza experimental.
+#' @param alpha Nivel de significancia (error tipo I).
+#' @param beta Nivel de error tipo II (1 - potencia deseada).
+#' @param S1_sq Estimación de la varianza experimental (S1 al cuadrado).
+#' @param max_error Error relativo máximo permitido para la convergencia (por defecto 0.01).
+#' @param max_iter Número máximo de iteraciones permitidas (por defecto 1000).
+#'
+#' @return Una lista con los siguientes elementos:
+#' \describe{
+#'   \item{r}{Número estimado de réplicas (redondeado hacia arriba).}
+#'   \item{S1}{Varianza experimental utilizada (S1^2).}
+#'   \item{df1}{Grados de libertad del estimador de la varianza.}
+#'   \item{df2}{Grados de libertad del error (redondeado hacia abajo).}
+#'   \item{dif}{Diferencia mínima detectable (d).}
+#'   \item{alfa}{Nivel de significancia.}
+#'   \item{iteraciones}{Número de iteraciones realizadas.}
+#'   \item{convergencia}{\code{TRUE} si el proceso convergió; \code{FALSE} en caso contrario.}
+#' }
+#'
+#' @examples
+#' calcular_df2(
+#'   t = 6, d = 20, r_inicial = 5, df1 = 40, 
+#'   alpha = 0.05, beta = 0.1, S1_sq = 141.6
+#' )
+#'
+#' @export
+
+calcular_df2 <- function(t, d, r_inicial, df1, alpha, beta, S1_sq, max_error = 0.01, max_iter = 1000) {
+  # Inicializar
+  r_est <- r_inicial
+  df2 <- t * (r_est - 1)
+  error <- 1
+  iter <- 0
+  # Iteración hasta convergencia o límite de iteraciones
+  while (error > max_error && iter < max_iter) {
+    iter <- iter + 1
+    # Cuantil F para potencia (1 - beta)
+    F_crit <- qf(1 - beta, df2, df1)
+    # Cuantil de Tukey para comparaciones múltiples (nivel de confianza 1 - alpha)
+    q_crit <- qtukey(1 - alpha, nmeans = t, df = df2)
+    # Cálculo de r usando la fórmula 5.24 corregida (sin redondear)
+    r_new <- (F_crit * S1_sq * q_crit^2) / d^2
+    # Error relativo
+    error <- abs(r_new - r_est) / r_est
+    # Actualizar
+    r_est <- r_new
+    df2 <- t * (r_est - 1)
+  }
+  return(list(
+    r = ceiling(r_est),   
+    S1 = S1_sq, 
+    df1 = df1,
+    df2 = floor(df2),  
+    dif = d, 
+    alfa = alpha,
+    iteraciones = iter,
+    convergencia = error <= max_error
+  ))
+}
+
+# Revisión intervalo ------------------------------------------------------
+
+
+#' Revisión de intervalo para número óptimo de réplicas
+#'
+#' Esta función evalúa un rango de valores alrededor del número estimado de 
+#' réplicas \code{r}, calculando el valor correspondiente de \code{A} para cada uno 
+#' y determinando cuál valor de \code{r} hace que la longitud del intervalo 
+#' de confianza (\code{2A}) sea más cercana a la diferencia mínima detectable \code{d}.
+#'
+#' @param info_r Lista resultante de la función \code{calcular_df2}, que debe contener 
+#' los elementos \code{r}, \code{dif}, \code{alfa}, y \code{S1}.
+#' @param des Desviación entera para explorar alrededor del valor de \code{r}. Por defecto es 5.
+#'
+#' @return Una lista con los siguientes elementos:
+#' \describe{
+#'   \item{r_}{Valor de \code{r} que minimiza la diferencia entre \code{2A} y \code{d}.}
+#'   \item{A}{Valor de \code{A} correspondiente a \code{r_}.}
+#'   \item{r_l}{Vector de valores de \code{r} evaluados.}
+#'   \item{A_l}{Vector de valores de \code{A} correspondientes a cada \code{r_l}.}
+#'   \item{position}{Índice de \code{r_} dentro del vector evaluado.}
+#' }
+#'
+#' @examples
+#' info <- calcular_df2(
+#'   t = 6, d = 20, r_inicial = 5, df1 = 40, 
+#'   alpha = 0.05, beta = 0.1, S1_sq = 141.6
+#' )
+#' revision_intervalo(info_r = info, des = 3)
+#'
+#' @export
+
+revision_intervalo <- function(info_r, des = 5){
+  x <- seq(from = info_r$r - des, to = info_r$r + des)
+  d_ <- rep(info_r$dif, length(x))
+  x_ <- calcular_A(info_r$alfa, x, sqrt(info_r$S1))
+  diff <- abs(2*x_ - d_)
+  
+  i = which(diff == min(diff))
+  return(list(r_ = x[i], A = x_[i], r_l = x, A_l = x_, position = i))
+}
+
+# Calcular el número de replicas ------------------------------------------
+
+#' Cálculo del número óptimo de réplicas en diseños con múltiples tratamientos
+#'
+#' Esta función estima el número óptimo de réplicas necesarias \code{r} en un diseño experimental 
+#' con múltiples tratamientos, de manera que la longitud del intervalo de confianza sea cercana 
+#' a un valor deseado (\code{D = 2A}). Utiliza un procedimiento iterativo basado en distribuciones 
+#' F y de Tukey para ajustar el número de réplicas y grados de libertad del error, y realiza una 
+#' revisión posterior para seleccionar el valor de \code{r} que produce un \code{A} más cercano a \code{D/2}.
+#'
+#' @param T_ Número de tratamientos.
+#' @param D Diferencia mínima detectable entre medias (objetivo de longitud del intervalo: \code{D = 2A}).
+#' @param ro Estimación inicial del número de réplicas.
+#' @param S1 Estimación de la desviación estándar experimental.
+#' @param df1 Grados de libertad del estimador de \code{S1}.
+#' @param alfa Nivel de significancia (por defecto \code{0.05}).
+#' @param Beta Error tipo II deseado (por defecto \code{0.1}).
+#'
+#' @return Una lista con los siguientes elementos:
+#' \describe{
+#'   \item{r}{Número estimado de réplicas que cumple la potencia deseada.}
+#'   \item{A}{Valor de \code{A} asociado a \code{r}.}
+#'   \item{r_i}{Valor de \code{r} más cercano que logra que \code{2A ≈ D}.}
+#'   \item{A_i}{Valor de \code{A} correspondiente a \code{r_i}.}
+#'   \item{lista_r}{Vector de valores de \code{r} evaluados en la revisión del intervalo.}
+#'   \item{valores_A}{Vector de valores de \code{A} asociados a \code{lista_r}.}
+#'   \item{posicion_escogida}{Índice de \code{r_i} dentro de \code{lista_r}.}
+#' }
+#'
+#' @examples
+#' calcular_r_MT(
+#'   T_ = 6, D = 20, ro = 5, 
+#'   S1 = sqrt(141.6), df1 = 40,
+#'   alfa = 0.05, Beta = 0.1
+#' )
+#'
+#' @export
+
+calcular_r_MT <- function(T_, D, ro, S1, df1, alfa = 0.05, Beta = 0.1){
+
+  info <- 
+    calcular_df2(
+    t = T_,
+    d = D,
+    r_inicial = ro,
+    df1 = df1,
+    alpha = alfa,
+    beta = Beta,
+    S1_sq = S1^2
+  )
+  # resultados de la iteracion
+  info2 <- revision_intervalo(info)
+  return(list(r = info$r, 
+              A = calcular_A(alfa, info$r, S1),
+              r_i = info2$r_,
+              A_i = info2$A, 
+              lista_r = info2$r_l, 
+              valores_A = info2$A_l, 
+              posicion_escogida =  info2$position))
+}
+
+
+# Ejemplos libro ----------------------------------------------------------
+
+## Prueba ejemplo 5.12
+calcular_r_MT(T_ = 6, 
+              D = 20, 
+              ro = 6, 
+              S1 = sqrt(141.6), 
+              df1 = 40)
+
+## Prueba ejemplo 5.13
+calcular_r_MT(T_ = 8, 
+              D = 500, 
+              ro = 4, 
+              S1 = sqrt(90000), 
+              df1 = 200, 
+              alfa = 0.1, 
+              Beta = 0.25)
+
+
+
 
 
