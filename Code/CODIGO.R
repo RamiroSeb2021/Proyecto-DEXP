@@ -160,3 +160,5 @@ r_HHM_rounded <- ceiling(r_HHM)
 
 cat("El número de réplicas requerido (método HHM) es:", r_HHM_rounded)
 
+######
+cambio 
