@@ -44,3 +44,13 @@ calcular_potencia <- function(r, t, sigma2, Delta, alpha = 0.05) {
               Fcrit = Fcrit,
               power = power))
 }
+
+### comentario
+> t = 4 ; sigma2= 10.35 ; Delta=3 
+> r= 2:100 
+> potencia= numeric(99)
+> for (i in 1:99){potencia[i]=calcular_potencia(r[i],t,sigma2,Delta)$power}
+> data.frame(r,potencia)
+
+## ese ciclo for en otra funcion y me retorne el valor de r mas cercano
+# por encima de lo que me diga el usuario
