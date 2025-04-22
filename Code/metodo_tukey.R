@@ -33,18 +33,20 @@
 #'
 #' @export
 
-calcular_S1_df1 <- function(vector_interes, 
-                            Si, 
+calcular_S1_df1 <- function(desviacion_estandar, 
+                            Si,
                             Ss, 
                             max_error = 0.01,
                             confianza = 0.9,
                             maximum_df = 1000){
-
-  media <- mean(vector_interes)
-  n <- length(vector_interes)
-  media_sd <- media/sqrt(n)
-  SI <- media_sd * Si
-  SS <- media_sd * Ss
+  # desviacion_estandar representa la desviación estándar de la media
+  # Si y Ss representan los errores (en porcentaje) admisibles de la estimación de la media
+  # max_error es un valor de parada para la comparación
+  # confianza es la confiabilidad esperada para estimar la diferencia
+  # maximum_df representa los grados de libertad máximos para el cálculo del cociente
+  
+  SI <- desviacion_estandar * Si
+  SS <- desviacion_estandar * Ss
   
   S1 <- (SI + SS)/2
   
