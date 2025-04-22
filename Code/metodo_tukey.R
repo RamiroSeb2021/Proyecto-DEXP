@@ -37,7 +37,8 @@ calcular_S1_df1 <- function(vector_interes,
                             Si, 
                             Ss, 
                             max_error = 0.01,
-                            confianza = 0.95){
+                            confianza = 0.9,
+                            maximum_df = 1000){
 
   media <- mean(vector_interes)
   n <- length(vector_interes)
@@ -49,10 +50,10 @@ calcular_S1_df1 <- function(vector_interes,
   
   Cociente <- round(SS/SI, 2)
   
-  x <- numeric(n)
-  for(i in 1:n){
+  x <- numeric(maximum_df)
+  for(i in 1:maximum_df){
     x[i] <- 
-      round(sqrt(qchisq(p = 0.9, df = i)/qchisq(p = 0.1, df = i)), 2)
+      round(sqrt(qchisq(p = confianza, df = i)/qchisq(p = 1-confianza, df = i)), 2)
     error <- abs(x[i] - Cociente)/Cociente
     if(x[i] == Cociente |  error < max_error){
       return(list(Media = media,
