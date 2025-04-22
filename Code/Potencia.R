@@ -32,7 +32,7 @@ calcular_phi2 <- function(r, t, Delta, sigma2) {
 }
 
 calcular_potencia <- function(r, t, sigma2, Delta, alpha = 0.05) {
-  df1 <- t - 1
+  df1 <- t - 1   
   df2 <- t * (r - 1)
   Fcrit <- qf(1 - alpha, df1, df2)
   phi2 <- calcular_phi2(r, t, Delta, sigma2)
