@@ -277,7 +277,7 @@ calcular_df2 <- function(t, d, r_inicial, df1, alpha, beta, S1_sq, max_error = 0
 revision_intervalo <- function(info_r, des = 5){
   x <- seq(from = info_r$r - des, to = info_r$r + des)
   d_ <- rep(info_r$dif, length(x))
-  x_ <- calcular_A(info_r$alfa, x, sqrt(info_r$S1))
+  x_ <- calcular_A(info_r$alfa, x, info_r$S1)
   diff <- abs(2*x_ - d_)
   
   i = which(diff == min(diff))
