@@ -15,13 +15,15 @@ NULL
 #' @param confianza Nivel de confianza del intervalo considerado (por defecto \code{0.9}). *Actualmente fijo en los cálculos internos.*
 #' @param maximum_df Máximo número de grados de libertad que se evaluarán (por defecto \code{1000}).
 #'
-#' @return Una lista con los siguientes elementos:
+#' @return
+#' Una lista con:
 #' \describe{
 #'   \item{S1}{Estimación corregida de la desviación estándar.}
 #'   \item{grados_libertad}{Número de grados de libertad estimado.}
-#'   \item{valor_x}{Cociente calculado entre los cuantiles de chi-cuadrado.}
-#'   \item{error_relativo}{Error relativo del cociente estimado respecto al cociente observado.}
+#'   \item{valor_x}{Cociente entre cuantiles de chi-cuadrado.}
+#'   \item{error_relativo}{Error relativo del cociente respecto al objetivo.}
 #' }
+
 #'
 #' @details
 #' Se busca el número de grados de libertad tal que el cociente de los valores críticos de la distribución chi-cuadrado,
@@ -33,9 +35,9 @@ NULL
 #' calcular_S1_df1(desviacion_estandar = 30, Si = 0.07, Ss = 0.12)
 #'
 #' @export
-calcular_S1_df1 <- function(desviacion_estandar, 
+calcular_S1_df1 <- function(desviacion_estandar,
                             Si,
-                            Ss, 
+                            Ss,
                             max_error = 0.01,
                             confianza = 0.9,
                             maximum_df = 1000) {
