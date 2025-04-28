@@ -28,8 +28,8 @@
 #' Si la longitud de \code{sigmas} no coincide con \code{a}, la función detiene su ejecución con un mensaje de error.
 #'
 #' @examples
-#' sigmas <- c(2.5, 3.0, 1.8)
-#' proporcionalidad_sin_costo_ni_tamaño_de_muestra(a = 3, r0 = 5, sigmas = sigmas)
+#' sigmas <- c(6.27, 9.57, 12, 3.32)
+#' proporcionalidad_sin_costo_ni_tamaño_de_muestra(a = 4, r0 = 5, sigmas = sigmas)
 #'
 #' @export
 proporcionalidad_sin_costo_ni_tamaño_de_muestra <- function(a, r0, sigmas) {
@@ -39,7 +39,7 @@ proporcionalidad_sin_costo_ni_tamaño_de_muestra <- function(a, r0, sigmas) {
     stop("La cantidad de tratamientos no coincide con la longitud del vector de desviaciones")
   }
   n <- r0 * a
-  r_prop <- round((n * sigmas[, 1]) / sum(sigmas[, 1]))
+  r_prop <- round((n * sigmas) / sum(sigmas))
   return(r_prop)
 }
 
