@@ -2,8 +2,6 @@
 # PARTE 1: ASIGNACIÓN SIN COSTOS
 # -------------------------------
 
-
-
 #' Asignación proporcional de réplicas sin considerar costos ni tamaño de muestra
 #'
 #' Esta función calcula un esquema de asignación proporcional de réplicas por tratamiento, 
@@ -25,24 +23,19 @@
 #' \deqn{r_i = \mathrm{round}\left(\frac{n \times \sigma_i}{\sum \sigma_i}\right)}
 #' donde \eqn{\sigma_i} es la desviación estándar del tratamiento \eqn{i}.
 #'
-#' Si la longitud de \code{sigmas} no coincide con \code{a}, la función detiene su ejecución con un mensaje de error.
-#'
 #' @examples
 #' sigmas <- c(2.5, 3.0, 1.8)
 #' proporcionalidad_sin_costo_ni_tamaño_de_muestra(a = 3, r0 = 5, sigmas = sigmas)
 #'
 #' @export
 proporcionalidad_sin_costo_ni_tamaño_de_muestra <- function(a, r0, sigmas) {
-  ## Número de réplicas inicial r0
-  ## Número de tratamientos a
   if (length(sigmas) != a) {
-    stop("La cantidad de tratamientos no coincide con la longitud del vector de desviaciones")
+    stop("La cantidad de tratamientos no coincide con la longitud del vector de desviaciones.")
   }
   n <- r0 * a
-  r_prop <- round((n * sigmas[, 1]) / sum(sigmas[, 1]))
+  r_prop <- round((n * sigmas) / sum(sigmas))
   return(r_prop)
 }
-
 
 #' Asignación proporcional de réplicas considerando costos y sin un tamaño de muestra fijo
 #'
@@ -78,15 +71,11 @@ proporcionalidad_sin_costo_ni_tamaño_de_muestra <- function(a, r0, sigmas) {
 #'
 #' @export
 proporcionalidad_con_costo_ni_tamaño_de_muestra <- function(a, sigmas, costos, costo_total) {
-  ## Número de tratamientos a
-  ## Vector de desviaciones estándar sigmas
-  ## Vector de costos costos
-  ## Presupuesto total costo_total
   if (length(sigmas) != a) {
-    stop("La cantidad de tratamientos no coincide con la longitud del vector de desviaciones")
+    stop("La cantidad de tratamientos no coincide con la longitud del vector de desviaciones.")
   }
   if (length(costos) != a) {
-    stop("La cantidad de tratamientos no coincide con la longitud del vector de costos")
+    stop("La cantidad de tratamientos no coincide con la longitud del vector de costos.")
   }
   
   lambda <- 1 / a
@@ -96,10 +85,10 @@ proporcionalidad_con_costo_ni_tamaño_de_muestra <- function(a, sigmas, costos, 
   return(r_prop)
 }
 
-
 # ----------------------------------------
 # PARTE 2: ASIGNACIÓN CON COSTOS (ÓPTIMA)
 # ----------------------------------------
+
 #' Cálculo del número de tratamientos y réplicas bajo modelo de efectos aleatorios
 #'
 #' Esta función estima el número óptimo de tratamientos y el número de réplicas por tratamiento
@@ -142,12 +131,6 @@ proporcionalidad_con_costo_ni_tamaño_de_muestra <- function(a, sigmas, costos, 
 #'
 #' @export
 numero_de_tratamientos_y_replicas_con_efectos_aleatorios <- function(costo_tratamiento, costo_ue, sigma_cuadrado, rho, v_max) {
-  ## Costo por tratamiento C1
-  ## Costo por unidad experimental C2
-  ## Varianza del error sigma^2
-  ## Proporción rho = sigma^2_tau / sigma^2
-  ## Máxima varianza relativa v_max
-  
   sigma_A2 <- rho * sigma_cuadrado
   
   num_de_tratamientos <- round((1 / v_max) * (sigma_A2 + sqrt((sigma_A2 * sigma_cuadrado * costo_ue) / costo_tratamiento)))
