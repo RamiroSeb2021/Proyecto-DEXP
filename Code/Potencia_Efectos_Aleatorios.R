@@ -1,12 +1,14 @@
 #' @import stats
 #' @import ggplot2
 #' @importFrom stats qf qtukey ptukey qchisq qt
+#' @importFrom utils install.packages
+
 NULL
 
 #' Simular potencia para ANOVA de efectos aleatorios balanceado
 #'
 #' Ejecuta una simulación de Monte Carlo para estimar la potencia de la prueba
-#' \eqn{F} en un diseño a una vía con efectos aleatorios y \emph{r} réplicas por tratamiento. 
+#' \eqn{F} en un diseño a una vía con efectos aleatorios y \emph{r} réplicas por tratamiento.
 #' Cada observación se genera como
 #' \deqn{Y_{ij} = \tau_i + \varepsilon_{ij},}
 #' donde \eqn{\tau_i \sim N(0,\sigma_\tau^2)} y \eqn{\varepsilon_{ij} \sim N(0,\sigma^2)}.
@@ -101,17 +103,18 @@ encontrar_r_minimo <- function(t, rho, potencia_objetivo = 0.8,
     resultados <- rbind(resultados, data.frame(r = r, potencia = potencia))
     
     if (potencia >= potencia_objetivo) {
-      grafico <- ggplot(resultados, aes(x = r, y = potencia)) +
-        geom_line() +
-        geom_point() +
-        geom_text(aes(label = r), vjust = -1, size = 3) +
-        geom_hline(yintercept = potencia_objetivo, linetype = "dashed", color = "red") +
-        labs(
+      grafico <- ggplot2::ggplot(resultados, ggplot2::aes(x = r, y = potencia)) +
+        ggplot2::geom_line() +
+        ggplot2::geom_point() +
+        ggplot2::geom_text(ggplot2::aes(label = r), vjust = -1, size = 3) +
+        ggplot2::geom_hline(yintercept = potencia_objetivo, linetype = "dashed", color = "red") +
+        ggplot2::labs(
           title = "Curva de potencia estimada",
           x = "Número de réplicas (r)",
-          y = "Potencia (1 - beta)"
+          y = expression("Potencia (1 - " * beta * ")")
         ) +
-        theme_minimal()
+        ggplot2::theme_minimal()
+      
       
       # cat("Se alcanza potencia >= ", potencia_objetivo, " con r =", r, "\n")
       return(list(
