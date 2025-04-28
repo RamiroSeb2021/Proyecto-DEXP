@@ -24,8 +24,8 @@
 #' donde \eqn{\sigma_i} es la desviación estándar del tratamiento \eqn{i}.
 #'
 #' @examples
-#' sigmas <- c(2.5, 3.0, 1.8)
-#' proporcionalidad_sin_costo_ni_tamaño_de_muestra(a = 3, r0 = 5, sigmas = sigmas)
+#' sigmas <- c(6.27, 9.57, 12, 3.32)
+#' proporcionalidad_sin_costo_ni_tamaño_de_muestra(a = 4, r0 = 5, sigmas = sigmas)
 #'
 #' @export
 proporcionalidad_sin_costo_ni_tamaño_de_muestra <- function(a, r0, sigmas) {
