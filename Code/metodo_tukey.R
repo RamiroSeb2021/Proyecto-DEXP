@@ -2,8 +2,6 @@
 #' @importFrom stats qf qtukey ptukey qchisq qt
 NULL
 
-# Calcular desviacion estandar y grados de libertad  ----------------------
-
 #' Estimación de la desviación estándar corregida y grados de libertad
 #'
 #' Esta función estima una desviación estándar corregida (\code{S1}) y el número de grados de libertad
@@ -19,7 +17,6 @@ NULL
 #'
 #' @return Una lista con los siguientes elementos:
 #' \describe{
-#'   \item{Media}{Promedio de los límites corregidos (\code{S1}).}
 #'   \item{S1}{Estimación corregida de la desviación estándar.}
 #'   \item{grados_libertad}{Número de grados de libertad estimado.}
 #'   \item{valor_x}{Cociente calculado entre los cuantiles de chi-cuadrado.}
@@ -36,38 +33,38 @@ NULL
 #' calcular_S1_df1(desviacion_estandar = 30, Si = 0.07, Ss = 0.12)
 #'
 #' @export
-
-
 calcular_S1_df1 <- function(desviacion_estandar, 
                             Si,
                             Ss, 
                             max_error = 0.01,
                             confianza = 0.9,
-                            maximum_df = 1000){
-
+                            maximum_df = 1000) {
   
   SI <- desviacion_estandar * Si
   SS <- desviacion_estandar * Ss
   
-  S1 <- (SI + SS)/2
+  S1 <- (SI + SS) / 2
   
-  Cociente <- round(SS/SI, 2)
+  Cociente <- SS / SI
   
-  x <- numeric(n)
-  for(i in 1:n){
-    x[i] <-
-      round(sqrt(qchisq(p = 0.9, df = i)/qchisq(p = 0.1, df = i)), 2)
-    error <- abs(x[i] - Cociente)/Cociente
-    if(x[i] == Cociente |  error < max_error){
-      return(list(Media = media,
-                  S1 = S1,
-                  grados_libertad = i,
-                  valor_x = x[i],
-                  error_relativo = error))
+  for (i in 1:maximum_df) {
+    x_i <- sqrt(qchisq(p = confianza, df = i) / qchisq(p = 1 - confianza, df = i))
+    error_relativo <- abs(x_i - Cociente) / Cociente
+    
+    if (error_relativo < max_error) {
+      return(list(
+        S1 = S1,
+        grados_libertad = i,
+        valor_x = x_i,
+        error_relativo = error_relativo
+      ))
     }
   }
+  
+  warning("No se encontró un número de grados de libertad que cumpla el criterio.")
   return(NULL)
 }
+
 
 
 # Calculo de A ------------------------------------------------------------

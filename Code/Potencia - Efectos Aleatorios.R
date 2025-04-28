@@ -109,7 +109,7 @@ encontrar_r_minimo <- function(t, rho, potencia_objetivo = 0.8,
         labs(
           title = "Curva de potencia estimada",
           x = "Número de réplicas (r)",
-          y = "Potencia (1 - β)"
+          y = "Potencia (1 - beta)"
         ) +
         theme_minimal()
       
