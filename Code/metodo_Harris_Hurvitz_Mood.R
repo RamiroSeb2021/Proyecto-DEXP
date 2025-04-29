@@ -5,7 +5,7 @@
 #' \deqn{r = 2\,(df2 + 1)\,(K \times S1 / d)^2},
 #' donde \eqn{S1} es la desviación estándar estimada, \eqn{d} la diferencia mínima
 #' detectable, \eqn{df2} los grados de libertad del segundo estimador de la varianza
-y \eqn{K} el valor de la tabla A.9.
+#'y \eqn{K} el valor de la tabla A.9.
 #'
 #' @param S1 Estimación de la desviación estándar experimental.
 #' @param d Diferencia mínima detectable entre medias.
