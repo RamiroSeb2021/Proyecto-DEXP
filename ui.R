@@ -1,3 +1,6 @@
+library(shiny)
+library(shinythemes)
+
 ui <- fluidPage(
   theme = shinytheme("cerulean"),
   tags$head(
