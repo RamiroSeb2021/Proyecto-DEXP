@@ -1,5 +1,8 @@
 library(shiny)
 library(shinythemes)
+source("Code/metodo_tukey.R")
+source("Code/Costos.R")
+source("Code/Potencia_Efectos_Aleatorios.R")
 
 ui <- fluidPage(
   theme = shinytheme("cerulean"),
