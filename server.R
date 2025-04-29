@@ -42,4 +42,31 @@ server <- function(input, output, session) {
             "\nRéplicas por tratamiento:", resultados$num_de_replicas)
     })
   })
+  
+  # Calculo 4: Potencia
+  observeEvent(input$calcular_4, {
+    resultados <- calcular_potencia(
+      r = input$r_potencia,
+      t = input$t_potencia,
+      sigma2 = input$sigma2_potencia,
+      Delta = input$Delta_potencia,
+      alpha = input$alpha_potencia
+    )
+    output$resultados <- renderPrint({
+      resultados
+    })
+  })
+  
+  # Calculo 5: Harris-Hurvitz-Mood (HHM)
+  observeEvent(input$calcular_5, {
+    resultado <- calcular_r_HHM(
+      S1 = input$S1_hhm,
+      d = input$d_hhm,
+      df2 = input$df2_hhm,
+      K = input$K_hhm
+    )
+    output$resultados <- renderText({
+      paste("Número estimado de réplicas (r):", round(resultado, 2))
+    })
+  })
 }

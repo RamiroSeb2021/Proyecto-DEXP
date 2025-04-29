@@ -3,75 +3,54 @@ library(shinythemes)
 source("Code/metodo_tukey.R")
 source("Code/Costos.R")
 source("Code/Potencia_Efectos_Aleatorios.R")
-
-ui <- fluidPage(
-  theme = shinytheme("cerulean"),
-  tags$head(
-    tags$style(HTML("
-      .tab-content { padding: 20px; }
-      .well { background-color: #f5f5f5; border: 1px solid #ddd; }
-      .input-group { margin-bottom: 15px; }
-      .btn-primary { background: #007bff; }
-      .result-box { 
-        background: #f8f9fa; 
-        padding: 20px; 
-        border-radius: 8px; 
-        border: 1px solid #dee2e6;
-      }
-    "))
+source("Code/Potencia.R") 
+source("Code/metodo_Harris_Hurvitz_Mood.R") 
+tabsetPanel(
+  tabPanel("Proporcionalidad sin costo", 
+           h4("Parámetros"),
+           numericInput("a", "Tratamientos (a)", 4),
+           numericInput("r0", "Réplicas iniciales (r₀)", 5),
+           textInput("sigmas", "Desviaciones σ (separadas por comas)", "6.27,9.57,12,3.32"),
+           actionButton("calcular_1", "Calcular", class = "btn btn-success")
   ),
   
-  titlePanel(
-    div(
-      h1("Diseño Experimental Optimizado", style = "color: #004080;"),
-      img(src = "https://i.imgur.com/3JZ7X6F.png", height = 60, style = "float:right;")
-    )
+  tabPanel("Proporcionalidad con costo", 
+           h4("Parámetros"),
+           numericInput("a_2", "Tratamientos (a)", 4),
+           textInput("sigmas_2", "Desviaciones σ (vector)", "6.27,9.57,12,3.32"),
+           textInput("costos", "Costos por tratamiento (vector)", "1000,200,700,1100"),
+           numericInput("costo_total", "Presupuesto total", 50000),
+           actionButton("calcular_2", "Calcular", class = "btn btn-success")
   ),
   
-  sidebarLayout(
-    sidebarPanel(
-      wellPanel(
-        tabsetPanel(
-          tabPanel("Proporcionalidad sin costo", 
-                   h4("Parámetros"),
-                   numericInput("a", "Tratamientos (a)", 4),
-                   numericInput("r0", "Réplicas iniciales (r₀)", 5),
-                   textInput("sigmas", "Desviaciones σ (separadas por comas)", "6.27,9.57,12,3.32"),
-                   actionButton("calcular_1", "Calcular", class = "btn btn-success")
-          ),
-          
-          tabPanel("Proporcionalidad con costo", 
-                   h4("Parámetros"),
-                   numericInput("a_2", "Tratamientos (a)", 4),
-                   textInput("sigmas_2", "Desviaciones σ (vector)", "6.27,9.57,12,3.32"),
-                   textInput("costos", "Costos por tratamiento (vector)", "1000,200,700,1100"),
-                   numericInput("costo_total", "Presupuesto total", 50000),
-                   actionButton("calcular_2", "Calcular", class = "btn btn-success")
-          ),
-          
-          tabPanel("Efectos aleatorios", 
-                   h4("Parámetros"),
-                   numericInput("costo_tratamiento", "Costo tratamiento (C₁)", 150000),
-                   numericInput("costo_ue", "Costo unidad (C₂)", 50000),
-                   numericInput("sigma_cuadrado", "Varianza error (σ²)", 416.21),
-                   numericInput("rho", "Proporción ρ", 0.3796),
-                   numericInput("v_max", "Varianza máxima (v_max)", 43.49),
-                   actionButton("calcular_3", "Calcular", class = "btn btn-success")
-          )
-        )
-      )
-    ),
-    
-    mainPanel(
-      tabsetPanel(
-        tabPanel("Resultados", 
-                 div(
-                   class = "result-box",
-                   h4("Resultados del cálculo"),
-                   verbatimTextOutput("resultados")
-                 )
-        )
-      )
-    )
+  tabPanel("Efectos aleatorios", 
+           h4("Parámetros"),
+           numericInput("costo_tratamiento", "Costo tratamiento (C₁)", 150000),
+           numericInput("costo_ue", "Costo unidad (C₂)", 50000),
+           numericInput("sigma_cuadrado", "Varianza error (σ²)", 416.21),
+           numericInput("rho", "Proporción ρ", 0.3796),
+           numericInput("v_max", "Varianza máxima (v_max)", 43.49),
+           actionButton("calcular_3", "Calcular", class = "btn btn-success")
+  ),
+  
+  # Nuevo: Cálculo de Potencia
+  tabPanel("Cálculo de Potencia", 
+           h4("Parámetros"),
+           numericInput("r_potencia", "Réplicas por tratamiento (r)", 15),
+           numericInput("t_potencia", "Tratamientos (t)", 4),
+           numericInput("sigma2_potencia", "Varianza estimada (σ²)", 10.35),
+           numericInput("Delta_potencia", "Diferencia mínima detectable (Δ)", 3),
+           numericInput("alpha_potencia", "Nivel de significancia (α)", 0.05),
+           actionButton("calcular_4", "Calcular", class = "btn btn-success")
+  ),
+  
+  # Nuevo: Método Harris–Hurvitz–Mood (HHM)
+  tabPanel("Método HHM", 
+           h4("Parámetros"),
+           numericInput("S1_hhm", "Desviación estándar experimental (S₁)", sqrt(141.6)),
+           numericInput("d_hhm", "Diferencia mínima detectable (d)", 20),
+           numericInput("df2_hhm", "Grados de libertad (df₂)", 60),
+           numericInput("K_hhm", "Valor K (tabla A.9)", 0.322),
+           actionButton("calcular_5", "Calcular", class = "btn btn-success")
   )
 )
