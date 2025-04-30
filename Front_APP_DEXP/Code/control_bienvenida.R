@@ -1,6 +1,6 @@
 # control_bienvenida.R
 # Aquí definimos la función que muestra la modal de bienvenida
-
+# Aquí van los nombres #
 show_bienvenida_modal <- function() {
   showModal(
     modalDialog(
@@ -23,6 +23,8 @@ show_bienvenida_modal <- function() {
             <img src='1361b70b-cd7c-4150-aa30-e3f659f15fba.png' style='width:120px;margin-bottom:20px;'/>
             <h1>Bienvenido a la App de Diseño de Experimentos</h1>
             <p>Explora datos, modelos experimentales y calcula tamaños muestrales.</p>
+            <p>Estudiantes: Juan Sebastián Ramirez Ayala, Diana Catalina Hernández Rojas, Yan Carlos Moreno Guerra</p>
+            <p>Profesor: Wilmer Dario Pineda Rios</p>
           </div>
         </div>
       "),
