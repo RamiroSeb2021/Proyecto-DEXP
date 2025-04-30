@@ -5,8 +5,8 @@ library(shinydashboard)
 source("Code/metodo_tukey.R")
 source("Code/Costos.R")
 source("Code/Potencia_Efectos_Aleatorios.R")
-source("Code/Potencia.R")
-source("Code/metodo_Harris_Hurvitz_Mood.R")
+source("Code/Potencia.R")                   # calcular_potencia + encontrar_r_minimo
+source("Code/metodo_Harris_Hurvitz_Mood.R")  # obtener_K_A9 + calcular_r_HHM
 
 ui <- dashboardPage(
   dashboardHeader(title = "Diseño Experimental"),
@@ -24,15 +24,18 @@ ui <- dashboardPage(
   ),
   dashboardBody(
     tabItems(
+      # --- Introducción ---
       tabItem(tabName = "intro",
               fluidRow(
                 box(title = "Bienvenido", width = 12, status = "primary", solidHeader = TRUE,
-                    p("A continuación podrás realizar cálculos para determinar el número de réplicas en diferentes contextos de diseño experimental. Estos incluyen métodos con y sin costos, con efectos aleatorios, cálculos de potencia, y el método de Harris-Hurvitz-Mood (HHM)."),
+                    p("A continuación podrás realizar cálculos para determinar el número de réplicas en diferentes contextos de diseño experimental. Estos incluyen métodos con y sin costos, con efectos aleatorios, cálculos de potencia y el método de Harris-Hurvitz-Mood (HHM)."),
                     p("Haz clic en 'Continuar' para comenzar con el primer cálculo: Proporcionalidad sin Costo."),
                     actionButton("continuar", "Continuar", class = "btn btn-primary")
                 )
               )
       ),
+      
+      # --- Proporcionalidad sin Costo ---
       tabItem(tabName = "sin_costo",
               fluidRow(
                 box(title = "Parámetros", width = 6, status = "primary", solidHeader = TRUE,
@@ -51,6 +54,8 @@ ui <- dashboardPage(
                 )
               )
       ),
+      
+      # --- Proporcionalidad con Costo ---
       tabItem(tabName = "con_costo",
               fluidRow(
                 box(title = "Parámetros", width = 6, status = "primary", solidHeader = TRUE,
@@ -73,6 +78,8 @@ ui <- dashboardPage(
                 )
               )
       ),
+      
+      # --- Efectos Aleatorios ---
       tabItem(tabName = "efectos",
               fluidRow(
                 box(title = "Parámetros", width = 6, status = "primary", solidHeader = TRUE,
@@ -96,14 +103,16 @@ ui <- dashboardPage(
                 )
               )
       ),
+      
+      # --- Cálculo de Potencia ---
       tabItem(tabName = "potencia",
               fluidRow(
                 box(title = "Parámetros", width = 6, status = "primary", solidHeader = TRUE,
-                    numericInput("r_potencia", "Réplicas por tratamiento (r)", 15),
-                    numericInput("t_potencia", "Tratamientos (t)", 4),
-                    numericInput("sigma2_potencia", "Varianza estimada (σ²)", 10.35),
-                    numericInput("Delta_potencia", "Diferencia mínima detectable (Δ)", 3),
-                    numericInput("alpha_potencia", "Nivel de significancia (α)", 0.05),
+                    numericInput("t_potencia", "Tratamientos (t)", 4, min = 1),
+                    numericInput("sigma2_potencia", "Varianza estimada (σ²)", 10.35, min = 0),
+                    numericInput("Delta_potencia", "Diferencia mínima detectable (Δ)", 3, min = -Inf),
+                    numericInput("alpha_potencia", "Nivel de significancia (α)", 0.05, min = 0, max = 1, step = 0.01),
+                    numericInput("power_target", "Potencia objetivo (1−β)", 0.80, min = 0, max = 1, step = 0.01),
                     actionButton("calcular_4", "Calcular", class = "btn btn-success")
                 ),
                 box(title = "Resultados", width = 6, status = "info", solidHeader = TRUE,
@@ -119,22 +128,19 @@ ui <- dashboardPage(
                 )
               )
       ),
+      
+      # --- Método HHM (corregido) ---
       tabItem(tabName = "hhm",
               fluidRow(
-                box(title = "Parámetros", width = 6, status = "primary", solidHeader = TRUE,
-                    numericInput("S1_hhm", "Desviación estándar experimental (S₁)", sqrt(141.6)),
-                    numericInput("d_hhm", "Diferencia mínima detectable (d)", 20),
-                    numericInput("df2_hhm", "Grados de libertad (df₂)", 60),
-                    numericInput("K_hhm", "Valor K (tabla A.9)", 0.322),
+                box(title = "Parámetros HHM", width = 6, status = "primary", solidHeader = TRUE,
+                    numericInput("S2_1_hhm", "Varianza estimada (S2₁)", 141.6, min = 0),
+                    numericInput("d_hhm", "Diferencia mínima detectable (mismas unidades que S₁)", 20, min = 0),
+                    numericInput("df2_hhm", "Grados de libertad df₂", 60, min = 1),
+                    numericInput("alpha_hhm", "Nivel de significancia (α)", 0.05, min = 0, max = 1, step = 0.01),
                     actionButton("calcular_5", "Calcular", class = "btn btn-success")
                 ),
-                box(title = "Resultados", width = 6, status = "info", solidHeader = TRUE,
+                box(title = "Resultados HHM", width = 6, status = "info", solidHeader = TRUE,
                     verbatimTextOutput("resultados_5")
-                )
-              ),
-              fluidRow(
-                column(12, align = "left",
-                       actionButton("anterior_5", "Anterior", icon = icon("arrow-left"), class = "btn btn-secondary")
                 )
               )
       )
@@ -143,12 +149,8 @@ ui <- dashboardPage(
 )
 
 server <- function(input, output, session) {
-  
-  observeEvent(input$continuar, {
-    updateTabItems(session, "tabs", selected = "sin_costo")
-  })
-  
   # Navegación
+  observeEvent(input$continuar, updateTabItems(session, "tabs", selected = "sin_costo"))
   observeEvent(input$siguiente_1, updateTabItems(session, "tabs", selected = "con_costo"))
   observeEvent(input$anterior_2, updateTabItems(session, "tabs", selected = "sin_costo"))
   observeEvent(input$siguiente_2, updateTabItems(session, "tabs", selected = "efectos"))
@@ -156,38 +158,105 @@ server <- function(input, output, session) {
   observeEvent(input$siguiente_3, updateTabItems(session, "tabs", selected = "potencia"))
   observeEvent(input$anterior_4, updateTabItems(session, "tabs", selected = "efectos"))
   observeEvent(input$siguiente_4, updateTabItems(session, "tabs", selected = "hhm"))
-  observeEvent(input$anterior_5, updateTabItems(session, "tabs", selected = "potencia"))
   
-  # Cálculos
+  # Proporcionalidad sin Costo
   observeEvent(input$calcular_1, {
     sigmas <- as.numeric(unlist(strsplit(input$sigmas, ",")))
-    resultados <- proporcionalidad_sin_costo_ni_tamaño_de_muestra(input$a, input$r0, sigmas)
-    output$resultados_1 <- renderText({ paste("Réplicas asignadas:", paste(resultados, collapse = ", ")) })
+    out1 <- proporcionalidad_sin_costo_ni_tamaño_de_muestra(input$a, input$r0, sigmas)
+    output$resultados_1 <- renderText(paste("Réplicas asignadas:", paste(out1, collapse = ", ")))
   })
   
+  # Proporcionalidad con Costo
   observeEvent(input$calcular_2, {
     sigmas <- as.numeric(unlist(strsplit(input$sigmas_2, ",")))
     costos <- as.numeric(unlist(strsplit(input$costos, ",")))
-    resultados <- proporcionalidad_con_costo_ni_tamaño_de_muestra(input$a_2, sigmas, costos, input$costo_total)
-    output$resultados_2 <- renderText({ paste("Réplicas asignadas:", paste(resultados, collapse = ", ")) })
+    out2 <- proporcionalidad_con_costo_ni_tamaño_de_muestra(input$a_2, sigmas, costos, input$costo_total)
+    output$resultados_2 <- renderText(paste("Réplicas asignadas:", paste(out2, collapse = ", ")))
   })
   
+  # Efectos Aleatorios
   observeEvent(input$calcular_3, {
-    resultados <- numero_de_tratamientos_y_replicas_con_efectos_aleatorios(
-      input$costo_tratamiento, input$costo_ue, input$sigma_cuadrado, input$rho, input$v_max)
-    output$resultados_3 <- renderText({ paste("Tratamientos:", resultados$num_de_tratamientos,
-                                              "\nRéplicas por tratamiento:", resultados$num_de_replicas) })
+    res3 <- numero_de_tratamientos_y_replicas_con_efectos_aleatorios(
+      input$costo_tratamiento, input$costo_ue, input$sigma_cuadrado, input$rho, input$v_max
+    )
+    output$resultados_3 <- renderText(
+      paste0("Tratamientos: ", res3$num_de_tratamientos,
+             "\nRéplicas por tratamiento: ", res3$num_de_replicas)
+    )
   })
   
+  # Cálculo de Potencia (con validaciones)
   observeEvent(input$calcular_4, {
-    resultados <- calcular_potencia(
-      input$r_potencia, input$t_potencia, input$sigma2_potencia, input$Delta_potencia, input$alpha_potencia)
-    output$resultados_4 <- renderPrint({ resultados })
+    # Validaciones
+    if (is.na(input$t_potencia) || input$t_potencia %% 1 != 0 || input$t_potencia < 2) {
+      showNotification("Error: t debe ser un entero ≥ 2.", type = "error"); return()
+    }
+    if (is.na(input$sigma2_potencia) || input$sigma2_potencia <= 0) {
+      showNotification("Error: σ² debe ser positivo.", type = "error"); return()
+    }
+    if (is.na(input$Delta_potencia) || input$Delta_potencia <= 0) {
+      showNotification("Error: Δ debe ser > 0.", type = "error"); return()
+    }
+    if (is.na(input$alpha_potencia) || input$alpha_potencia <= 0 || input$alpha_potencia >= 1) {
+      showNotification("Error: α debe estar en (0,1).", type = "error"); return()
+    }
+    if (is.na(input$power_target) || input$power_target <= 0 || input$power_target >= 1) {
+      showNotification("Error: potencia objetivo debe estar en (0,1).", type = "error"); return()
+    }
+    
+    res4 <- tryCatch(
+      encontrar_r_minimo(
+        t = input$t_potencia,
+        sigma2 = input$sigma2_potencia,
+        Delta = input$Delta_potencia,
+        alpha = input$alpha_potencia,
+        power_target = input$power_target
+      ),
+      error = function(e) {
+        showNotification(paste("No se pudo calcular:", e$message), type = "error")
+        return(NULL)
+      }
+    )
+    if (is.null(res4)) return()
+    
+    output$resultados_4 <- renderPrint({
+      cat(sprintf("Número mínimo de réplicas (r): %d\n", res4$r))
+      cat(sprintf("φ² (no centralidad): %.4f\n", res4$phi2))
+      cat(sprintf("df₁ (t−1): %d\n", res4$df1))
+      cat(sprintf("df₂ (t·(r−1)): %d\n", res4$df2))
+      cat(sprintf("F crítico (1−α): %.4f\n", res4$Fcrit))
+      cat(sprintf("Potencia alcanzada (1−β): %.4f\n", res4$power))
+    })
   })
   
+  # Método HHM (corregido)
   observeEvent(input$calcular_5, {
-    resultado <- calcular_r_HHM(input$S1_hhm, input$d_hhm, input$df2_hhm, input$K_hhm)
-    output$resultados_5 <- renderText({ paste("Número estimado de réplicas (r):", round(resultado, 2)) })
+    # Validaciones HHM
+    if (is.na(input$S2_1_hhm) || input$S2_1_hhm <= 0) {
+      showNotification("Error: S2₁ debe ser > 0.", type = "error"); return()
+    }
+    if (is.na(input$d_hhm) || input$d_hhm <= 0) {
+      showNotification("Error: d debe ser > 0.", type = "error"); return()
+    }
+    if (is.na(input$df2_hhm) || input$df2_hhm < 1) {
+      showNotification("Error: df₂ debe ser ≥ 1.", type = "error"); return()
+    }
+    if (is.na(input$alpha_hhm) || input$alpha_hhm <= 0 || input$alpha_hhm >= 1) {
+      showNotification("Error: α debe estar en (0,1).", type = "error"); return()
+    }
+    
+    res5 <- calcular_r_HHM(
+      S2_1 = input$S2_1_hhm,
+      d    = input$d_hhm,
+      df2  = input$df2_hhm,
+      alpha= input$alpha_hhm
+    )
+    
+    output$resultados_5 <- renderPrint({
+      cat(sprintf("S₁ (desv. estándar redondeada): %.2f\n", res5$S1))
+      cat(sprintf("K (tabla A.9): %.3f\n", res5$K))
+      cat(sprintf("Número de réplicas (r): %.2f\n", res5$r))
+    })
   })
 }
 
