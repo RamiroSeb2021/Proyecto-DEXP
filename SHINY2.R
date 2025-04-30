@@ -129,14 +129,14 @@ ui <- dashboardPage(
               )
       ),
       
-      # --- Método HHM (corregido) ---
+      # --- Método HHM ---
       tabItem(tabName = "hhm",
               fluidRow(
                 box(title = "Parámetros HHM", width = 6, status = "primary", solidHeader = TRUE,
-                    numericInput("S2_1_hhm", "Varianza estimada (S2₁)", 141.6, min = 0),
-                    numericInput("d_hhm", "Diferencia mínima detectable (mismas unidades que S₁)", 20, min = 0),
-                    numericInput("df2_hhm", "Grados de libertad df₂", 60, min = 1),
-                    numericInput("alpha_hhm", "Nivel de significancia (α)", 0.05, min = 0, max = 1, step = 0.01),
+                    numericInput("S2_1_hhm", "Varianza estimada S2₁ (g²)", 141.6, min = 0),
+                    numericInput("d_hhm", "Diferencia mínima detectable d (gramos)", 20, min = 0),
+                    numericInput("df2_hhm", "Grados de libertad df₂ (entero)", 60, min = 1),
+                    numericInput("alpha_hhm", "Nivel de significancia α (por ejemplo, 0.05)", 0.05, min = 0, max = 1, step = 0.01),
                     actionButton("calcular_5", "Calcular", class = "btn btn-success")
                 ),
                 box(title = "Resultados HHM", width = 6, status = "info", solidHeader = TRUE,
