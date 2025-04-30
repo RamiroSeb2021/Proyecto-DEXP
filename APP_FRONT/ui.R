@@ -3,8 +3,8 @@ library(shinythemes)
 source("Code/metodo_tukey.R")
 source("Code/Costos.R")
 source("Code/Potencia_Efectos_Aleatorios.R")
-source("Code/Potencia.R") 
-source("Code/metodo_Harris_Hurvitz_Mood.R") 
+source("Code/Potencia.R") # Nuevo
+source("Code/metodo_Harris_Hurvitz_Mood.R") # Nuevo
 tabsetPanel(
   tabPanel("Proporcionalidad sin costo", 
            h4("Parámetros"),
