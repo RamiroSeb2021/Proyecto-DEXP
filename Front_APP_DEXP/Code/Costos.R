@@ -27,9 +27,9 @@
 #'
 #' @export
 proporcionalidad_sin_costo_ni_tamaño_de_muestra <- function(a, r0, sigmas) {
-  if (length(sigmas) != a) {
-    stop("La cantidad de tratamientos no coincide con la longitud del vector de desviaciones")
-  }
+  #if (length(sigmas) != a) {
+    #stop("La cantidad de tratamientos no coincide con la longitud del vector de desviaciones")
+  #}
   n <- r0 * a
   r_prop <- round((n * sigmas) / sum(sigmas))
   return(r_prop)
@@ -42,7 +42,7 @@ proporcionalidad_sin_costo_ni_tamaño_de_muestra <- function(a, r0, sigmas) {
 #' considerando tanto las desviaciones estándar como los costos unitarios de observación
 #' de cada tratamiento. La asignación se ajusta para respetar un presupuesto total disponible (\code{costo_total}).
 #'
-#' @param a Número de tratamientos.
+#' @param a Número de tratamientos. 
 #' @param sigmas Vector numérico de desviaciones estándar estimadas para cada tratamiento (longitud igual a \code{a}).
 #' @param costos Vector numérico de costos unitarios por tratamiento (longitud igual a \code{a}).
 #' @param costo_total Presupuesto total disponible para realizar las observaciones.

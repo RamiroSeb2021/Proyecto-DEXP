@@ -16,6 +16,7 @@ source("Code/Potencia_Efectos_Aleatorios.R")
 source("Code/Potencia.R")
 source("Code/metodo_Harris_Hurvitz_Mood.R")
 source("Code/control_bienvenida.R")
+source("Code/errores.R")
 
 server <- function(input, output, session) {
   # 1) Abrimos la splash modal al iniciar
@@ -41,12 +42,48 @@ server <- function(input, output, session) {
   observeEvent(input$siguiente_4, updateTabItems(session, "tabs", selected = "hhm"))
   observeEvent(input$anterior_5, updateTabItems(session, "tabs", selected = "potencia"))
   
-  # Cálculos
+  # Función para mostrar errores en modal y limpiar output
+  show_error <- function(message) {
+    showModal(modalDialog(
+      title = "Error",
+      paste0("⚠️ ", message),
+      easyClose = TRUE,
+      size = "s"
+    ))
+    output$resultados_1 <- renderText({ NULL })  # Limpia resultados
+  }
+  
   observeEvent(input$calcular_1, {
-    sigmas <- as.numeric(unlist(strsplit(input$sigmas, ",")))
-    resultados <- proporcionalidad_sin_costo_ni_tamaño_de_muestra(input$a, input$r0, sigmas)
-    output$resultados_1 <- renderText({ paste("Réplicas asignadas:", paste(resultados, collapse = ", ")) })
+    # Limpia resultados previos
+    output$resultados_1 <- renderText({ NULL })
+    
+    # Validar y obtener sigmas con función externa que llama a show_error si hay problema
+    sigmas <- Excepciones_proporcionalidad_sin_costo(input$a, input$r0, input$sigmas, show_error)
+    if (isFALSE(sigmas) || is.null(sigmas)) return()  # Si hay error, salir
+    
+    # Ejecutar cálculo con manejo de errores
+    resultados <- tryCatch(
+      proporcionalidad_sin_costo_ni_tamaño_de_muestra(a = input$a, r0 = input$r0, sigmas = sigmas),
+      error = function(e) {
+        show_error(paste("Error en el cálculo:", e$message))
+        NULL
+      }
+    )
+    if (is.null(resultados)) return()
+    
+    # Mostrar resultados
+    output$resultados_1 <- renderText({
+      paste("Réplicas asignadas:", paste(resultados, collapse = ", "))
+    })
   })
+  
+  
+  # Cálculos
+  #observeEvent(input$calcular_1, {
+    #sigmas <- as.numeric(unlist(strsplit(input$sigmas, ",")))
+    #resultados <- proporcionalidad_sin_costo_ni_tamaño_de_muestra(input$a, input$r0, sigmas)
+    #output$resultados_1 <- renderText({ paste("Réplicas asignadas:", paste(resultados, collapse = ", ")) })
+  #})
   
   observeEvent(input$calcular_2, {
     sigmas <- as.numeric(unlist(strsplit(input$sigmas_2, ",")))

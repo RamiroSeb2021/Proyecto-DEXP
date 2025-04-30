@@ -54,14 +54,35 @@ ui <-tagList(
       ),
       tabItem(tabName = "sin_costo",
               fluidRow(
-                box(title = "Parámetros", width = 6, status = "primary", solidHeader = TRUE,
-                    numericInput("a", "Tratamientos (a)", 4),
-                    numericInput("r0", "Réplicas iniciales (r₀)", 5),
-                    textInput("sigmas", "Desviaciones σ (separadas por comas)", "6.27,9.57,12,3.32"),
-                    actionButton("calcular_1", "Calcular", class = "btn btn-success")
+                column(
+                  width = 12,
+                  p("Esta función calcula la asignación proporcional de réplicas entre tratamientos sin considerar costos adicionales. Se basa en las desviaciones estándar de cada tratamiento para distribuir las réplicas iniciales de manera óptima."),
+                  withMathJax(
+                    HTML(
+                      "La asignación proporcional se calcula como:<br/>
+          \\[ r_i = \\frac{n \\times \\sigma_i}{\\sum_{j=1}^a \\sigma_j} \\]<br/>
+          donde:<br/>
+          <ul>
+            <li><em>r<sub>i</sub></em> es el número de réplicas asignadas al tratamiento <em>i</em></li>
+            <li><em>n</em> es el total de réplicas iniciales (<em>r<sub>0</sub> \\times a</em>)</li>
+            <li><em>\\sigma<sub>i</sub></em> es la desviación estándar del tratamiento <em>i</em></li>
+            <li><em>a</em> es el número total de tratamientos</li>
+          </ul>"
+                    )
+                  )
+                )
+              ),
+              fluidRow(
+                box(
+                  title = "Parámetros", width = 6, status = "primary", solidHeader = TRUE,
+                  numericInput("a", "Número de tratamientos", 4),
+                  numericInput("r0", "Número de réplicas iniciales", 5),
+                  textInput("sigmas", "Desviaciones estándar por tratamiento (separadas por comas)", "6.27,9.57,12,3.32"),
+                  actionButton("calcular_1", "Calcular", class = "btn btn-success")
                 ),
-                box(title = "Resultados", width = 6, status = "success", solidHeader = TRUE,
-                    verbatimTextOutput("resultados_1")
+                box(
+                  title = "Resultados", width = 6, status = "success", solidHeader = TRUE,
+                  verbatimTextOutput("resultados_1")
                 )
               ),
               fluidRow(
