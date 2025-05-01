@@ -18,8 +18,8 @@ source("Presentation/function_description.R")
 ui <-tagList(
   # 1) Inyectamos el CSS para personalizar tonos de verde
   tags$head(
-    tags$style(HTML(custom_css))
-  ),
+    tags$style(HTML(custom_css)),
+    ),
   dashboardPage(
   skin = "green",
   dashboardHeader(title = "Diseño Experimental",
@@ -35,7 +35,7 @@ ui <-tagList(
                 menuItem("Cálculos número de réplicas", icon = icon("flask"),
                          menuSubItem("Réplicas por variabilidad", tabName = "sin_costo"),
                          menuSubItem("Réplicas con presupuesto", tabName = "con_costo"),
-                         menuSubItem("Efectos Aleatorios", tabName = "efectos"),
+                         menuSubItem("Tratamientos y réplicas", tabName = "efectos"),
                          menuSubItem("Cálculo de Potencia", tabName = "potencia"),
                          menuSubItem("Método HHM", tabName = "hhm"),
                          menuSubItem("Método de Tukey", tabName = "metodo_tukey"),
@@ -73,9 +73,19 @@ ui <-tagList(
               fluidRow(
                 column(
                   width = 12,
-                  h3("Asignación de réplicas por variabilidad"),  # Título para "sin costo"
+                  h3("Asignación de réplicas por variabilidad"),
+                  p("Esta herramienta calcula cuántas réplicas son necesarias para cada tratamiento en un diseño experimental, sin tener en cuenta los costos, pero equilibrando la precisión de los tratamientos según su variabilidad. Los tratamientos con mayor variabilidad recibirán más réplicas."),
+                  tags$ul(
+                    tags$li("Cuando los costos no son una preocupación, pero se desea equilibrar la precisión, la herramienta distribuye las réplicas de forma proporcional a la variabilidad de cada tratamiento. Esto significa que los tratamientos más variables recibirán más réplicas para mejorar la precisión de los resultados."),
+                    tags$li("La herramienta toma como entrada el número de tratamientos, el número total de réplicas iniciales y la desviación estándar de cada tratamiento para distribuirlas de manera eficiente.")
+                  ),
+                  br(),
+                  p(strong("Ejemplo de aplicación:")),
+                  p("Supongamos que tienes cuatro tratamientos con diferentes desviaciones estándar dadas por (6.27, 9.57, 12, 3.32) y un número total de réplicas iniciales de 5. La herramienta calculará cuántas réplicas deben asignarse a cada tratamiento, distribuyendo las réplicas de manera proporcional a la variabilidad de cada tratamiento. Los tratamientos con mayor desviación estándar recibirán más réplicas para mejorar la precisión de los resultados."),
+                  p("Para mayor información accede a:", a("hola", href = "https://escuelaing.s3.amazonaws.com/production/documents/Programación_Académica_Pregrado_Periodo_2025-i.pdf?AWSAccessKeyId=AKIAWFY3NGTFJHVI634A&Signature=FNQU9BVTAGB1mt0WKOCEy2BHUMA%3D&Expires=1748480035"))
                 )
               )
+              
               ,
               fluidRow(
                 box(
@@ -121,7 +131,14 @@ ui <-tagList(
                         class = "mi-tooltip",
                         HTML(" ⓘ"),
                         span(class = "texto-tooltip", "Aquí debes ingresar los valores de las desviaciones estándar con los que cuentas, separados por comas (ejemplo: 6.27, 9.57, 12, 3.32). Debes asegurarte de que la cantidad de desviaciones estándar, coincida con el número de tratamientos."),
-                        style = "margin-left: 5px; color: #3498db; cursor: help;"
+                        style = "
+                        margin-left: 5px; 
+                        color: #3498db; 
+                        cursor: help;
+                        /* Posicionamiento para tooltip arriba */
+                        position: relative;
+                        display: inline-block;
+                      "
                       )
                     ),
                     value = "6.27,9.57,12,3.32",
@@ -148,9 +165,20 @@ ui <-tagList(
               fluidRow(
                 column(
                   width = 12,
-                  h3("Asignación de réplicas con restricción presupuestaria"),  # Título para "con costo"
+                  h3("Asignación de réplicas con restricción presupuestaria"),
+                  p("Esta herramienta calcula cuántas réplicas son necesarias para cada tratamiento en un diseño experimental, considerando los costos por tratamiento y el presupuesto para llevarlo a cabo, con el objetivo de optimizar la precisión de los resultados dentro de un presupuesto limitado."),
+                  tags$ul(
+                    tags$li("Cuando el presupuesto es una restricción y los tratamientos tienen diferentes costos y niveles de variabilidad, la herramienta distribuye las réplicas de manera eficiente utilizando un enfoque basado en multiplicadores de Lagrange."),
+                    tags$li("Esto permite asignar más réplicas a los tratamientos más variables teniendo en cuenta el presupuesto total disponible, maximizando así la precisión del diseño experimental."),
+                    tags$li("La herramienta toma como entrada el número de tratamientos, la desviación estándar de cada tratamiento, el costo por unidad experimental de cada tratamiento y el presupuesto total disponible.")
+                  ),
+                  br(),
+                  p(strong("Ejemplo de aplicación:")),
+                  p("Supongamos que tienes cuatro tratamientos con desviaciones estándar dadas por (6.27, 9.57, 12, 3.32), los costos por tratamiento son de (1000, 200, 700, 1100) y un presupuesto total de $50.000. La herramienta calculará cuántas réplicas deben asignarse a cada tratamiento, distribuyendo los recursos disponibles de forma que se mejore la precisión teniendo en cuenta el presupuesto disponible."),
+                  p("Para mayor información accede a:", a("hola", href = "https://escuelaing.s3.amazonaws.com/production/documents/Programación_Académica_Pregrado_Periodo_2025-i.pdf?AWSAccessKeyId=AKIAWFY3NGTFJHVI634A&Signature=FNQU9BVTAGB1mt0WKOCEy2BHUMA%3D&Expires=1748480035"))
                 )
               )
+              
               
               ,
               fluidRow(
@@ -233,12 +261,90 @@ ui <-tagList(
       ,
       tabItem(tabName = "efectos",
               fluidRow(
+                column(
+                  width = 12,
+                  h3("Asignación de tratamientos y réplicas con Función de Costos y Varianza Máxima"),
+                  p("La asignación de tratamientos y réplicas en un diseño experimental se basa en un modelo de componentes de varianza, donde tanto el número de tratamientos como el número de réplicas son variables. Estos valores se ajustan de acuerdo con la necesidad de controlar las varianzas y minimizar los costos en la estimación de la media de los tratamientos. La varianza de la media muestral es una medida clave en este proceso y está determinada por las varianzas asociadas a los tratamientos y las réplicas. El desafío es encontrar los valores óptimos de tratamientos y réplicas que minimicen una función de costos dada, que incluye tanto el costo por unidad de tratamiento como el costo por unidad experimental. Este proceso matemático, descrito por Mendenhall (1968), busca la distribución eficiente de los recursos experimentales, ajustando el número de tratamientos y réplicas de manera que se mantenga constante la varianza de la media muestral, maximizando así la precisión del diseño teniendo en cuenta el presupuesto disponible."),
+                  br(),
+                  p(strong("Ejemplo de aplicación:")),
+                  p("En este ejemplo, se busca determinar el número óptimo de toros y terneros necesarios para un experimento genético, considerando restricciones de costo y precisión. La varianza máxima permitida para la media muestral es de 43,49, lo que establece un límite sobre la variabilidad aceptable en los resultados. Además, se tienen en cuenta los costos experimentales, siendo de $150.000 por cada toro y $50.000 por cada ternero. A partir de estos valores y las estimaciones de varianza obtenidas en el ejemplo anterior (como la varianza entre toros y el error experimental), se concluye que para cumplir con las condiciones establecidas se deben seleccionar 7 toros y 3 terneros por cada toro. Este diseño permite mantener el equilibrio entre el costo total del experimento y la precisión estadística deseada.")
+                ),
+                p("Para mayor información accede a:", a("hola", href = "https://escuelaing.s3.amazonaws.com/production/documents/Programación_Académica_Pregrado_Periodo_2025-i.pdf?AWSAccessKeyId=AKIAWFY3NGTFJHVI634A&Signature=FNQU9BVTAGB1mt0WKOCEy2BHUMA%3D&Expires=1748480035"))
+
+                
+              ),
+              fluidRow(
                 box(title = "Parámetros", width = 6, status = "primary", solidHeader = TRUE,
-                    numericInput("costo_tratamiento", "Costo tratamiento (C₁)", 150000),
-                    numericInput("costo_ue", "Costo unidad experimental (C₂)", 50000),
-                    numericInput("sigma_cuadrado", "Varianza del error (σ²)", 416.21),
-                    numericInput("rho", "Proporción ρ", 0.3796),
-                    numericInput("v_max", "Varianza máxima (v_max)", 43.49),
+                    numericInput(
+                      "costo_tratamiento", 
+                      label = div(
+                        style = "display: inline-flex; align-items: center;",
+                        "Costo por unidad de tratamiento (C₁)",
+                        span(
+                          class = "mi-tooltip",
+                          HTML(" ⓘ"),
+                          span(class = "texto-tooltip", "Este es el costo de cada tratamiento, debe ser un número positivo mayor que cero (ejemplo: 150000). Por favor, revisa los datos ingresados y consulta el ícono ⓘ para más información."),
+                          style = "margin-left: 5px; color: #3498db; cursor: pointer;"
+                        )
+                      ),
+                      value = 150000
+                    ),
+                    numericInput(
+                      "costo_ue", 
+                      label = div(
+                        style = "display: inline-flex; align-items: center;",
+                        "Costo por unidad experimental (C₂)",
+                        span(
+                          class = "mi-tooltip",
+                          HTML(" ⓘ"),
+                          span(class = "texto-tooltip", "Este es el costo de cada unidad experimental, debe ser un número positivo mayor que cero (ejemplo: 50000). Por favor, revisa los datos ingresados y consulta el ícono ⓘ para más información."),
+                          style = "margin-left: 5px; color: #3498db; cursor: pointer;"
+                        )
+                      ),
+                      value = 50000
+                    ),
+                    numericInput(
+                      "sigma_cuadrado", 
+                      label = div(
+                        style = "display: inline-flex; align-items: center;",
+                        "Varianza dentro de los tratamientos",
+                        span(
+                          class = "mi-tooltip",
+                          HTML(" ⓘ"),
+                          span(class = "texto-tooltip", "La varianza σ² refleja la dispersión dentro de los tratamientos. Debe ser un número positivo (ejemplo: 416.21). Por favor, revisa los datos ingresados y consulta el ícono ⓘ para más información."),
+                          style = "margin-left: 5px; color: #3498db; cursor: pointer;"
+                        )
+                      ),
+                      value = 416.21
+                    ),
+                    numericInput(
+                      "rho", 
+                      label = div(
+                        style = "display: inline-flex; align-items: center;",
+                        "Proporción de la varianza total",
+                        span(
+                          class = "mi-tooltip",
+                          HTML(" ⓘ"),
+                          span(class = "texto-tooltip", "Este parámetro representa la proporción de la varianza total atribuida a los tratamientos. Debe estar entre 0 y 1 (ejemplo: 0.3796). Por favor, revisa los datos ingresados y consulta el ícono ⓘ para más información."),
+                          style = "margin-left: 5px; color: #3498db; cursor: pointer;"
+                        )
+                      ),
+                      value = 0.3796
+                    ),
+                    numericInput(
+                      "v_max", 
+                      label = div(
+                        style = "display: inline-flex; align-items: center;",
+                        "Varianza máxima tolerable para la media muestral",
+                        span(
+                          class = "mi-tooltip",
+                          HTML(" ⓘ"),
+                          span(class = "texto-tooltip", "Este es el valor máximo aceptable para la varianza de la media muestral. Debe ser un número positivo mayor que cero (ejemplo: 43.49). Por favor, revisa los datos ingresados y consulta el ícono ⓘ para más información."),
+                          style = "margin-left: 5px; color: #3498db; cursor: pointer;"
+                        )
+                      ),
+                      value = 43.49
+                    ),
                     actionButton("calcular_3", "Calcular", class = "btn btn-success")
                 ),
                 box(title = "Resultados", width = 6, status = "success", solidHeader = TRUE,
@@ -257,11 +363,76 @@ ui <-tagList(
       tabItem(tabName = "potencia",
               fluidRow(
                 box(title = "Parámetros", width = 6, status = "primary", solidHeader = TRUE,
-                    numericInput("r_potencia", "Réplicas por tratamiento (r)", 15),
-                    numericInput("t_potencia", "Tratamientos (t)", 4),
-                    numericInput("sigma2_potencia", "Varianza estimada (σ²)", 10.35),
-                    numericInput("Delta_potencia", "Diferencia mínima detectable (Δ)", 3),
-                    numericInput("alpha_potencia", "Nivel de significancia (α)", 0.05),
+                    numericInput(
+                      "r_potencia", 
+                      label = div(
+                        style = "display: inline-flex; align-items: center;",
+                        "Réplicas por tratamiento (r)",
+                        span(
+                          class = "mi-tooltip",
+                          HTML(" ⓘ"),
+                          span(class = "texto-tooltip", "Aquí debes ingresar el número de réplicas por tratamiento, que debe ser un número entero positivo (ejemplo: 15). Por favor, revisa los datos ingresados y consulta el ícono ⓘ para más información."),
+                          style = "margin-left: 5px; color: #3498db; cursor: pointer;"
+                        )
+                      ),
+                      value = 15
+                    ),
+                    numericInput(
+                      "t_potencia", 
+                      label = div(
+                        style = "display: inline-flex; align-items: center;",
+                        "Tratamientos (t)",
+                        span(
+                          class = "mi-tooltip",
+                          HTML(" ⓘ"),
+                          span(class = "texto-tooltip", "Aquí debes ingresar el número de tratamientos, que debe ser un número entero positivo (ejemplo: 4). Por favor, revisa los datos ingresados y consulta el ícono ⓘ para más información."),
+                          style = "margin-left: 5px; color: #3498db; cursor: pointer;"
+                        )
+                      ),
+                      value = 4
+                    ),
+                    numericInput(
+                      "sigma2_potencia", 
+                      label = div(
+                        style = "display: inline-flex; align-items: center;",
+                        "Varianza estimada (σ²)",
+                        span(
+                          class = "mi-tooltip",
+                          HTML(" ⓘ"),
+                          span(class = "texto-tooltip", "La varianza estimada refleja la dispersión de los datos. Debe ser un número positivo (ejemplo: 10.35). Por favor, revisa los datos ingresados y consulta el ícono ⓘ para más información."),
+                          style = "margin-left: 5px; color: #3498db; cursor: pointer;"
+                        )
+                      ),
+                      value = 10.35
+                    ),
+                    numericInput(
+                      "Delta_potencia", 
+                      label = div(
+                        style = "display: inline-flex; align-items: center;",
+                        "Diferencia mínima detectable (Δ)",
+                        span(
+                          class = "mi-tooltip",
+                          HTML(" ⓘ"),
+                          span(class = "texto-tooltip", "Esta es la diferencia mínima entre tratamientos que se espera detectar con el experimento. Debe ser un número positivo (ejemplo: 3). Por favor, revisa los datos ingresados y consulta el ícono ⓘ para más información."),
+                          style = "margin-left: 5px; color: #3498db; cursor: pointer;"
+                        )
+                      ),
+                      value = 3
+                    ),
+                    numericInput(
+                      "alpha_potencia", 
+                      label = div(
+                        style = "display: inline-flex; align-items: center;",
+                        "Nivel de significancia (α)",
+                        span(
+                          class = "mi-tooltip",
+                          HTML(" ⓘ"),
+                          span(class = "texto-tooltip", "Este es el nivel de significancia para la prueba estadística, usualmente se utiliza 0.05 (ejemplo: 0.05). Por favor, revisa los datos ingresados y consulta el ícono ⓘ para más información."),
+                          style = "margin-left: 5px; color: #3498db; cursor: pointer;"
+                        )
+                      ),
+                      value = 0.05
+                    ),
                     actionButton("calcular_4", "Calcular", class = "btn btn-success")
                 ),
                 box(title = "Resultados", width = 6, status = "success", solidHeader = TRUE,
@@ -276,7 +447,8 @@ ui <-tagList(
                        actionButton("siguiente_4", "Siguiente", icon = icon("arrow-right"), class = "btn btn-success")
                 )
               )
-      ),
+      )
+,
       tabItem(tabName = "hhm",
               fluidRow(
                 box(title = "Parámetros", width = 6, status = "primary", solidHeader = TRUE,

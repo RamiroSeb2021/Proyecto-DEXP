@@ -141,6 +141,36 @@ server <- function(input, output, session) {
     })
   })
   
+  # Observador para calcular los resultados
+  observeEvent(input$calcular_3, {
+    
+    # Validando los parámetros de entrada
+    validado <- validar_parametros_funcion_disenio(
+      input$costo_tratamiento, input$costo_ue, input$sigma_cuadrado, input$rho, input$v_max, show_error
+    )
+    
+    # Si la validación falla, no continuamos con el cálculo
+    if (!validado) {
+      return(NULL)
+    }
+    
+    # Si la validación es exitosa, calculamos los resultados
+    resultados <- numero_de_tratamientos_y_replicas_con_efectos_aleatorios(
+      input$costo_tratamiento, input$costo_ue, input$sigma_cuadrado, input$rho, input$v_max
+    )
+    
+    # Actualizando el output con los resultados
+    output$resultados_3 <- renderText({
+      paste("Tratamientos:", resultados$num_de_tratamientos,
+            "\nRéplicas por tratamiento:", resultados$num_de_replicas)
+    })
+  })
+  
+  
+  
+  
+  
+  
   
   
   
@@ -159,12 +189,12 @@ server <- function(input, output, session) {
     #output$resultados_2 <- renderText({ paste("Réplicas asignadas:", paste(resultados, collapse = ", ")) })
   #})
   
-  observeEvent(input$calcular_3, {
-    resultados <- numero_de_tratamientos_y_replicas_con_efectos_aleatorios(
-      input$costo_tratamiento, input$costo_ue, input$sigma_cuadrado, input$rho, input$v_max)
-    output$resultados_3 <- renderText({ paste("Tratamientos:", resultados$num_de_tratamientos,
-                                              "\nRéplicas por tratamiento:", resultados$num_de_replicas) })
-  })
+  #observeEvent(input$calcular_3, {
+    #resultados <- numero_de_tratamientos_y_replicas_con_efectos_aleatorios(
+      #input$costo_tratamiento, input$costo_ue, input$sigma_cuadrado, input$rho, input$v_max)
+    #output$resultados_3 <- renderText({ paste("Tratamientos:", resultados$num_de_tratamientos,
+                                              #"\nRéplicas por tratamiento:", resultados$num_de_replicas) })
+  #})
   
   observeEvent(input$calcular_4, {
     resultados <- calcular_potencia(
@@ -239,3 +269,4 @@ server <- function(input, output, session) {
   })
 
 }
+

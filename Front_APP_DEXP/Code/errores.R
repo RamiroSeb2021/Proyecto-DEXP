@@ -181,3 +181,56 @@ Excepciones_proporcionalidad_con_costo <- function(a, sigmas_str, costos_str, co
   
   return(list(sigmas = sigmas, costos = costos))
 }
+
+
+####################
+handle_hhm_error_costo_tratamiento_invalido <- function() {
+  return("El costo por tratamiento debe ser un número positivo mayor que cero. Por favor, revisa los datos ingresados y consulta el ícono ⓘ para más información.")
+}
+
+handle_hhm_error_costo_ue_invalido <- function() {
+  return("El costo por unidad experimental debe ser un número positivo mayor que cero. Por favor, revisa los datos ingresados y consulta el ícono ⓘ para más información.")
+}
+
+handle_hhm_error_sigma_cuadrado_invalido <- function() {
+  return("La varianza dentro de los tratamientos debe ser un número positivo mayor que cero. Por favor, revisa los datos ingresados y consulta el ícono ⓘ para más información.")
+}
+
+handle_hhm_error_rho_invalido <- function() {
+  return("La proporción de la varianza total debe estar entre 0 y 1, sin incluirlos. Por favor, revisa los datos ingresados y consulta el ícono ⓘ para más información.")
+}
+
+handle_hhm_error_vmax_invalido <- function() {
+  return("La varianza máxima permitida debe ser un número positivo mayor que cero. Por favor, revisa los datos ingresados y consulta el ícono ⓘ para más información.")
+}
+
+validar_parametros_funcion_disenio <- function(costo_tratamiento, costo_ue, sigma_cuadrado, rho, v_max, show_error) {
+  
+  if (missing(costo_tratamiento) || !is.numeric(costo_tratamiento) || is.na(costo_tratamiento) || costo_tratamiento <= 0) {
+    show_error(handle_hhm_error_costo_tratamiento_invalido())
+    return(FALSE)
+  }
+  
+  if (missing(costo_ue) || !is.numeric(costo_ue) || is.na(costo_ue) || costo_ue <= 0) {
+    show_error(handle_hhm_error_costo_ue_invalido())
+    return(FALSE)
+  }
+  
+  if (missing(sigma_cuadrado) || !is.numeric(sigma_cuadrado) || is.na(sigma_cuadrado) || sigma_cuadrado <= 0) {
+    show_error(handle_hhm_error_sigma_cuadrado_invalido())
+    return(FALSE)
+  }
+  
+  if (missing(rho) || !is.numeric(rho) || is.na(rho) || rho <= 0 || rho >= 1) {
+    show_error(handle_hhm_error_rho_invalido())
+    return(FALSE)
+  }
+  
+  if (missing(v_max) || !is.numeric(v_max) || is.na(v_max) || v_max <= 0) {
+    show_error(handle_hhm_error_vmax_invalido())
+    return(FALSE)
+  }
+  
+  return(TRUE)
+}
+
