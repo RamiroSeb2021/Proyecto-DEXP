@@ -77,5 +77,51 @@ custom_css <- "
   color: #ffffff !important;
 }
 
+/* ==== TOOLTIP A LA DERECHA ==== */
+/* --- Tooltip a la derecha: clase .tooltip-right --- */
+
+/* 1) Contenedor relativo que envuelve icono y texto */
+.tooltip-right {
+  position: relative;
+  display: inline-block;
+  cursor: help;
+}
+
+/* 2) El contenido del tooltip, inicialmente oculto */
+.tooltip-right .tooltip-right-content {
+  position: absolute;
+  top: 50%;
+  left: 100%;
+  transform: translateY(-50%);
+  margin-left: 8px;
+
+  padding: 8px 12px;
+  background: #3498db;
+  color: #fff;
+  border-radius: 4px;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+
+  white-space: normal;
+  word-wrap: break-word;
+  max-width: 250px;
+
+  visibility: hidden;
+  opacity: 0;
+  transition: opacity 0.2s ease-in-out;
+  z-index: 10000;
+}
+
+/* 3) Al pasar el ratón, lo mostramos */
+.tooltip-right:hover .tooltip-right-content {
+  visibility: visible;
+  opacity: 1;
+}
+/* — Separa el icono del texto y lo pinta de azul — */
+.tooltip-right {
+  margin-left: 8px !important;    /* separación del texto */
+  color: #3498db !important;       /* color azul para el icono */
+}
+
+
 
 "

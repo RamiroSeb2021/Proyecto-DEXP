@@ -14,6 +14,7 @@ library(shinydashboard)
 library(dplyr)
 source("Presentation/custom_styles.R")
 source("Presentation/function_description.R")
+source("Code/message_tooltips.R")
 
 ui <-tagList(
   # 1) Inyectamos el CSS para personalizar tonos de verde
@@ -299,31 +300,118 @@ ui <-tagList(
                 )
               )
       ), 
-      # +1: método de Tukey
+
+# metodo tukey ------------------------------------------------------------
+
+
       tabItem(tabName = "metodo_tukey",
               fluidRow(
                 box(
                   title = "Parámetros Método de Tukey", status = "primary", solidHeader = TRUE, width = 6,
-                  numericInput("mt_T",    "Tratamientos (T_)",         value = 6, min = 2),
-                  numericInput("mt_D",    "Diferencia mínima (D)",     value = 20),
-                  numericInput("mt_ro",   "Réplica inicial (ro)",      value = 5, min = 1),
-                  numericInput("mt_S1",   "S1 (SD experimental)",      value = sqrt(141.6)),
-                  numericInput("mt_df1",  "df1 (gl de S1)",           value = 40, min = 1),
-                  numericInput("mt_alfa", "Alfa",                      value = 0.05, step = 0.01),
-                  numericInput("mt_Beta", "Beta (1–potencia)",         value = 0.10, step = 0.01),
+                  
+                  numericInput(
+                    inputId = "mt_T",
+                    label = div(
+                      style = "display: inline-flex; align-items: center;",
+                      "Número de tratamientos ",
+                      span(
+                        class = "tooltip-right", HTML(" ⓘ"),
+                        span(
+                          class = "tooltip-right-content",
+                          Tratamientos
+                        )
+                      )
+                    ),
+                    value = 6,
+                    min = 2
+                  )
+                  ,
+                  
+                  numericInput(
+                    inputId = "mt_D",
+                    label = div(
+                      style = "display: inline-flex; align-items: center;",
+                      "Diferencia mínima a detectar",
+                      span(
+                        class = "mi-tooltip", HTML(" ⓘ"),
+                        span(class = "texto-tooltip", DifMin),
+                        style = "margin-left: 5px; color: #3498db; cursor: pointer;"
+                      )
+                    ),
+                    value = 20
+                  ),
+                  
+                  numericInput(
+                    inputId = "mt_ro",
+                    label = div(
+                      style = "display: inline-flex; align-items: center;",
+                      "Tamaño de muestra inicial",
+                      span(
+                        class = "mi-tooltip", HTML(" ⓘ"),
+                        span(class = "texto-tooltip", r_0),
+                        style = "margin-left: 5px; color: #3498db; cursor: pointer;"
+                      )
+                    ),
+                    value = 5, min = 1
+                  ),
+                  
+                  numericInput(
+                    inputId = "mt_S1",
+                    label = div(
+                      style = "display: inline-flex; align-items: center;",
+                      "Desviación estándar",
+                      span(
+                        class = "mi-tooltip", HTML(" ⓘ"),
+                        span(class = "texto-tooltip", S1_),
+                        style = "margin-left: 5px; color: #3498db; cursor: pointer;"
+                      )
+                    ),
+                    value = sqrt(141.6)
+                  ),
+                  
+                  numericInput(
+                    inputId = "mt_df1",
+                    label = div(
+                      style = "display: inline-flex; align-items: center;",
+                      "Grados de libertad del tratamiento (entre grupos)",
+                      span(
+                        class = "mi-tooltip", HTML(" ⓘ"),
+                        span(class = "texto-tooltip", df1_),
+                        style = "margin-left: 5px; color: #3498db; cursor: pointer;"
+                      )
+                    ),
+                    value = 40, min = 1
+                  ),
+                  
+                  numericInput(
+                    inputId = "mt_alfa",
+                    label = div(
+                      style = "display: inline-flex; align-items: center;",
+                      "Nivel de significancia (α)",
+                      span(
+                        class = "mi-tooltip", HTML(" ⓘ"),
+                        span(class = "texto-tooltip", alpha),
+                        style = "margin-left: 5px; color: #3498db; cursor: pointer;"
+                      )
+                    ),
+                    value = 0.05, step = 0.01
+                  ),
+                  
+                  numericInput(
+                    inputId = "mt_Beta",
+                    label = div(
+                      style = "display: inline-flex; align-items: center;",
+                      "Potencia objetivo (1 − β)",
+                      span(
+                        class = "mi-tooltip", HTML(" ⓘ"),
+                        span(class = "texto-tooltip", potencia),
+                        style = "margin-left: 5px; color: #3498db; cursor: pointer;"
+                      )
+                    ),
+                    value = 0.10, step = 0.01
+                  ),
+                  
                   actionButton("calcular_mt", "Calcular", class = "btn btn-success")
-                ),
-                box(
-                  title = "Resultados Tukey", status = "success", solidHeader = TRUE, width = 6,
-                  verbatimTextOutput("resultados_mt")
-                )
-              ),
-              fluidRow(
-                column(6, align = "left",
-                       actionButton("anterior_6", "Anterior", icon = icon("arrow-left"), class = "btn btn-secondary")
-                ),
-                column(6, align = "right",
-                       actionButton("siguiente_6", "Siguiente", icon = icon("arrow-right"), class = "btn btn-success")
                 )
               )
       ),
@@ -334,14 +422,112 @@ ui <-tagList(
                 # tus parámetros siguen igual…
                 box(
                   title = "Parámetros Simulación", status = "primary", solidHeader = TRUE, width = 6,
-                  numericInput("sim_t", "Tratamientos (t)", value = 5,  min = 2),
-                  numericInput("sim_rho", "Proporcion varianzas", value = 0.4,  min = 2),
-                  numericInput("sim_sigma2",       expression(sigma^2 ~ "residual"), value = 1),
-                  numericInput("sim_alpha", "Alfa",value = 0.05, step = 0.01),
-                  numericInput("sim_power_target", "Potencia objetivo (1-β)", value = 0.8,  step = 0.05),
-                  numericInput("sim_r_max", "Tamaño maximo de tamaño de muestra", value = 50,  min = 1),
+                  
+                  numericInput(
+                    inputId = "sim_t",
+                    label = div(
+                      style = "display: inline-flex; align-items: center;",
+                      "Número de tratamientos ",
+                      span(
+                        class = "tooltip-right", HTML(" ⓘ"),
+                        span(
+                          class = "tooltip-right-content",
+                          Tratamientos
+                        )
+                      )
+                    ),
+                    value = 5,
+                    min = 2
+                  ),
+                  
+                  numericInput(
+                    inputId = "sim_rho",
+                    label = div(
+                      style = "display: inline-flex; align-items: center;",
+                      "Suerte de cociente (ρ)",
+                      span(
+                        class = "mi-tooltip", HTML(" ⓘ"),
+                        span(
+                          class = "texto-tooltip",
+                          rho_
+                        ),
+                        style = "margin-left: 5px; color: #3498db; cursor: help;"
+                      )
+                    ),
+                    value = 0.4, min = 0, step = 0.01
+                  ),
+                  
+                  numericInput(
+                    inputId = "sim_sigma2",
+                    label = div(
+                      style = "display: inline-flex; align-items: center;",
+                      expression("Varianza del error σ²."),
+                      span(
+                        class = "mi-tooltip", HTML(" ⓘ"),
+                        span(
+                          class = "texto-tooltip",
+                          var_2_
+                        ),
+                        style = "margin-left: 5px; color: #3498db; cursor: help;"
+                      )
+                    ),
+                    value = 1, min = 0
+                  ),
+                  
+                  numericInput(
+                    inputId = "sim_alpha",
+                    label = div(
+                      style = "display: inline-flex; align-items: center;",
+                      "Nivel de significancia (α)",
+                      span(
+                        class = "mi-tooltip", HTML(" ⓘ"),
+                        span(
+                          class = "texto-tooltip",
+                          alpha
+                        ),
+                        style = "margin-left: 5px; color: #3498db; cursor: help;"
+                      )
+                    ),
+                    value = 0.05, step = 0.01, min = 0, max = 1
+                  ),
+                  
+                  numericInput(
+                    inputId = "sim_power_target",
+                    label = div(
+                      style = "display: inline-flex; align-items: center;",
+                      "Potencia objetivo (1-β)",
+                      span(
+                        class = "mi-tooltip", HTML(" ⓘ"),
+                        span(
+                          class = "texto-tooltip",
+                          potencia
+                        ),
+                        style = "margin-left: 5px; color: #3498db; cursor: help;"
+                      )
+                    ),
+                    value = 0.8, step = 0.05, min = 0, max = 1
+                  ),
+                  
+                  numericInput(
+                    inputId = "sim_r_max",
+                    label = div(
+                      style = "display: inline-flex; align-items: center;",
+                      "Número máximo de réplicas que se probarán en la simulación.",
+                      span(
+                        class = "mi-tooltip", HTML(" ⓘ"),
+                        span(
+                          class = "texto-tooltip",
+                          r_max_sim
+                        ),
+                        style = "margin-left: 5px; color: #3498db; cursor: help;"
+                      )
+                    ),
+                    value = 50, min = 1
+                  ),
+                  
                   actionButton("calcular_sim", "Calcular", class = "btn btn-success")
-                ),
+                )
+                ,
                 
                 # Aquí reemplazamos el box de resultados por un tabBox de 2 pestañas
                 shinydashboard::tabBox(

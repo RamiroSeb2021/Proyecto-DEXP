@@ -221,3 +221,5 @@ Formato_significancia <- function() {
 Formato_r_max <- function() {
   paste0("El formato del tamaño máximo de muestra es incorrecto.", frase_pred)
 }
+
+
