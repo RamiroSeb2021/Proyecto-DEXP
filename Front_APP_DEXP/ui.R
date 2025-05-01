@@ -32,7 +32,7 @@ ui <-tagList(
     sidebarMenu(id = "tabs",
                 menuItem("Introducción", tabName = "intro", icon = icon("info-circle")),
                 menuItem("Cálculos número de réplicas", icon = icon("flask"),
-                         menuSubItem("Proporcionalidad sin Costo", tabName = "sin_costo"),
+                         menuSubItem("Réplicas por variabilidad", tabName = "sin_costo"),
                          menuSubItem("Proporcionalidad con Costo", tabName = "con_costo"),
                          menuSubItem("Efectos Aleatorios", tabName = "efectos"),
                          menuSubItem("Cálculo de Potencia", tabName = "potencia"),
@@ -70,15 +70,15 @@ ui <-tagList(
               fluidRow(
                 column(
                   width = 12,
-                  h3("Proporcionalidad sin Costo"),  # Título para "sin costo"
+                  h3("Asignación de réplicas por variabilidad"),  # Título para "sin costo"
                   p("Esta herramienta calcula cuántas réplicas son necesarias para cada tratamiento en un diseño experimental, sin tener en cuenta los costos, pero equilibrando la precisión de los tratamientos según su variabilidad. Los tratamientos con mayor variabilidad recibirán más réplicas."),
                   tags$ul(
                     tags$li("Cuando los costos no son una preocupación, pero se desea equilibrar la precisión, la herramienta distribuye las réplicas de forma proporcional a la variabilidad de cada tratamiento. Esto significa que los tratamientos más variables recibirán más réplicas para mejorar la precisión de los resultados."),
-                    tags$li("La herramienta toma como entrada el número total de réplicas y la desviación estándar de cada tratamiento para distribuirlas de manera eficiente.")
+                    tags$li("La herramienta toma como entrada el número de tratamientos, el número total de réplicas iniciales y la desviación estándar de cada tratamiento para distribuirlas de manera eficiente.")
                   ),
                   p(strong("Ejemplo de aplicación:")),  # Ejemplo en negrilla
-                  p("Supongamos que tienes tres tratamientos con diferentes desviaciones estándar y un número total de réplicas de 100. La herramienta calculará cuántas réplicas deben asignarse a cada tratamiento, distribuyendo las réplicas de manera proporcional a la variabilidad de cada tratamiento. Los tratamientos con mayor desviación estándar recibirán más réplicas para mejorar la precisión de los resultados."),
-                  p(strong("Para más información, accede a: "), tags$span("proporcionalidad sin costo"))
+                  p("Supongamos que tienes cuatro tratamientos con diferentes desviaciones estándar dadas por (6.27,9.57,12,3.32) y un número total de réplicas iniciales de 5. La herramienta calculará cuántas réplicas deben asignarse a cada tratamiento, distribuyendo las réplicas de manera proporcional a la variabilidad de cada tratamiento. Los tratamientos con mayor desviación estándar recibirán más réplicas para mejorar la precisión de los resultados."),
+                  p(strong("Para más información, accede a: "), tags$span("Asignación de réplicas por variabilidad"))
                 )
               )
               
@@ -95,7 +95,7 @@ ui <-tagList(
                       span(
                         class = "mi-tooltip",
                         HTML(" ⓘ"),
-                        span(class = "texto-tooltip", "Aquí debe ingresar el número de tratamientos con los que cuenta, este debe ser un número entero positivo."),
+                        span(class = "texto-tooltip", "Aquí debes ingresar el número de tratamientos con los que cuentas, este debe ser un número entero positivo(ejemplo:4). Debes asegurarte de que la cantidad de tratamientos, coincida con el número de desviaciones estándar."),
                         style = "margin-left: 5px; color: #3498db; cursor: pointer;"
                       )
                     ),
@@ -110,7 +110,7 @@ ui <-tagList(
                       span(
                         class = "mi-tooltip",
                         HTML(" ⓘ"),
-                        span(class = "texto-tooltip", "Aquí debe ingresar el número de réplicas inciales con las que cuenta, este debe ser un número entero positivo."),
+                        span(class = "texto-tooltip", "Aquí debes ingresar el número de réplicas inciales con las que cuentas, este debe ser un número entero positivo (ejemplo:5)."),
                         style = "margin-left: 5px; color: #3498db; cursor: help;"
                       )
                     ),
@@ -127,7 +127,7 @@ ui <-tagList(
                       span(
                         class = "mi-tooltip",
                         HTML(" ⓘ"),
-                        span(class = "texto-tooltip", "Aquí debe ingresar los valores de las desviaciones estándar separados por comas (ejemplo: 1.5, 2.0, 1.8). Debe asegurarse de que la cantidad de desviaciones estándar, coincida con el número de tratamientos."),
+                        span(class = "texto-tooltip", "Aquí debes ingresar los valores de las desviaciones estándar con los que cuentas, separados por comas (ejemplo: 1.5, 2.0, 1.8). Debes asegurarte de que la cantidad de desviaciones estándar, coincida con el número de tratamientos."),
                         style = "margin-left: 5px; color: #3498db; cursor: help;"
                       )
                     ),

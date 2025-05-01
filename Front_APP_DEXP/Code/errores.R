@@ -1,6 +1,5 @@
 # Mensajes de errores -----------------------------------------------------
 
-
 # errores_potencia.R
 
 handle_potencia_error_t <- function() {
@@ -40,26 +39,24 @@ handle_hhm_error_df2 <- function() {
 handle_hhm_error_alpha <- function() {
   return("Error: α debe estar en (0,1).")
 }
-
+################################## 
 ## Excepciones Diana
 handle_hhm_error_numero_de_tratamientos_positivo_mayor_que_cero <- function() {
   return("El número de tratamientos debe ser un número entero positivo mayor que cero. Por favor, revise los datos ingresados y consulte el ícono ⓘ para más información.")
 }
 
 handle_hhm_error_numero_de_replicas_positivo_mayor_que_cero <- function() {
-  return(return("El número de réplicas iniciales debe ser un número entero positivo mayor que cero. Por favor, revise los datos ingresados y consulte el ícono ⓘ para más información.")
+  message <- "El número de réplicas iniciales debe ser un número entero positivo mayor que cero. Por favor, revise los datos ingresados y consulte el ícono ⓘ para más información."
+  print(message)  # Para verificar que el mensaje se está generando
+  return(message)
 }
 
 handle_hhm_error_desviaciones_separas_por_coma <- function() {
-  return("Debe ingresar las desviaciones estándar (σ) como una lista de números separados por comas.")
-}
+  return("Debes ingresar las desviaciones estándar como una lista de números separados por comas. Por favor, revise los datos ingresados y consulte el ícono ⓘ para más información.")}
 
 handle_hhm_error_desviaciones_mal_formateadas <- function() {
-  return("Las desviaciones estándar (σ) contienen valores no numéricos o mal formateados. Por favor, revise la entrada.")
+  return("Las desviaciones estándar contienen valores no numéricos, negativos o con un formato incorrecto. Por favor, revise los datos ingresados y consulte el ícono ⓘ para más información.")
 }
-
-# Funciones para mostrar errores ------------------------------------------
-
 
 Excepciones_proporcionalidad_sin_costo <- function(a, r0, sigmas_str, show_error) {
   # Validar 'a': debe ser un entero positivo
@@ -80,21 +77,102 @@ Excepciones_proporcionalidad_sin_costo <- function(a, r0, sigmas_str, show_error
     return(FALSE)
   }
   
-  # Convertir cadena a vector numérico
-  sigmas <- suppressWarnings(as.numeric(strsplit(sigmas_str, ",")[[1]]))
+  # Convertir cadena a vector numérico, eliminando espacios
+  sigmas_raw <- strsplit(sigmas_str, ",")[[1]]
+  sigmas <- suppressWarnings(as.numeric(trimws(sigmas_raw)))
   
-  # Validar que no haya valores no numéricos
-  if (any(is.na(sigmas))) {
+  # Validar que todos los valores sean numéricos y positivos
+  if (any(is.na(sigmas)) || any(sigmas <= 0)) {
     show_error(handle_hhm_error_desviaciones_mal_formateadas())
     return(FALSE)
   }
   
   # Validar que la cantidad de sigmas coincida con 'a'
   if (length(sigmas) != a) {
-    show_error(paste0("La cantidad de desviaciones estándar (", length(sigmas), 
-                      ") debe ser igual al número de tratamientos (", a, ")."))
+    show_error(handle_hhm_error_cantidad_de_sigmas_distinta_a_tratamientos(a))
     return(FALSE)
   }
   
   return(sigmas)
+}
+
+################################## 
+handle_hhm_error_presupuesto_total_positivo <- function() {
+  return("El presupuesto total debe ser un número positivo mayor que cero.Por favor, revise los datos ingresados y consulte el ícono ⓘ para más información.")
+}
+
+handle_hhm_error_cantidad_de_sigmas_distinta_a_tratamientos <- function(a) {
+  return(paste0("Debe ingresar exactamente ", a, 
+                " desviaciones estándar (σ), separadas por comas, una por cada tratamiento."))
+}
+
+handle_hhm_error_costos_separados_por_coma <- function() {
+  return("Debe ingresar los costos como una lista de números separados por comas.")
+}
+
+handle_hhm_error_costos_mal_formateados <- function() {
+  return("Los costos contienen valores no numéricos, negativos o mal formateados. Por favor, revise la entrada.")
+}
+
+handle_hhm_error_cantidad_de_costos_distinta_a_tratamientos <- function(a) {
+  return(paste0("Debe ingresar exactamente ", a, 
+                " costos, uno para cada tratamiento, separados por comas."))
+}
+
+Excepciones_proporcionalidad_con_costo <- function(a, sigmas_str, costos_str, costo_total, show_error) {
+  # Validar 'a'
+  if (missing(a) || !is.numeric(a) || length(a) != 1 || is.na(a) || a < 1 || a != floor(a)) {
+    show_error(handle_hhm_error_numero_de_tratamientos_positivo_mayor_que_cero())
+    return(FALSE)
+  }
+  
+  # Validar 'costo_total'
+  if (missing(costo_total) || !is.numeric(costo_total) || is.na(costo_total) || costo_total <= 0) {
+    show_error(handle_hhm_error_presupuesto_total_positivo())
+    return(FALSE)
+  }
+  
+  # Validar sigmas_str
+  if (missing(sigmas_str) || !is.character(sigmas_str) || nchar(trimws(sigmas_str)) == 0) {
+    show_error(handle_hhm_error_desviaciones_separas_por_coma())
+    return(FALSE)
+  }
+  sigmas_raw <- strsplit(sigmas_str, ",")[[1]]
+  sigmas <- suppressWarnings(as.numeric(trimws(sigmas_raw)))
+  if (any(is.na(sigmas)) || any(sigmas <= 0)) {
+    show_error(handle_hhm_error_desviaciones_mal_formateadas())
+    return(FALSE)
+  }
+  if (length(sigmas) != a) {
+    show_error(handle_hhm_error_cantidad_de_sigmas_distinta_a_tratamientos(a))
+    return(FALSE)
+  }
+  
+  # Validar costos_str
+  if (missing(costos_str) || !is.character(costos_str) || nchar(trimws(costos_str)) == 0) {
+    show_error(handle_hhm_error_costos_separados_por_coma())
+    return(FALSE)
+  }
+  costos_raw <- strsplit(costos_str, ",")[[1]]
+  costos <- suppressWarnings(as.numeric(trimws(costos_raw)))
+  
+  # Validar si los costos son negativos o cero
+  if (any(is.na(costos)) || any(costos <= 0)) {
+    show_error(handle_hhm_error_costos_mal_formateados())
+    return(FALSE)
+  }
+  
+  if (length(costos) != a) {
+    show_error(handle_hhm_error_cantidad_de_costos_distinta_a_tratamientos(a))
+    return(FALSE)
+  }
+  
+  # Verificación adicional antes de cálculos como sqrt (si es necesario)
+  if (any(costos < 0)) {
+    show_error("Los costos no pueden ser negativos.")
+    return(FALSE)
+  }
+  
+  # Todo válido, devolver lista
+  return(list(sigmas))
 }

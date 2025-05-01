@@ -16,7 +16,7 @@ source("Code/Potencia_Efectos_Aleatorios.R")
 source("Code/Potencia.R")
 source("Code/metodo_Harris_Hurvitz_Mood.R")
 source("Code/control_bienvenida.R")
-source("Code/excepciones.R")
+source("Code/errores.R")
 
 server <- function(input, output, session) {
   # 1) Abrimos la splash modal al iniciar
