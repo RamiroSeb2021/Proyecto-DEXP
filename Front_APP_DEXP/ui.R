@@ -9,6 +9,7 @@
 library(shinyjs)
 library(shiny)
 library(shinyWidgets)
+library(shinyFeedback)
 library(shinydashboard)
 library(dplyr)
 source("Presentation/custom_styles.R")
