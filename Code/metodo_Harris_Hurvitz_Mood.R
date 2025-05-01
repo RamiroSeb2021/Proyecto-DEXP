@@ -17,13 +17,31 @@ obtener_K_A9 <- function(df2, alpha = 0.05) {
 
 #' Cálculo de réplicas según Harris–Hurvitz–Mood (HHM)
 #'
-#' @param S2_1 Varianza estimada (S2₁).
-#' @param d Diferencia mínima detectable (mismas unidades que S₁).
-#' @param df2 Grados de libertad del segundo estimador.
-#' @param alpha Nivel de significancia (por defecto 0.05).
-#' @return Lista con S1 (redondeado), K, df2 y r.
+#' @param S2_1 Varianza estimada (S2₁), debe ser > 0.
+#' @param d Diferencia mínima detectable (en mismas unidades que S₁), debe ser > 0.
+#' @param df2 Grados de libertad del segundo estimador (entero ≥ 1).
+#' @param alpha Nivel de significancia (0 < α < 1).
+#' @return Lista con:
+#'   \item{S1}{Desviación estándar (redondeada a 2 decimales).}
+#'   \item{K}{Valor interpolado de la tabla A.9.}
+#'   \item{df2}{Grados de libertad df₂ usados.}
+#'   \item{r}{Número de réplicas calculado según fórmula.}
 #' @export
 calcular_r_HHM <- function(S2_1, d, df2, alpha = 0.05) {
+  # Validaciones de entrada
+  if (!is.numeric(S2_1) || length(S2_1) != 1 || S2_1 <= 0) {
+    stop("Error en HHM: S2_1 debe ser un número > 0.")
+  }
+  if (!is.numeric(d) || length(d) != 1 || d <= 0) {
+    stop("Error en HHM: d debe ser un número > 0.")
+  }
+  if (!is.numeric(df2) || length(df2) != 1 || df2 < 1 || df2 %% 1 != 0) {
+    stop("Error en HHM: df2 debe ser un entero ≥ 1.")
+  }
+  if (!is.numeric(alpha) || length(alpha) != 1 || alpha <= 0 || alpha >= 1) {
+    stop("Error en HHM: alpha debe estar en (0,1).")
+  }
+  
   # 1) Estimar y redondear S1
   S1_raw <- sqrt(S2_1)
   S1      <- ceiling(S1_raw * 100) / 100
