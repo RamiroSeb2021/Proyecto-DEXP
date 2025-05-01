@@ -12,6 +12,7 @@ library(shinyWidgets)
 library(shinydashboard)
 library(dplyr)
 source("Presentation/custom_styles.R")
+source("Presentation/function_description.R")
 
 ui <-tagList(
   # 1) Inyectamos el CSS para personalizar tonos de verde
@@ -36,9 +37,17 @@ ui <-tagList(
                          menuSubItem("Efectos Aleatorios", tabName = "efectos"),
                          menuSubItem("Cálculo de Potencia", tabName = "potencia"),
                          menuSubItem("Método HHM", tabName = "hhm"),
-                         menuSubItem("Método de Tukey", tabName = "metodo_tukey", icon = icon("table")),
-                         menuSubItem("Simulación de Potencia", tabName = "sim_potencia", icon = icon("chart-line"))
+                         menuSubItem("Método de Tukey", tabName = "metodo_tukey"),
+                         menuSubItem("Simulación de Potencia", tabName = "sim_potencia")
                 )
+    ),
+    # aquí insertamos el logo al fondo
+    tags$div(
+      style = "position: absolute; bottom: 0; width: 100%; text-align: center; padding: 10px;",
+      img(
+        src   = "Logo_Escuela_sin_fondo.png",
+        style = "max-width: 98%; height: auto; display: block; margin: 0 auto;"
+      )
     )
   ),
   dashboardBody(
@@ -55,44 +64,7 @@ ui <-tagList(
       tabItem(tabName = "sin_costo",
               # Estilos CSS para el tooltip (añadido en el head)
               tags$head(
-                tags$style(HTML("
-            .mi-tooltip {
-              position: relative;
-              display: inline-block;
-              cursor: pointer;
-            }
-            .mi-tooltip .texto-tooltip {
-              visibility: hidden;
-              width: 160px;
-              background-color: #3498db;
-              color: white;
-              text-align: center;
-              border-radius: 6px;
-              padding: 8px;
-              position: absolute;
-              z-index: 1000;
-              bottom: 125%;
-              left: 50%;
-              transform: translateX(-50%);
-              opacity: 0;
-              transition: opacity 0.3s;
-              font-size: 14px;
-            }
-            .mi-tooltip:hover .texto-tooltip {
-              visibility: visible;
-              opacity: 1;
-            }
-            .mi-tooltip .texto-tooltip::after {
-              content: '';
-              position: absolute;
-              top: 100%;
-              left: 50%;
-              margin-left: -5px;
-              border-width: 5px;
-              border-style: solid;
-              border-color: #3498db transparent transparent transparent;
-            }
-          "))
+                tags$style(HTML(desc_sinCosto))
               ),
               
               fluidRow(
@@ -172,44 +144,7 @@ ui <-tagList(
       tabItem(tabName = "con_costo",
               # Estilos CSS para el tooltip (añadido en el head)
               tags$head(
-                tags$style(HTML("
-                  .mi-tooltip {
-                    position: relative;
-                    display: inline-block;
-                    cursor: pointer;
-                  }
-                  .mi-tooltip .texto-tooltip {
-                    visibility: hidden;
-                    width: 160px;
-                    background-color: #3498db;
-                    color: white;
-                    text-align: center;
-                    border-radius: 6px;
-                    padding: 8px;
-                    position: absolute;
-                    z-index: 1000;
-                    bottom: 125%;
-                    left: 50%;
-                    transform: translateX(-50%);
-                    opacity: 0;
-                    transition: opacity 0.3s;
-                    font-size: 14px;
-                  }
-                  .mi-tooltip:hover .texto-tooltip {
-                    visibility: visible;
-                    opacity: 1;
-                  }
-                  .mi-tooltip .texto-tooltip::after {
-                    content: '';
-                    position: absolute;
-                    top: 100%;
-                    left: 50%;
-                    margin-left: -5px;
-                    border-width: 5px;
-                    border-style: solid;
-                    border-color: #3498db transparent transparent transparent;
-                  }
-                "))
+                tags$style(HTML(desc_conCosto))
               ),
               fluidRow(
                 column(
@@ -360,8 +295,11 @@ ui <-tagList(
                 )
               ),
               fluidRow(
-                column(12, align = "left",
+                column(6, align = "left",
                        actionButton("anterior_5", "Anterior", icon = icon("arrow-left"), class = "btn btn-secondary")
+                ),
+                column(6, align = "right",
+                       actionButton("siguiente_5", "Siguiente", icon = icon("arrow-right"), class = "btn btn-success")
                 )
               )
       ), 
@@ -383,45 +321,60 @@ ui <-tagList(
                   title = "Resultados Tukey", status = "success", solidHeader = TRUE, width = 6,
                   verbatimTextOutput("resultados_mt")
                 )
+              ),
+              fluidRow(
+                column(6, align = "left",
+                       actionButton("anterior_6", "Anterior", icon = icon("arrow-left"), class = "btn btn-secondary")
+                ),
+                column(6, align = "right",
+                       actionButton("siguiente_6", "Siguiente", icon = icon("arrow-right"), class = "btn btn-success")
+                )
               )
       ),
       
       # +2: simulación de potencia / encontrar r mínimo
       tabItem(tabName = "sim_potencia",
               fluidRow(
+                # tus parámetros siguen igual…
                 box(
                   title = "Parámetros Simulación", status = "primary", solidHeader = TRUE, width = 6,
-                  numericInput("sim_t",            "Tratamientos (t)",               value = 5,  min = 2),
+                  numericInput("sim_t", "Tratamientos (t)", value = 5,  min = 2),
+                  numericInput("sim_rho", "Proporcion varianzas", value = 0.4,  min = 2),
                   numericInput("sim_sigma2",       expression(sigma^2 ~ "residual"), value = 1),
-                  numericInput("sim_Delta",        "Diferencia mínima (D)",         value = 20),
-                  numericInput("sim_alpha",       "Alfa",                            value = 0.05, step = 0.01),
-                  numericInput("sim_power_target","Potencia objetivo (1-β)",        value = 0.8,  step = 0.05),
-                  numericInput("sim_r_min",       "r mínimo",                       value = 2,  min = 1),
-                  numericInput("sim_r_max",       "r máximo",                       value = 50, min = 2),
+                  numericInput("sim_alpha", "Alfa",value = 0.05, step = 0.01),
+                  numericInput("sim_power_target", "Potencia objetivo (1-β)", value = 0.8,  step = 0.05),
+                  numericInput("sim_r_max", "Tamaño maximo de tamaño de muestra", value = 50,  min = 1),
                   actionButton("calcular_sim", "Calcular", class = "btn btn-success")
                 ),
-                box(
-                  title = "Resultados Simulación", status = "success", solidHeader = TRUE, width = 6,
-                  verbatimTextOutput("resultados_sim"),
-                  plotOutput("grafico_sim"),
-                  DT::DTOutput("tabla_sim")
+                
+                # Aquí reemplazamos el box de resultados por un tabBox de 2 pestañas
+                shinydashboard::tabBox(
+                  title = "Resultados Simulación",
+                  id    = "sim_res_tabs",
+                  width = 6,
+                  # pestaña 1: Gráfico
+                  tabPanel("Gráfico",
+                           plotOutput("grafico_sim", height = "400px"),
+                           br(),
+                           div(style="padding: 8px;",
+                               textOutput("mensaje_sim")
+                           )
+                  ),
+                  # pestaña 2: Tabla
+                  tabPanel("Tabla",
+                           DT::DTOutput("tabla_sim")
+                  )
+                )
+              ),
+              
+              fluidRow(
+                column(12, align = "left",
+                       actionButton("anterior_7", "Anterior", icon = icon("arrow-left"), class = "btn btn-secondary")
                 )
               )
       )
       
-    ),
-    # logo fijo en la esquina inferior derecha
-    tags$img(
-      src = "Logo_Escuela.png",
-      class = "fixed-logo",
-      style = "
-      position: fixed;
-      bottom: 10px;
-      right: 10px;
-      width: 160px;   /* ajusta al tamaño que necesites */
-      z-index: 1000; /* para asegurarse de que quede por encima */
-    "
-      )
+    )
     )
   )
 )

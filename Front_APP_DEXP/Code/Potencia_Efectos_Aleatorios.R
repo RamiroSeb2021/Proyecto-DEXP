@@ -86,8 +86,12 @@ simular_potencia <- function(t, r, sigma2 = 1, rho = 0.5, alpha = 0.05, nsim = 1
 #' resultado$tabla
 #'
 #' @export
-encontrar_r_minimo <- function(t, rho, potencia_objetivo = 0.8,
-                               sigma2 = 1, alpha = 0.05, nsim = 1000,
+encontrar_r_minimo_ <- function(t, 
+                               rho, 
+                               potencia_objetivo = 0.8,
+                               sigma2 = 1, 
+                               alpha = 0.05, 
+                               nsim = 1000,
                                r_max = 50) {
   if (!requireNamespace("ggplot2", quietly = TRUE)) {
     install.packages("ggplot2")

@@ -60,5 +60,22 @@ custom_css <- "
   border: none !important;
   background: transparent !important;
 }
+/* 1) Quitar todo borde de cada <li> y de cada <a> dentro de las pestañas */
+.skin-green .nav-tabs-custom > .nav-tabs > li,
+.skin-green .nav-tabs-custom > .nav-tabs > li > a {
+  border: none !important;
+}
+
+/* 2) Pintar sólo el borde superior de la pestaña activa */
+.skin-green .nav-tabs-custom > .nav-tabs > li.active {
+  border-top: 3px solid #14532d !important;
+}
+
+/* 3) Ajustar el <a> de la pestaña activa para que no meta ningún otro borde */
+.skin-green .nav-tabs-custom > .nav-tabs > li.active > a {
+  background-color: #14532d !important;
+  color: #ffffff !important;
+}
+
 
 "

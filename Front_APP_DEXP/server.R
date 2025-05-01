@@ -41,6 +41,10 @@ server <- function(input, output, session) {
   observeEvent(input$anterior_4, updateTabItems(session, "tabs", selected = "efectos"))
   observeEvent(input$siguiente_4, updateTabItems(session, "tabs", selected = "hhm"))
   observeEvent(input$anterior_5, updateTabItems(session, "tabs", selected = "potencia"))
+  observeEvent(input$siguiente_5, updateTabItems(session, "tabs", selected = "metodo_tukey"))
+  observeEvent(input$anterior_6, updateTabItems(session, "tabs", selected = "hhm"))
+  observeEvent(input$siguiente_6, updateTabItems(session, "tabs", selected = "sim_potencia"))
+  observeEvent(input$anterior_7, updateTabItems(session, "tabs", selected = "metodo_tukey"))
   
   # Función para mostrar errores en modal y limpiar output
   show_error <- function(message) {
@@ -164,26 +168,43 @@ server <- function(input, output, session) {
   })
   
   # 2) Simulación de potencia / r mínimo
+  resultado_sim <- reactiveVal(NULL)
+  
   observeEvent(input$calcular_sim, {
-    resultado <- encontrar_r_minimo(
-      t            = input$sim_t,
-      sigma2       = input$sim_sigma2,
-      Delta        = input$sim_Delta,
-      alpha        = input$sim_alpha,
-      power_target = input$sim_power_target,
-      r_min        = input$sim_r_min,
-      r_max        = input$sim_r_max
+    
+    res <- encontrar_r_minimo_(
+      t = input$sim_t, 
+      rho = input$sim_rho, 
+      potencia_objetivo = input$sim_power_target,
+      sigma2 = input$sim_sigma2, 
+      alpha = input$sim_alpha,
+      r_max = input$sim_r_max
     )
-    output$resultados_sim <- renderPrint({
-      if (is.null(resultado)) "No se alcanzó la potencia deseada" else
-        list(r_optimo = resultado$r_optimo,
-             potencia  = resultado$potencia)
-    })
+    resultado_sim(res)
+    
     output$grafico_sim <- renderPlot({
-      if (!is.null(resultado)) resultado$grafico
+      req(res)
+      res$grafico
     })
-    output$tabla_sim <- renderDataTable({
-      if (!is.null(resultado)) resultado$tabla
-    }, options = list(pageLength = 5))
+    output$tabla_sim <- DT::renderDT({
+      req(resultado_sim())
+      resultado_sim()$tabla
+    }, 
+    options = list(
+      pageLength      = 5,            # si quieres paginación
+      scrollY         = "300px",      # alto del área con scroll
+      scrollCollapse  = TRUE,         # colapsa si hay pocas filas
+      paging          = FALSE         # desactiva paginación si prefieres
+    ))
+    
   })
+  
+  output$mensaje_sim <- renderText({
+    req(resultado_sim())
+    paste0(
+      "Para alcanzar una potencia de ", input$sim_power_target,
+      ", necesitas un tamaño muestral de ", resultado_sim()$r_optimo, "."
+    )
+  })
+
 }

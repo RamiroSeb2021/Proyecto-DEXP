@@ -1,3 +1,6 @@
+# Mensajes de errores -----------------------------------------------------
+
+
 # errores_potencia.R
 
 handle_potencia_error_t <- function() {
@@ -55,6 +58,7 @@ handle_hhm_error_desviaciones_mal_formateadas <- function() {
   return("Las desviaciones estándar (σ) contienen valores no numéricos o mal formateados. Por favor, revise la entrada.")
 }
 
+# Funciones para mostrar errores ------------------------------------------
 
 
 Excepciones_proporcionalidad_sin_costo <- function(a, r0, sigmas_str, show_error) {
