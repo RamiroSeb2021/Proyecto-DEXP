@@ -53,31 +53,109 @@ ui <-tagList(
               )
       ),
       tabItem(tabName = "sin_costo",
+              # Estilos CSS para el tooltip (añadido en el head)
+              tags$head(
+                tags$style(HTML("
+            .mi-tooltip {
+              position: relative;
+              display: inline-block;
+              cursor: pointer;
+            }
+            .mi-tooltip .texto-tooltip {
+              visibility: hidden;
+              width: 160px;
+              background-color: #3498db;
+              color: white;
+              text-align: center;
+              border-radius: 6px;
+              padding: 8px;
+              position: absolute;
+              z-index: 1000;
+              bottom: 125%;
+              left: 50%;
+              transform: translateX(-50%);
+              opacity: 0;
+              transition: opacity 0.3s;
+              font-size: 14px;
+            }
+            .mi-tooltip:hover .texto-tooltip {
+              visibility: visible;
+              opacity: 1;
+            }
+            .mi-tooltip .texto-tooltip::after {
+              content: '';
+              position: absolute;
+              top: 100%;
+              left: 50%;
+              margin-left: -5px;
+              border-width: 5px;
+              border-style: solid;
+              border-color: #3498db transparent transparent transparent;
+            }
+          "))
+              ),
+              
               fluidRow(
                 column(
                   width = 12,
-                  p("Esta función calcula la asignación proporcional de réplicas entre tratamientos sin considerar costos adicionales. Se basa en las desviaciones estándar de cada tratamiento para distribuir las réplicas iniciales de manera óptima."),
-                  withMathJax(
-                    HTML(
-                      "La asignación proporcional se calcula como:<br/>
-          \\[ r_i = \\frac{n \\times \\sigma_i}{\\sum_{j=1}^a \\sigma_j} \\]<br/>
-          donde:<br/>
-          <ul>
-            <li><em>r<sub>i</sub></em> es el número de réplicas asignadas al tratamiento <em>i</em></li>
-            <li><em>n</em> es el total de réplicas iniciales (<em>r<sub>0</sub> \\times a</em>)</li>
-            <li><em>\\sigma<sub>i</sub></em> es la desviación estándar del tratamiento <em>i</em></li>
-            <li><em>a</em> es el número total de tratamientos</li>
-          </ul>"
-                    )
-                  )
+                  p("Esta función calcula cuántas repeticiones (tamaño de muestra) se necesitan para cada tratamiento en un experimento científico, considerando dos enfoques:"),
+                  tags$ul(
+                    tags$li("Cuando hay costos variables (donde cada tratamiento tiene un precio diferente), optimiza la distribución del presupuesto para minimizar el error en los resultados, asignando más repeticiones a tratamientos más variables o importantes (usando ecuaciones con multiplicadores matemáticos llamados lagrangianos)."),
+                    tags$li("Cuando el costo no importa pero se quiere equilibrar la precisión, distribuye las repeticiones proporcionalmente a la variabilidad de cada tratamiento (tratamientos más variables reciben más repeticiones).")
+                  ),
+                  p("En esencia, es una herramienta estadística que asegura resultados confiables en experimentos, ya sea ajustándose a un presupuesto o priorizando la precisión científica.")
                 )
               ),
               fluidRow(
                 box(
                   title = "Parámetros", width = 6, status = "primary", solidHeader = TRUE,
-                  numericInput("a", "Número de tratamientos", 4),
-                  numericInput("r0", "Número de réplicas iniciales", 5),
-                  textInput("sigmas", "Desviaciones estándar por tratamiento (separadas por comas)", "6.27,9.57,12,3.32"),
+                  numericInput(
+                    inputId = "a",
+                    label = div(
+                      style = "display: inline-flex; align-items: center;",
+                      "Número de tratamientos",
+                      span(
+                        class = "mi-tooltip",
+                        HTML(" ⓘ"),
+                        span(class = "texto-tooltip", "Aquí debe ingresar el número de tratamientos con los que cuenta, este debe ser un número entero positivo."),
+                        style = "margin-left: 5px; color: #3498db; cursor: pointer;"
+                      )
+                    ),
+                    value = 4
+                  ),
+                  # 2. Input para réplicas iniciales (con tooltip)
+                  numericInput(
+                    inputId = "r0",
+                    label = div(
+                      style = "display: inline-flex; align-items: center;",
+                      "Número de réplicas iniciales",
+                      span(
+                        class = "mi-tooltip",
+                        HTML(" ⓘ"),
+                        span(class = "texto-tooltip", "Aquí debe ingresar el número de réplicas inciales con las que cuenta, este debe ser un número entero positivo."),
+                        style = "margin-left: 5px; color: #3498db; cursor: help;"
+                      )
+                    ),
+                    value = 5,
+                    width = "100%"
+                  ),
+                  
+                  # 3. Input para desviaciones estándar (con tooltip)
+                  textInput(
+                    inputId = "sigmas",
+                    label = div(
+                      style = "display: inline-flex; align-items: center;",
+                      "Desviaciones estándar por tratamiento",
+                      span(
+                        class = "mi-tooltip",
+                        HTML(" ⓘ"),
+                        span(class = "texto-tooltip", "Aquí debe ingresar los valores de las desviaciones estándar separados por comas (ejemplo: 1.5, 2.0, 1.8). Debe asegurarse de que la cantidad de desviaciones estándar, coincida con el número de tratamientos."),
+                        style = "margin-left: 5px; color: #3498db; cursor: help;"
+                      )
+                    ),
+                    value = "6.27,9.57,12,3.32",
+                    width = "100%"
+                  ),
                   actionButton("calcular_1", "Calcular", class = "btn btn-success")
                 ),
                 box(

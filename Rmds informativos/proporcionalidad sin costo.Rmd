@@ -1,0 +1,73 @@
+---
+title: "Determinación del Tamaño de Muestra con Costo Variable por Tratamiento"
+author: "DEXP"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE, warning = FALSE, message = FALSE)
+
+
+
+
+```{r determ_muestra, echo=FALSE, results='asis', comment=NA}
+cat('
+## 5.7.5. Determinación del Tamaño de Muestra con Costo Variable por Tratamiento
+
+Asumiendo que los costos por tratamiento ($c_i > 0$) son variables, bajo la restricción:
+
+$$
+\\sum_{i=1}^t c_i r_i = C \\quad \\text{(Restricción presupuestaria)}
+$$
+
+y considerando que:
+
+$$
+Var(\\text{MELI}(L)) = \\sum_{i=1}^t \\frac{\\lambda_i^2 \\sigma_i^2}{r_i} \\quad \\text{(Ecuación 5.25)}
+$$
+
+donde $L = \\sum_{i=1}^t \\lambda_i \\mu_i$ y 
+
+$$
+\\text{MELI}(L) = \\sum_{i=1}^t \\lambda_i \\bar{y}_i\\text{(Ecuación 5.26)}
+$$ 
+
+### Minimización Lagrangiana
+
+Para minimizar $Var(\\text{MELI}(L))$ sujeto a la restricción presupuestaria, construimos el lagrangiano:
+
+$$
+Q = \\sum_{i=1}^t \\frac{\\lambda_i^2 \\sigma_i^2}{r_i} + \\phi \\left( \\sum_{i=1}^t c_i r_i - C \\right) \\quad \\text{(Ecuación 5.27)}
+$$
+
+Al resolver lo anterior, obtenemos:
+
+$$
+r_i = \\frac{|\\lambda_i| \\sigma_i}{\\sqrt{\\phi c_i}} \\quad \\text{(Ecuación 5.28)}
+$$
+
+donde el multiplicador de Lagrange es:
+
+$$
+\\phi = \\frac{\\left( \\sum_{i=1}^t |\\lambda_i| \\sigma_i \\sqrt{c_i} \\right)^2}{C^2}
+$$
+
+**Recomendación:** Los coeficientes $\\lambda_i$ deben expresarse como fracciones para simplificar el cálculo de $r_i$.
+
+### Asignación Proporcional (Ecuación 5.29)
+
+Si en lugar de optimizar con costos, asignamos las observaciones de forma proporcional a las desviaciones estándar (con $n$ fijo):
+
+$$
+\\tilde{r}_{i} = \\frac{n \\sigma_i}{\\sum_{s=1}^t \\sigma_s}; \\quad i = 1, \\dots, t \\quad \\text{(Ecuación 5.29)}
+$$
+
+**Interpretación:** Los tratamientos con mayor variabilidad ($\\sigma_i$) reciben más réplicas.
+
+## Referencia
+
+**Referencia Bibliográfica**
+
+> Melo M., O. O., López P., L. A., & Melo M., S. E. (2023). *Diseño de Experimentos: Métodos y Aplicaciones* (1a ed.). Pro-Oﬀset Editorial S.A.. Capítulo 5, Sección 5.7.5, pp. 204-205.
+')
+

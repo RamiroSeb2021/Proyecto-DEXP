@@ -39,24 +39,40 @@ handle_hhm_error_alpha <- function() {
 }
 
 ## Excepciones Diana
+handle_hhm_error_numero_de_tratamientos_positivo_mayor_que_cero <- function() {
+  return("El número de tratamientos debe ser un número entero positivo mayor que cero.")
+}
+
+handle_hhm_error_numero_de_replicas_positivo_mayor_que_cero <- function() {
+  return("El número de réplicas iniciales (r₀) debe ser un número entero positivo mayor que cero.")
+}
+
+handle_hhm_error_desviaciones_separas_por_coma <- function() {
+  return("Debe ingresar las desviaciones estándar (σ) como una lista de números separados por comas.")
+}
+
+handle_hhm_error_desviaciones_mal_formateadas <- function() {
+  return("Las desviaciones estándar (σ) contienen valores no numéricos o mal formateados. Por favor, revise la entrada.")
+}
+
 
 
 Excepciones_proporcionalidad_sin_costo <- function(a, r0, sigmas_str, show_error) {
   # Validar 'a': debe ser un entero positivo
   if (missing(a) || !is.numeric(a) || length(a) != 1 || is.na(a) || a < 1 || a != floor(a)) {
-    show_error("El número de tratamientos debe ser un número entero positivo mayor que cero.")
+    show_error(handle_hhm_error_numero_de_tratamientos_positivo_mayor_que_cero())
     return(FALSE)
   }
   
   # Validar 'r0': debe ser un entero positivo
   if (missing(r0) || !is.numeric(r0) || length(r0) != 1 || is.na(r0) || r0 < 1 || r0 != floor(r0)) {
-    show_error("El número de réplicas iniciales (r₀) debe ser un número entero positivo mayor que cero.")
+    show_error(handle_hhm_error_numero_de_replicas_positivo_mayor_que_cero())
     return(FALSE)
   }
   
   # Validar 'sigmas_str': debe ser cadena no vacía
   if (missing(sigmas_str) || !is.character(sigmas_str) || nchar(trimws(sigmas_str)) == 0) {
-    show_error("Debe ingresar las desviaciones estándar (σ) como una lista de números separados por comas.")
+    show_error(handle_hhm_error_desviaciones_separas_por_coma())
     return(FALSE)
   }
   
@@ -65,7 +81,7 @@ Excepciones_proporcionalidad_sin_costo <- function(a, r0, sigmas_str, show_error
   
   # Validar que no haya valores no numéricos
   if (any(is.na(sigmas))) {
-    show_error("Las desviaciones estándar (σ) contienen valores no numéricos o mal formateados. Por favor, revise la entrada.")
+    show_error(handle_hhm_error_desviaciones_mal_formateadas())
     return(FALSE)
   }
   
