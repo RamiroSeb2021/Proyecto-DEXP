@@ -199,7 +199,12 @@ server <- function(input, output, session) {
   resultado_sim <- reactiveVal(NULL)
   
   observeEvent(input$calcular_sim, {
+    # 1) deshabilitar el botón
+    disable("calcular_sim")
+    # 2) al salir (éxito o error), volver a habilitar
+    on.exit(enable("calcular_sim"), add = TRUE)
     
+    # 3) llamada de tu función de simulación
     res <- encontrar_r_minimo_(
       t = input$sim_t, 
       rho = input$sim_rho, 
@@ -210,29 +215,27 @@ server <- function(input, output, session) {
     )
     resultado_sim(res)
     
+    # 4) renderizar outputs
     output$grafico_sim <- renderPlot({
-      req(res)
-      res$grafico
+      req(resultado_sim())
+      resultado_sim()$grafico
     })
     output$tabla_sim <- DT::renderDT({
       req(resultado_sim())
       resultado_sim()$tabla
-    }, 
-    options = list(
-      pageLength      = 5,            # si quieres paginación
-      scrollY         = "300px",      # alto del área con scroll
-      scrollCollapse  = TRUE,         # colapsa si hay pocas filas
-      paging          = FALSE         # desactiva paginación si prefieres
+    }, options = list(
+      pageLength     = 5,
+      scrollY        = "300px",
+      scrollCollapse = TRUE,
+      paging         = FALSE
     ))
-    
-  })
-  
-  output$mensaje_sim <- renderText({
-    req(resultado_sim())
-    paste0(
-      "Para alcanzar una potencia de ", input$sim_power_target,
-      ", necesitas un tamaño muestral de ", resultado_sim()$r_optimo, "."
-    )
+    output$mensaje_sim <- renderText({
+      req(resultado_sim())
+      paste0(
+        "Para alcanzar una potencia de ", input$sim_power_target,
+        ", necesitas un tamaño muestral de ", resultado_sim()$r_optimo, "."
+      )
+    })
   })
 
 }
