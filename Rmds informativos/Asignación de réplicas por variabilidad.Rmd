@@ -13,18 +13,6 @@ knitr::opts_chunk$set(echo = FALSE, warning = FALSE, message = FALSE)
 ```{r determ_muestra, echo=FALSE, results='asis', comment=NA}
 cat('
 
-## Contexto de la función Asignación de réplicas por variabilidad
-
-Esta herramienta calcula cuántas réplicas son necesarias para cada tratamiento en un diseño experimental, sin tener en cuenta los costos, pero equilibrando la precisión de los tratamientos según su variabilidad. Los tratamientos con mayor variabilidad recibirán más réplicas.
-
-- Cuando los costos no son una preocupación, pero se desea equilibrar la precisión, la herramienta distribuye las réplicas de forma proporcional a la variabilidad de cada tratamiento. Esto significa que los tratamientos más variables recibirán más réplicas para mejorar la precisión de los resultados.
-- La herramienta toma como entrada el número de tratamientos, el número total de réplicas iniciales y la desviación estándar de cada tratamiento para distribuirlas de manera eficiente.
-
-**Ejemplo de aplicación:**
-
-Supongamos que tienes cuatro tratamientos con diferentes desviaciones estándar dadas por (6.27, 9.57, 12, 3.32) y un número total de réplicas iniciales de 5. La herramienta calculará cuántas réplicas deben asignarse a cada tratamiento, distribuyendo las réplicas de manera proporcional a la variabilidad de cada tratamiento. Los tratamientos con mayor desviación estándar recibirán más réplicas para mejorar la precisión de los resultados.
-
-
 ## Teoría
 
 Asumiendo que los costos por tratamiento ($c_i > 0$) son variables, bajo la restricción:

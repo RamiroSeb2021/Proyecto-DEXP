@@ -1,0 +1,50 @@
+---
+title: "Asignación de tratamientos y réplicas con Función de Costos y Varianza Máxima"
+author: "DEXP"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE, warning = FALSE, message = FALSE)
+
+```{r determ_muestra, echo=FALSE, results='asis', comment=NA}
+cat('
+
+## Teoría
+
+En el modelo de componentes de varianza tanto el número de tratamientos $t$ como el número de réplicas $r$ son variables y sus estimaciones están ligadas con el control de dichas varianzas. Un criterio usual para elegir los valores de $r$ y $t$ es el de minimizar los costos en la estimación de la media $\\mu$. Una medida de la cantidad de información disponible para estimar $\\mu$ es la varianza de la media muestral dada por:
+
+$$
+v(\\bar{y}..) = \\frac{\\sigma^2}{rt} + \\frac{\\sigma_A^2}{t}
+$$
+
+En el caso de un diseño C.A. (Completamente Aleatorizado).
+
+El problema se reduce a encontrar los valores de $r$ y $t$ que minimicen la función de costos dada por:
+
+$$
+C = C_1 t + C_2 t r
+$$
+
+para una varianza $v(\\bar{y}..)$ fija, donde $C_1$ es el costo por unidad de tratamiento y $C_2$ es el costo por unidad experimental. La solución matemática es, según Mendenhall (1968):
+
+$$
+t = \\frac{1}{v(\\bar{y}..)} \\left( \\hat{\\sigma}_A^2 + \\frac{(\\hat{\\sigma}_A)^2}{\\sigma^2} C_2 / C_1 \\right)
+$$
+
+y
+
+$$
+r = \\frac{(\\hat{\\sigma})_A^2 C_1}{\\hat{\\sigma}^2 C_2}
+$$
+
+
+
+## Referencia
+
+**Referencia Bibliográfica**
+
+> Melo M., O. O., López P., L. A., & Melo M., S. E. (2007). *Diseño de Experimentos: Métodos y Aplicaciones* (1a ed.). Pro-Oﬀset Editorial S.A.. Capítulo 5, Sección 5.7.5, pp. 204-205.
+
+')
+
