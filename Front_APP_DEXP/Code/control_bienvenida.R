@@ -24,11 +24,11 @@ show_bienvenida_modal <- function() {
             <h1>Bienvenido a la App de Diseño de Experimentos</h1>
             <p>Explora datos, modelos experimentales y calcula tamaños muestrales.</p>
             <p>Estudiantes:</p>
-              <ul style='list-style-type: disc; text-align: left; margin: 0 auto; max-width: 300px; padding-left: 20px;'>
+              <center><ul style='list-style-type: disc; text-align: left; margin: 0 auto; max-width: 300px; padding-left: 20px;'>
                 <li>Juan Sebastián Ramírez Ayala</li>
                 <li>Diana Catalina Hernández Rojas</li>
                 <li>Yan Carlos Moreno Guerra</li>
-              </ul>
+              </ul></center>
             <p>Profesor: Wilmer Dario Pineda Rios</p>
           </div>
         </div>

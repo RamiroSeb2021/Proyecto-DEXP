@@ -92,3 +92,87 @@ Excepciones_proporcionalidad_sin_costo <- function(a, r0, sigmas_str, show_error
   
   return(sigmas)
 }
+
+##################################
+
+handle_hhm_error_numero_de_tratamientos_positivo_mayor_que_cero <- function() {
+  return("El número de tratamientos debe ser un número entero positivo mayor que cero.")
+}
+
+handle_hhm_error_presupuesto_total_positivo <- function() {
+  return("El presupuesto total debe ser un número positivo mayor que cero.")
+}
+
+handle_hhm_error_desviaciones_separas_por_coma <- function() {
+  return("Debe ingresar las desviaciones estándar (σ) como una lista de números separados por comas.")
+}
+
+handle_hhm_error_desviaciones_mal_formateadas <- function() {
+  return("Las desviaciones estándar (σ) contienen valores no numéricos, negativos o mal formateados. Por favor, revise la entrada.")
+}
+
+handle_hhm_error_cantidad_de_sigmas_distinta_a_tratamientos <- function(a) {
+  return(paste0("Debe ingresar exactamente ", a, 
+                " desviaciones estándar (σ), separadas por comas, una por cada tratamiento."))
+}
+
+handle_hhm_error_costos_separados_por_coma <- function() {
+  return("Debe ingresar los costos como una lista de números separados por comas.")
+}
+
+handle_hhm_error_costos_mal_formateados <- function() {
+  return("Los costos contienen valores no numéricos o mal formateados. Por favor, revise la entrada.")
+}
+
+handle_hhm_error_cantidad_de_costos_distinta_a_tratamientos <- function(a) {
+  return(paste0("Debe ingresar exactamente ", a, 
+                " costos, uno para cada tratamiento, separados por comas."))
+}
+
+Excepciones_proporcionalidad_con_costo <- function(a, sigmas_str, costos_str, costo_total, show_error) {
+  # Validar 'a'
+  if (missing(a) || !is.numeric(a) || length(a) != 1 || is.na(a) || a < 1 || a != floor(a)) {
+    show_error(handle_hhm_error_numero_de_tratamientos_positivo_mayor_que_cero())
+    return(FALSE)
+  }
+  
+  # Validar 'costo_total'
+  if (missing(costo_total) || !is.numeric(costo_total) || is.na(costo_total) || costo_total <= 0) {
+    show_error(handle_hhm_error_presupuesto_total_positivo())
+    return(FALSE)
+  }
+  
+  # Validar sigmas_str
+  if (missing(sigmas_str) || !is.character(sigmas_str) || nchar(trimws(sigmas_str)) == 0) {
+    show_error(handle_hhm_error_desviaciones_separas_por_coma())
+    return(FALSE)
+  }
+  sigmas <- suppressWarnings(as.numeric(strsplit(sigmas_str, ",")[[1]]))
+  if (any(is.na(sigmas)) || any(sigmas <= 0)) {
+    show_error(handle_hhm_error_desviaciones_mal_formateadas())
+    return(FALSE)
+  }
+  if (length(sigmas) != a) {
+    show_error(handle_hhm_error_cantidad_de_sigmas_distinta_a_tratamientos(a))
+    return(FALSE)
+  }
+  
+  # Validar costos_str
+  if (missing(costos_str) || !is.character(costos_str) || nchar(trimws(costos_str)) == 0) {
+    show_error(handle_hhm_error_costos_separados_por_coma())
+    return(FALSE)
+  }
+  costos <- suppressWarnings(as.numeric(strsplit(costos_str, ",")[[1]]))
+  if (any(is.na(costos))) {
+    show_error(handle_hhm_error_costos_mal_formateados())
+    return(FALSE)
+  }
+  if (length(costos) != a) {
+    show_error(handle_hhm_error_cantidad_de_costos_distinta_a_tratamientos(a))
+    return(FALSE)
+  }
+  
+  # Todo está bien, devolver lista
+  return(list(sigmas))
+}
+

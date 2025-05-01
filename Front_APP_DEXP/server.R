@@ -77,6 +77,46 @@ server <- function(input, output, session) {
     })
   })
   
+  observeEvent(input$calcular_2, {
+    # Limpiar resultados previos
+    output$resultados_2 <- renderText({ NULL })
+    
+    # Validar entradas y obtener sigmas y costos
+    validados <- Excepciones_proporcionalidad_con_costo(
+      a = input$a_2,
+      sigmas_str = input$sigmas_2,
+      costos_str = input$costos,
+      costo_total = input$costo_total,
+      show_error = show_error
+    )
+    
+    # Si hubo errores, salir
+    if (isFALSE(validados)) return()
+    
+    # Ejecutar cálculo con manejo de errores
+    resultados <- tryCatch(
+      proporcionalidad_con_costo_ni_tamaño_de_muestra(
+        a = input$a_2,
+        sigmas = validados$sigmas,
+        costos = validados$costos,
+        costo_total = input$costo_total
+      ),
+      error = function(e) {
+        show_error(paste("Error en el cálculo:", e$message))
+        NULL
+      }
+    )
+    
+    # Si hubo error en el cálculo, salir
+    if (is.null(resultados)) return()
+    
+    # Mostrar resultados
+    output$resultados_2 <- renderText({
+      paste("Réplicas asignadas:", paste(resultados, collapse = ", "))
+    })
+  })
+  
+  
   
   # Cálculos
   #observeEvent(input$calcular_1, {
@@ -85,12 +125,12 @@ server <- function(input, output, session) {
     #output$resultados_1 <- renderText({ paste("Réplicas asignadas:", paste(resultados, collapse = ", ")) })
   #})
   
-  observeEvent(input$calcular_2, {
-    sigmas <- as.numeric(unlist(strsplit(input$sigmas_2, ",")))
-    costos <- as.numeric(unlist(strsplit(input$costos, ",")))
-    resultados <- proporcionalidad_con_costo_ni_tamaño_de_muestra(input$a_2, sigmas, costos, input$costo_total)
-    output$resultados_2 <- renderText({ paste("Réplicas asignadas:", paste(resultados, collapse = ", ")) })
-  })
+  #observeEvent(input$calcular_2, {
+    #sigmas <- as.numeric(unlist(strsplit(input$sigmas_2, ",")))
+    #costos <- as.numeric(unlist(strsplit(input$costos, ",")))
+    #resultados <- proporcionalidad_con_costo_ni_tamaño_de_muestra(input$a_2, sigmas, costos, input$costo_total)
+    #output$resultados_2 <- renderText({ paste("Réplicas asignadas:", paste(resultados, collapse = ", ")) })
+  #})
   
   observeEvent(input$calcular_3, {
     resultados <- numero_de_tratamientos_y_replicas_con_efectos_aleatorios(

@@ -71,12 +71,12 @@ proporcionalidad_sin_costo_ni_tamaño_de_muestra <- function(a, r0, sigmas) {
 #'
 #' @export
 proporcionalidad_con_costo_ni_tamaño_de_muestra <- function(a, sigmas, costos, costo_total) {
-  if (length(sigmas) != a) {
-    stop("La cantidad de tratamientos no coincide con la longitud del vector de desviaciones.")
-  }
-  if (length(costos) != a) {
-    stop("La cantidad de tratamientos no coincide con la longitud del vector de costos.")
-  }
+  #if (length(sigmas) != a) {
+    #stop("La cantidad de tratamientos no coincide con la longitud del vector de desviaciones.")
+  #}
+  #if (length(costos) != a) {
+    #stop("La cantidad de tratamientos no coincide con la longitud del vector de costos.")
+  #}
 
   lambda <- 1 / a
   phi <- (sum(lambda * sigmas * sqrt(costos))^2) / (costo_total^2)

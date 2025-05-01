@@ -103,7 +103,7 @@ ui <-tagList(
                     tags$li("Cuando hay costos variables (donde cada tratamiento tiene un precio diferente), optimiza la distribución del presupuesto para minimizar el error en los resultados, asignando más repeticiones a tratamientos más variables o importantes (usando ecuaciones con multiplicadores matemáticos llamados lagrangianos)."),
                     tags$li("Cuando el costo no importa pero se quiere equilibrar la precisión, distribuye las repeticiones proporcionalmente a la variabilidad de cada tratamiento (tratamientos más variables reciben más repeticiones).")
                   ),
-                  p("En esencia, es una herramienta estadística que asegura resultados confiables en experimentos, ya sea ajustándose a un presupuesto o priorizando la precisión científica.")
+                  p("Para mayor información acceder a:"),
                 )
               ),
               fluidRow(
@@ -170,12 +170,120 @@ ui <-tagList(
               )
       ),
       tabItem(tabName = "con_costo",
+              # Estilos CSS para el tooltip (añadido en el head)
+              tags$head(
+                tags$style(HTML("
+                  .mi-tooltip {
+                    position: relative;
+                    display: inline-block;
+                    cursor: pointer;
+                  }
+                  .mi-tooltip .texto-tooltip {
+                    visibility: hidden;
+                    width: 160px;
+                    background-color: #3498db;
+                    color: white;
+                    text-align: center;
+                    border-radius: 6px;
+                    padding: 8px;
+                    position: absolute;
+                    z-index: 1000;
+                    bottom: 125%;
+                    left: 50%;
+                    transform: translateX(-50%);
+                    opacity: 0;
+                    transition: opacity 0.3s;
+                    font-size: 14px;
+                  }
+                  .mi-tooltip:hover .texto-tooltip {
+                    visibility: visible;
+                    opacity: 1;
+                  }
+                  .mi-tooltip .texto-tooltip::after {
+                    content: '';
+                    position: absolute;
+                    top: 100%;
+                    left: 50%;
+                    margin-left: -5px;
+                    border-width: 5px;
+                    border-style: solid;
+                    border-color: #3498db transparent transparent transparent;
+                  }
+                "))
+              ),
+              fluidRow(
+                column(
+                  width = 12,
+                  p("Esta función calcula cuántas repeticiones (tamaño de muestra) se necesitan para cada tratamiento en un experimento científico, considerando dos enfoques:"),
+                  tags$ul(
+                    tags$li("Cuando hay costos variables (donde cada tratamiento tiene un precio diferente), optimiza la distribución del presupuesto para minimizar el error en los resultados, asignando más repeticiones a tratamientos más variables o importantes (usando ecuaciones con multiplicadores matemáticos llamados lagrangianos)."),
+                    tags$li("Cuando el costo no importa pero se quiere equilibrar la precisión, distribuye las repeticiones proporcionalmente a la variabilidad de cada tratamiento (tratamientos más variables reciben más repeticiones).")
+                  ),
+                  p("Para mayor información acceder a:"),
+                )
+              ),
               fluidRow(
                 box(title = "Parámetros", width = 6, status = "primary", solidHeader = TRUE,
-                    numericInput("a_2", "Tratamientos (a)", 4),
-                    textInput("sigmas_2", "Desviaciones σ", "6.27,9.57,12,3.32"),
-                    textInput("costos", "Costos por tratamiento", "1000,200,700,1100"),
-                    numericInput("costo_total", "Presupuesto total", 50000),
+                    # NumericInput con tooltip para tratamientos
+                    numericInput(
+                      inputId = "a_2",
+                      label = div(
+                        style = "display: inline-flex; align-items: center;",
+                        "Número de tratamientos",
+                        span(
+                          class = "mi-tooltip",
+                          HTML(" ⓘ"),
+                          span(class = "texto-tooltip", "Aquí debe ingresar el número de tratamientos con los que cuenta, este debe ser un número entero positivo."),
+                          style = "margin-left: 5px; color: #3498db; cursor: pointer;"
+                        )
+                      ),
+                      value = 4
+                    ),
+                    # TextInput con tooltip para desviaciones σ
+                    textInput(
+                      inputId = "sigmas_2",
+                      label = div(
+                        style = "display: inline-flex; align-items: center;",
+                        "Desviaciones estándar por tratamiento",
+                        span(
+                          class = "mi-tooltip",
+                          HTML(" ⓘ"),
+                          span(class = "texto-tooltip", "Aquí debe ingresar los valores de las desviaciones estándar separados por comas (ejemplo: 6.27,9.57,12,3.32). Debe asegurarse de que la cantidad de desviaciones estándar, coincida con el número de tratamientos."),
+                          style = "margin-left: 5px; color: #3498db; cursor: pointer;"
+                        )
+                      ),
+                      value = "6.27,9.57,12,3.32"
+                    ),
+                    # TextInput con tooltip para costos
+                    textInput(
+                      inputId = "costos",
+                      label = div(
+                        style = "display: inline-flex; align-items: center;",
+                        "Costos por tratamiento",
+                        span(
+                          class = "mi-tooltip",
+                          HTML(" ⓘ"),
+                          span(class = "texto-tooltip", "Aquí debe ingresar los costos correspondientes a cada tratamiento, separados por comas (ejemplo: 1000, 200, 700). Debe asegurarse de que la cantidad de desviaciones estándar, coincida con el número de tratamientos."),
+                          style = "margin-left: 5px; color: #3498db; cursor: pointer;"
+                        )
+                      ),
+                      value = "1000,200,700,1100"
+                    ),
+                    # NumericInput con tooltip para presupuesto total
+                    numericInput(
+                      inputId = "costo_total",
+                      label = div(
+                        style = "display: inline-flex; align-items: center;",
+                        "Presupuesto total",
+                        span(
+                          class = "mi-tooltip",
+                          HTML(" ⓘ"),
+                          span(class = "texto-tooltip", "Aquí debe ingresar el presupuesto total disponible para el experimento, sin utilizar signos de dólar, puntos ni comas, solo el número (ejemplo: 50000)."),
+                          style = "margin-left: 5px; color: #3498db; cursor: pointer;"
+                        )
+                      ),
+                      value = 50000
+                    ),
                     actionButton("calcular_2", "Calcular", class = "btn btn-success")
                 ),
                 box(title = "Resultados", width = 6, status = "success", solidHeader = TRUE,
@@ -190,7 +298,8 @@ ui <-tagList(
                        actionButton("siguiente_2", "Siguiente", icon = icon("arrow-right"), class = "btn btn-success")
                 )
               )
-      ),
+      )
+      ,
       tabItem(tabName = "efectos",
               fluidRow(
                 box(title = "Parámetros", width = 6, status = "primary", solidHeader = TRUE,
