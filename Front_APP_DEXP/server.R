@@ -209,63 +209,176 @@ server <- function(input, output, session) {
   
 
 # Calcular metodo de tukey ------------------------------------------------
-
-  observeEvent(input$calcular_mt, {
-    res <- calcular_r_MT(
-      T_    = input$mt_T,
-      D     = input$mt_D,
-      ro    = input$mt_ro,
-      S1    = input$mt_S1,
-      df1   = input$mt_df1,
-      alfa  = input$mt_alfa,
-      Beta  = input$mt_Beta
-    )
-    output$resultados_mt <- renderPrint(res)
+  # reactiveVal para almacenar el resultado
+  resultado_mt <- reactiveVal(NULL)
+  
+  # define el output fuera del observeEvent, con req()
+  output$resultados_mt <- renderPrint({
+    req(resultado_mt())      # si es NULL, no dibuja nada
+    resultado_mt()
   })
   
+  observeEvent(input$calcular_mt, {
+    # Limpiar cualquier modal / output previo
+    resultado_mt(NULL)
+
+    # 1) t >= 2 y entero
+    if (is.null(input$mt_T) || is.na(input$mt_T) || length(input$mt_T) != 1 ||
+        input$mt_T < 2 || input$mt_T != floor(input$mt_T)) {
+      show_error(Formato_tatamiento())
+      return()
+    }
+    # 2) D > 0, numérico escalar
+    if (is.null(input$mt_D) || is.na(input$mt_D) || length(input$mt_D) != 1 ||
+        !is.numeric(input$mt_D) || input$mt_D <= 0) {
+      show_error(Formato_diferencia())
+      return()
+    }
+    # 3) ro ≥ 1 entero
+    if (is.null(input$mt_ro) || is.na(input$mt_ro) || length(input$mt_ro) != 1 ||
+        input$mt_ro < 1 || input$mt_ro != floor(input$mt_ro)) {
+      show_error(Formato_rho())
+      return()
+    }
+    # 4) S1 > 0
+    if (is.null(input$mt_S1) || is.na(input$mt_S1) || length(input$mt_S1) != 1 ||
+        input$mt_S1 <= 0) {
+      show_error(Formato_sigma())
+      return()
+    }
+    # 5) df1 ≥ 1 entero
+    if (is.null(input$mt_df1) || is.na(input$mt_df1) || length(input$mt_df1) != 1 ||
+        input$mt_df1 < 1 || input$mt_df1 != floor(input$mt_df1)) {
+      show_error(Formato_gradosLibertad())
+      return()
+    }
+    # 6) alfa ∈ (0,1)
+    if (is.null(input$mt_alfa) || is.na(input$mt_alfa) || length(input$mt_alfa) != 1 ||
+        input$mt_alfa <= 0 || input$mt_alfa >= 1) {
+      show_error(Formato_significancia())
+      return()
+    }
+    # 7) Beta ∈ (0,1)
+    if (is.null(input$mt_Beta) || is.na(input$mt_Beta) || length(input$mt_Beta) != 1 ||
+        input$mt_Beta < 0 || input$mt_Beta >= 1) {
+      show_error(Formato_Potencia())
+      return()
+    }
+    
+    # Si todo pasó, ejecutamos y capturamos errores de la función
+    resultados <- tryCatch(
+      calcular_r_MT(
+        T_   = input$mt_T,
+        D    = input$mt_D,
+        ro   = input$mt_ro,
+        S1   = input$mt_S1,
+        df1  = input$mt_df1,
+        alfa = input$mt_alfa,
+        Beta = input$mt_Beta
+      ),
+      error = function(e) {
+        show_error(paste("Error en Tukey:", e$message))
+        return(NULL)
+      }
+    )
+    if (is.null(resultados)) return()
+    
+    resultado_mt(resultados)
+  })
 
 # Simulación de potencia / r mínimo ---------------------------------------
 
+  # 1) reactiveVal para almacenar el resultado
   resultado_sim <- reactiveVal(NULL)
   
+  # 2) Define los outputs UNA sola vez, fuera del observeEvent:
+  output$grafico_sim <- renderPlot({
+    req(resultado_sim())
+    resultado_sim()$grafico
+  })
+  output$tabla_sim <- DT::renderDT({
+    req(resultado_sim())
+    resultado_sim()$tabla
+  }, options = list(
+    pageLength      = 5,
+    scrollY         = "300px",
+    scrollCollapse  = TRUE,
+    paging          = FALSE
+  ))
+  output$mensaje_sim <- renderText({
+    req(resultado_sim())
+    paste0(
+      "Para alcanzar una potencia de ", input$sim_power_target,
+      ", necesitas un tamaño muestral de ", resultado_sim()$r_optimo, "."
+    )
+  })
+  
+  # 3) El observeEvent con todo el control de errores:
   observeEvent(input$calcular_sim, {
-    # 1) deshabilitar el botón
+    # 3.1) Deshabilita el botón mientras corre
     disable("calcular_sim")
-    # 2) al salir (éxito o error), volver a habilitar
     on.exit(enable("calcular_sim"), add = TRUE)
     
-    # 3) llamada de tu función de simulación
-    res <- encontrar_r_minimo_(
-      t = input$sim_t, 
-      rho = input$sim_rho, 
-      potencia_objetivo = input$sim_power_target,
-      sigma2 = input$sim_sigma2, 
-      alpha = input$sim_alpha,
-      r_max = input$sim_r_max
-    )
-    resultado_sim(res)
+    # 3.2) Limpia resultado previo
+    resultado_sim(NULL)
     
-    # 4) renderizar outputs
-    output$grafico_sim <- renderPlot({
-      req(resultado_sim())
-      resultado_sim()$grafico
-    })
-    output$tabla_sim <- DT::renderDT({
-      req(resultado_sim())
-      resultado_sim()$tabla
-    }, options = list(
-      pageLength     = 5,
-      scrollY        = "300px",
-      scrollCollapse = TRUE,
-      paging         = FALSE
-    ))
-    output$mensaje_sim <- renderText({
-      req(resultado_sim())
-      paste0(
-        "Para alcanzar una potencia de ", input$sim_power_target,
-        ", necesitas un tamaño muestral de ", resultado_sim()$r_optimo, "."
-      )
-    })
+    # 3.3) Validaciones de formato y rango
+    #   a) t ≥ 2 entero
+    if (is.na(input$sim_t) || length(input$sim_t) != 1 ||
+        input$sim_t < 2 || input$sim_t != floor(input$sim_t)) {
+      show_error(Formato_tatamiento())
+      return()
+    }
+    #   b) rho ≥ 0 escalar
+    if (is.na(input$sim_rho) || length(input$sim_rho) != 1 ||
+        input$sim_rho < 0) {
+      show_error(Formato_rho())
+      return()
+    }
+    #   c) sigma2 > 0 escalar
+    if (is.na(input$sim_sigma2) || length(input$sim_sigma2) != 1 ||
+        input$sim_sigma2 <= 0) {
+      show_error(Formato_sigma())
+      return()
+    }
+    #   d) alfa ∈ (0,1)
+    if (is.na(input$sim_alpha) || length(input$sim_alpha) != 1 ||
+        input$sim_alpha <= 0 || input$sim_alpha >= 1) {
+      show_error(Formato_significancia())
+      return()
+    }
+    #   e) potencia ∈ (0,1)
+    if (is.na(input$sim_power_target) || length(input$sim_power_target) != 1 ||
+        input$sim_power_target <= 0 || input$sim_power_target >= 1) {
+      show_error(Formato_Potencia())
+      return()
+    }
+    #   f) r_max ≥ 1 entero
+    if (is.na(input$sim_r_max) || length(input$sim_r_max) != 1 ||
+        input$sim_r_max < 1 || input$sim_r_max != floor(input$sim_r_max)) {
+      show_error(Formato_r_max())
+      return()
+    }
+    
+    # 3.4) Invocar la función con tryCatch()
+    res <- tryCatch(
+      encontrar_r_minimo_(
+        t                  = input$sim_t,
+        rho                = input$sim_rho,
+        potencia_objetivo  = input$sim_power_target,
+        sigma2             = input$sim_sigma2,
+        alpha              = input$sim_alpha,
+        r_max              = input$sim_r_max
+      ),
+      error = function(e) {
+        show_error(paste0("Error en simulación: ", e$message))
+        NULL
+      }
+    )
+    if (is.null(res)) return()         # si hubo error, no continúa
+    
+    # 3.5) Todo OK: almacena el resultado y dispara los render
+    resultado_sim(res)
   })
 
 }
