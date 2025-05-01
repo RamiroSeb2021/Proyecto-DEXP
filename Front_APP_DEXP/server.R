@@ -97,13 +97,25 @@ server <- function(input, output, session) {
       show_error = show_error
     )
     
-    # Si hubo errores, salir
+    # Si hubo errores en la validación de entradas, salir
     if (isFALSE(validados)) return()
     
     # Validar que los costos no sean negativos o cero antes de proceder
     if (any(validados$costos <= 0)) {
       show_error("Los costos no pueden ser negativos ni cero.")
       return()  # Detener la ejecución si hay costos inválidos
+    }
+    
+    # Verificar que los sigmas no sean vacíos o no válidos
+    if (is.null(validados$sigmas) || length(validados$sigmas) == 0) {
+      show_error("Las desviaciones estándar no están definidas correctamente.")
+      return()  # Detener la ejecución si los sigmas son inválidos
+    }
+    
+    # Verificar que los costos sean válidos
+    if (is.null(validados$costos) || length(validados$costos) == 0) {
+      show_error("Los costos no están definidos correctamente.")
+      return()  # Detener la ejecución si los costos son inválidos
     }
     
     # Ejecutar cálculo con manejo de errores
@@ -116,7 +128,7 @@ server <- function(input, output, session) {
       ),
       error = function(e) {
         show_error(paste("Error en el cálculo:", e$message))
-        NULL
+        return(NULL)  # Devuelve NULL si ocurre un error
       }
     )
     
@@ -128,6 +140,7 @@ server <- function(input, output, session) {
       paste("Réplicas asignadas:", paste(resultados, collapse = ", "))
     })
   })
+  
   
   
   

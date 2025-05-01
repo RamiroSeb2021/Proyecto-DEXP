@@ -42,20 +42,18 @@ handle_hhm_error_alpha <- function() {
 ################################## 
 ## Excepciones Diana
 handle_hhm_error_numero_de_tratamientos_positivo_mayor_que_cero <- function() {
-  return("El número de tratamientos debe ser un número entero positivo mayor que cero. Por favor, revise los datos ingresados y consulte el ícono ⓘ para más información.")
+  return("El número de tratamientos debe ser un número entero positivo mayor que cero. Por favor, revisa los datos ingresados y consulta el ícono ⓘ para más información.")
 }
 
 handle_hhm_error_numero_de_replicas_positivo_mayor_que_cero <- function() {
-  message <- "El número de réplicas iniciales debe ser un número entero positivo mayor que cero. Por favor, revise los datos ingresados y consulte el ícono ⓘ para más información."
-  print(message)  # Para verificar que el mensaje se está generando
-  return(message)
+  return("El número de réplicas iniciales debe ser un número entero positivo mayor que cero. Por favor, revisa los datos ingresados y consulta el ícono ⓘ para más información.")# Para verificar que el mensaje se está generando
 }
 
 handle_hhm_error_desviaciones_separas_por_coma <- function() {
-  return("Debes ingresar las desviaciones estándar como una lista de números separados por comas. Por favor, revise los datos ingresados y consulte el ícono ⓘ para más información.")}
+  return("Debes ingresar las desviaciones estándar como una lista de números separados por comas. Por favor, revisa los datos ingresados y consulta el ícono ⓘ para más información.")}
 
 handle_hhm_error_desviaciones_mal_formateadas <- function() {
-  return("Las desviaciones estándar contienen valores no numéricos, negativos o con un formato incorrecto. Por favor, revise los datos ingresados y consulte el ícono ⓘ para más información.")
+  return("Las desviaciones estándar contienen valores no numéricos, negativos o con un formato incorrecto. Por favor, revisa los datos ingresados y consulta el ícono ⓘ para más información.")
 }
 
 Excepciones_proporcionalidad_sin_costo <- function(a, r0, sigmas_str, show_error) {
@@ -98,28 +96,29 @@ Excepciones_proporcionalidad_sin_costo <- function(a, r0, sigmas_str, show_error
 
 ################################## 
 handle_hhm_error_presupuesto_total_positivo <- function() {
-  return("El presupuesto total debe ser un número positivo mayor que cero.Por favor, revise los datos ingresados y consulte el ícono ⓘ para más información.")
+  return("El presupuesto total debe ser un número positivo mayor que cero. Por favor, revisa los datos ingresados y consulta el ícono ⓘ para más información.")
 }
 
 handle_hhm_error_cantidad_de_sigmas_distinta_a_tratamientos <- function(a) {
   return(paste0("Debe ingresar exactamente ", a, 
-                " desviaciones estándar (σ), separadas por comas, una por cada tratamiento."))
+                " desviaciones estándar (σ), separadas por comas, una por cada tratamiento.Por favor, revisa los datos ingresados y consulta el ícono ⓘ para más información."))
 }
 
 handle_hhm_error_costos_separados_por_coma <- function() {
-  return("Debe ingresar los costos como una lista de números separados por comas.")
+  return("Debe ingresar los costos como una lista de números separados por comas. Por favor, revisa los datos ingresados y consulta el ícono ⓘ para más información.")
 }
 
 handle_hhm_error_costos_mal_formateados <- function() {
-  return("Los costos contienen valores no numéricos, negativos o mal formateados. Por favor, revise la entrada.")
+  return("Los costos por tratamiento contienen valores no numéricos, negativos o mal formateados. Por favor, revisa los datos ingresados y consulta el ícono ⓘ para más información.")
 }
 
 handle_hhm_error_cantidad_de_costos_distinta_a_tratamientos <- function(a) {
   return(paste0("Debe ingresar exactamente ", a, 
-                " costos, uno para cada tratamiento, separados por comas."))
+                " costos, uno para cada tratamiento, separados por comas. Por favor, revisa los datos ingresados y consulta el ícono ⓘ para más información."))
 }
 
 Excepciones_proporcionalidad_con_costo <- function(a, sigmas_str, costos_str, costo_total, show_error) {
+  
   # Validar 'a'
   if (missing(a) || !is.numeric(a) || length(a) != 1 || is.na(a) || a < 1 || a != floor(a)) {
     show_error(handle_hhm_error_numero_de_tratamientos_positivo_mayor_que_cero())
@@ -132,33 +131,46 @@ Excepciones_proporcionalidad_con_costo <- function(a, sigmas_str, costos_str, co
     return(FALSE)
   }
   
-  # Validar sigmas_str
+  # Validar 'sigmas_str'
   if (missing(sigmas_str) || !is.character(sigmas_str) || nchar(trimws(sigmas_str)) == 0) {
     show_error(handle_hhm_error_desviaciones_separas_por_coma())
     return(FALSE)
   }
+  
+  # Procesar sigmas
   sigmas_raw <- strsplit(sigmas_str, ",")[[1]]
   sigmas <- suppressWarnings(as.numeric(trimws(sigmas_raw)))
+  
   if (any(is.na(sigmas)) || any(sigmas <= 0)) {
     show_error(handle_hhm_error_desviaciones_mal_formateadas())
     return(FALSE)
   }
+  
   if (length(sigmas) != a) {
     show_error(handle_hhm_error_cantidad_de_sigmas_distinta_a_tratamientos(a))
     return(FALSE)
   }
   
-  # Validar costos_str
+  # Validar 'costos_str'
   if (missing(costos_str) || !is.character(costos_str) || nchar(trimws(costos_str)) == 0) {
     show_error(handle_hhm_error_costos_separados_por_coma())
     return(FALSE)
   }
+  
+  # Procesar costos
   costos_raw <- strsplit(costos_str, ",")[[1]]
+  
+  # Eliminar posibles espacios extra y convertir a numérico
   costos <- suppressWarnings(as.numeric(trimws(costos_raw)))
   
-  # Validar si los costos son negativos o cero
-  if (any(is.na(costos)) || any(costos <= 0)) {
-    show_error(handle_hhm_error_costos_mal_formateados())
+  # Verificar que todos los costos sean válidos
+  if (any(is.na(costos))) {
+    show_error("Algunos costos no son válidos. Por favor, ingresa valores numéricos correctamente. Por favor, revisa los datos ingresados y consulta el ícono ⓘ para más información.")
+    return(FALSE)
+  }
+  
+  if (any(costos <= 0)) {
+    show_error("Los costos no pueden ser negativos ni cero. Por favor, revisa los datos ingresados y consulta el ícono ⓘ para más información.")
     return(FALSE)
   }
   
@@ -167,12 +179,5 @@ Excepciones_proporcionalidad_con_costo <- function(a, sigmas_str, costos_str, co
     return(FALSE)
   }
   
-  # Verificación adicional antes de cálculos como sqrt (si es necesario)
-  if (any(costos < 0)) {
-    show_error("Los costos no pueden ser negativos.")
-    return(FALSE)
-  }
-  
-  # Todo válido, devolver lista
-  return(list(sigmas))
+  return(list(sigmas = sigmas, costos = costos))
 }

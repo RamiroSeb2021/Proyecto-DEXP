@@ -33,7 +33,7 @@ ui <-tagList(
                 menuItem("Introducción", tabName = "intro", icon = icon("info-circle")),
                 menuItem("Cálculos número de réplicas", icon = icon("flask"),
                          menuSubItem("Réplicas por variabilidad", tabName = "sin_costo"),
-                         menuSubItem("Proporcionalidad con Costo", tabName = "con_costo"),
+                         menuSubItem("Réplicas con presupuesto", tabName = "con_costo"),
                          menuSubItem("Efectos Aleatorios", tabName = "efectos"),
                          menuSubItem("Cálculo de Potencia", tabName = "potencia"),
                          menuSubItem("Método HHM", tabName = "hhm"),
@@ -95,7 +95,7 @@ ui <-tagList(
                       span(
                         class = "mi-tooltip",
                         HTML(" ⓘ"),
-                        span(class = "texto-tooltip", "Aquí debes ingresar el número de tratamientos con los que cuentas, este debe ser un número entero positivo(ejemplo:4). Debes asegurarte de que la cantidad de tratamientos, coincida con el número de desviaciones estándar."),
+                        span(class = "texto-tooltip", "Aquí debes ingresar el número de tratamientos con los que cuentas, este debe ser un número entero positivo (ejemplo:4). Debes asegurarte de que la cantidad de tratamientos, coincida con el número de desviaciones estándar."),
                         style = "margin-left: 5px; color: #3498db; cursor: pointer;"
                       )
                     ),
@@ -127,7 +127,7 @@ ui <-tagList(
                       span(
                         class = "mi-tooltip",
                         HTML(" ⓘ"),
-                        span(class = "texto-tooltip", "Aquí debes ingresar los valores de las desviaciones estándar con los que cuentas, separados por comas (ejemplo: 1.5, 2.0, 1.8). Debes asegurarte de que la cantidad de desviaciones estándar, coincida con el número de tratamientos."),
+                        span(class = "texto-tooltip", "Aquí debes ingresar los valores de las desviaciones estándar con los que cuentas, separados por comas (ejemplo: 6.27, 9.57, 12, 3.32). Debes asegurarte de que la cantidad de desviaciones estándar, coincida con el número de tratamientos."),
                         style = "margin-left: 5px; color: #3498db; cursor: help;"
                       )
                     ),
@@ -155,17 +155,20 @@ ui <-tagList(
               fluidRow(
                 column(
                   width = 12,
-                  h3("Proporcionalidad con Costo"),  # Título agregado
-                  p("Esta herramienta calcula cuántas repeticiones (tamaño de muestra) son necesarias para cada tratamiento en un diseño experimental, considerando lo siguiente:"),
+                  h3("Asignación de réplicas con restricción presupuestaria"),  # Título para "con costo"
+                  p("Esta herramienta calcula cuántas réplicas son necesarias para cada tratamiento en un diseño experimental, considerando los costos por tratamiento y el presupuesto para llevarlo a cabo, con el objetivo de optimizar la precisión de los resultados dentro de un presupuesto limitado."),
                   tags$ul(
-                    tags$li("Cuando los costos por tratamiento son variables, optimiza la distribución del presupuesto de manera que se minimice el error en los resultados. Esto se logra asignando más repeticiones a los tratamientos más variables o importantes, utilizando ecuaciones con multiplicadores matemáticos llamados lagrangianos."),
+                    tags$li("Cuando el presupuesto es una restricción y los tratamientos tienen diferentes costos y niveles de variabilidad, la herramienta distribuye las réplicas de manera eficiente utilizando un enfoque basado en multiplicadores de Lagrange."),
+                    tags$li("Esto permite asignar más réplicas a los tratamientos más variables teneindo en cuenta el presupuesto total disponible, maximizando así la precisión del diseño experimental."),
+                    tags$li("La herramienta toma como entrada el número de tratamientos, la desviación estándar de cada tratamiento, el costo por unidad experimental de cada tratamiento y el presupuesto total disponible")
                   ),
                   p(strong("Ejemplo de aplicación:")),  # Ejemplo en negrilla
-                  p("Supongamos que tienes tres tratamientos con costos y desviaciones estándar diferentes. Si el presupuesto total es de 500 unidades, la herramienta calculará cuántas repeticiones deben realizarse para cada tratamiento, distribuyendo el presupuesto de manera eficiente para maximizar la precisión de los resultados. Los tratamientos con mayor variabilidad o mayor costo recibirán más repeticiones."),
-                  p(strong("Para más información, accede a:")),
-                  p("proporcionalidad con costo")
+                  p("Supongamos que tienes cuatro tratamientos con desviaciones estándar dadas por (6.27, 9.57, 12, 3.32), los costos por tratamiento son de (1000, 200, 700, 1100) y un presupuesto total de $50000. La herramienta calculará cuántas réplicas deben asignarse a cada tratamiento, distribuyendo los recursos disponibles, de forma que se mejore la precisión teniendo en cuenta el presupuesto disponible."),
+                  p(strong("Para más información, accede a: "), tags$span("Asignación de réplicas con restricción presupuestaria"))
                 )
-              ),
+              )
+              
+              ,
               fluidRow(
                 box(title = "Parámetros", width = 6, status = "primary", solidHeader = TRUE,
                     # NumericInput con tooltip para tratamientos
@@ -177,7 +180,7 @@ ui <-tagList(
                         span(
                           class = "mi-tooltip",
                           HTML(" ⓘ"),
-                          span(class = "texto-tooltip", "Aquí debe ingresar el número de tratamientos con los que cuenta, este debe ser un número entero positivo."),
+                          span(class = "texto-tooltip", "Aquí debes ingresar el número de tratamientos con los que cuentas, este debe ser un número entero positivo (ejemplo:4). Debes asegurarte de que la cantidad de tratamientos, coincida con el número de desviaciones estándar y con el número de costos."),
                           style = "margin-left: 5px; color: #3498db; cursor: pointer;"
                         )
                       ),
@@ -192,7 +195,7 @@ ui <-tagList(
                         span(
                           class = "mi-tooltip",
                           HTML(" ⓘ"),
-                          span(class = "texto-tooltip", "Aquí debe ingresar los valores de las desviaciones estándar separados por comas (ejemplo: 6.27,9.57,12,3.32). Debe asegurarse de que la cantidad de desviaciones estándar, coincida con el número de tratamientos."),
+                          span(class = "texto-tooltip", "Aquí debes ingresar los valores de las desviaciones estándar con los que cuentas, separados por comas (ejemplo: 6.27, 9.57, 12, 3.32). Debes asegurarte de que la cantidad de desviaciones estándar, coincida con el número de tratamientos y con el número de costos."),
                           style = "margin-left: 5px; color: #3498db; cursor: pointer;"
                         )
                       ),
@@ -203,11 +206,11 @@ ui <-tagList(
                       inputId = "costos",
                       label = div(
                         style = "display: inline-flex; align-items: center;",
-                        "Costos por tratamiento",
+                        "Costos por unidad experimental de cada tratamiento",
                         span(
                           class = "mi-tooltip",
                           HTML(" ⓘ"),
-                          span(class = "texto-tooltip", "Aquí debe ingresar los costos correspondientes a cada tratamiento, separados por comas (ejemplo: 1000, 200, 700). Debe asegurarse de que la cantidad de desviaciones estándar, coincida con el número de tratamientos."),
+                          span(class = "texto-tooltip", "Aquí debes ingresar los costos correspondientes a una unidad experimental de cada tratamiento con los que cuentas, separados por comas (ejemplo: 1000, 200, 700, 1100). Debes asegurarte de que la cantidad de costos, coincida con el número de desviaciones estándar y con el número de tratamientos."),
                           style = "margin-left: 5px; color: #3498db; cursor: pointer;"
                         )
                       ),
@@ -222,7 +225,7 @@ ui <-tagList(
                         span(
                           class = "mi-tooltip",
                           HTML(" ⓘ"),
-                          span(class = "texto-tooltip", "Aquí debe ingresar el presupuesto total disponible para el experimento, sin utilizar signos de dólar, puntos ni comas, solo el número (ejemplo: 50000)."),
+                          span(class = "texto-tooltip", "Aquí debes ingresar el presupuesto total disponible para el experimento con el que cuentas, sin utilizar signo pesos, puntos ni comas, solo el número (ejemplo: 50000)."),
                           style = "margin-left: 5px; color: #3498db; cursor: pointer;"
                         )
                       ),
