@@ -42,13 +42,15 @@ handle_hhm_error_alpha <- function() {
 handle_hhm_error_numero_de_tratamientos_positivo_mayor_que_cero <- function() {
   return("El número de tratamientos debe ser un número entero positivo mayor que cero. Por favor, revise los datos ingresados y consulte el ícono ⓘ para más información.")
 }
+
 handle_hhm_error_numero_de_replicas_positivo_mayor_que_cero <- function() {
-  return("El número de réplicas iniciales debe ser un número entero positivo mayor que cero. Por favor, revise los datos ingresados y consulte el ícono ⓘ para más información.")
+  message <- "El número de réplicas iniciales debe ser un número entero positivo mayor que cero. Por favor, revise los datos ingresados y consulte el ícono ⓘ para más información."
+  print(message)  # Para verificar que el mensaje se está generando
+  return(message)
 }
 
 handle_hhm_error_desviaciones_separas_por_coma <- function() {
-  return("Debes ingresar las desviaciones estándar como una lista de números separados por comas. Por favor, revise los datos ingresados y consulte el ícono ⓘ para más información.")
-}
+  return("Debes ingresar las desviaciones estándar como una lista de números separados por comas. Por favor, revise los datos ingresados y consulte el ícono ⓘ para más información.")}
 
 handle_hhm_error_desviaciones_mal_formateadas <- function() {
   return("Las desviaciones estándar contienen valores no numéricos, negativos o con un formato incorrecto. Por favor, revise los datos ingresados y consulte el ícono ⓘ para más información.")
