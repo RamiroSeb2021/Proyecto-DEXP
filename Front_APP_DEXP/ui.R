@@ -6,7 +6,7 @@
 #
 #    https://shiny.posit.co/
 #
-
+library(shinyjs)
 library(shiny)
 library(shinyWidgets)
 library(shinydashboard)
@@ -51,6 +51,8 @@ ui <-tagList(
     )
   ),
   dashboardBody(
+    useShinyjs(),       # <<--- aquí
+    useShinyFeedback(), # <<--- aquí
     tabItems(
       tabItem(tabName = "intro",
               fluidRow(

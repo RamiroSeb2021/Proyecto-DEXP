@@ -177,6 +177,9 @@ server <- function(input, output, session) {
     output$resultados_5 <- renderText({ paste("Número estimado de réplicas (r):", round(resultado, 2)) })
   })
   
+
+# Calcular metodo de tukey ------------------------------------------------
+
   observeEvent(input$calcular_mt, {
     res <- calcular_r_MT(
       T_    = input$mt_T,
@@ -190,7 +193,9 @@ server <- function(input, output, session) {
     output$resultados_mt <- renderPrint(res)
   })
   
-  # 2) Simulación de potencia / r mínimo
+
+# Simulación de potencia / r mínimo ---------------------------------------
+
   resultado_sim <- reactiveVal(NULL)
   
   observeEvent(input$calcular_sim, {
