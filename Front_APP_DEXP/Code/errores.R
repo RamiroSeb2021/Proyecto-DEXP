@@ -1,44 +1,48 @@
+# Frase a concatenar ------------------------------------------------------
+frase_pred <- "  Por favor, revisa los datos ingresados y consulta el ícono ⓘ para más información."
+
 # Mensajes de errores -----------------------------------------------------
 
 # errores_potencia.R
 
 handle_potencia_error_t <- function() {
-  return("Error: t debe ser un entero ≥ 2.")
+  paste0("Los tratamientos deben de ser una cantidad entera mayor o igual a 2.", frase_pred)
 }
 
 handle_potencia_error_sigma2 <- function() {
-  return("Error: σ² debe ser positivo.")
+  paste0("σ² debe ser positivo mayor a cero.", frase_pred)
 }
 
 handle_potencia_error_Delta <- function() {
-  return("Error: Δ debe ser > 0.")
+  paste0("La diferncia mínima a detectar debe ser > 0.", frase_pred)
 }
 
 handle_potencia_error_alpha <- function() {
-  return("Error: α debe estar en (0,1).")
+  paste0("α debe ser en (0,1).", frase_pred)
 }
 
 handle_potencia_error_power <- function() {
-  return("Error: potencia objetivo debe estar en (0,1).")
+  paste0("La potencia objetivo debe ser en (0,1).", frase_pred)
 }
 
 # errores_hhm.R
 
 handle_hhm_error_S2 <- function() {
-  return("Error: S2₁ debe ser > 0.")
+  paste0("S2₁ debe ser > 0.", frase_pred)
 }
 
 handle_hhm_error_d <- function() {
-  return("Error: d debe ser > 0.")
+  paste0("d debe ser > 0.", frase_pred)
 }
 
 handle_hhm_error_df2 <- function() {
-  return("Error: df₂ debe ser ≥ 1.")
+  paste0("df₂ debe ser ≥ 1.", frase_pred)
 }
 
 handle_hhm_error_alpha <- function() {
-  return("Error: α debe estar en (0,1).")
+  paste0("α debe ser en (0,1).", frase_pred)
 }
+
 ################################## 
 ## Excepciones Diana
 handle_hhm_error_numero_de_tratamientos_positivo_mayor_que_cero <- function() {
@@ -180,4 +184,40 @@ Excepciones_proporcionalidad_con_costo <- function(a, sigmas_str, costos_str, co
   }
   
   return(list(sigmas = sigmas, costos = costos))
+}
+
+
+# Sebastian ---------------------------------------------------------------
+
+
+Formato_diferencia <- function() {
+  paste0("El formato de la diferencia mínima es incorrecto.", frase_pred)
+}
+
+Formato_tatamiento <- function() {
+  paste0("El formato del tratamiento es incorrecto.", frase_pred)
+}
+
+Formato_rho <- function() {
+  paste0("El formato del rho es incorrecto.", frase_pred)
+}
+
+Formato_sigma <- function() {
+  paste0("El formato de la descviación estandar es incorrecta.", frase_pred)
+}
+
+Formato_gradosLibertad <- function() {
+  paste0("El formato de los grados de libertad es incorrecta.", frase_pred)
+}
+
+Formato_Potencia <- function() {
+  paste0("El formato de la potencia objetivo es incorrecto.", frase_pred)
+}
+
+Formato_significancia <- function() {
+  paste0("El formato de la significancia es incorrecto.", frase_pred)
+}
+
+Formato_r_max <- function() {
+  paste0("El formato del tamaño máximo de muestra es incorrecto.", frase_pred)
 }
