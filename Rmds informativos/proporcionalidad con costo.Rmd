@@ -54,15 +54,6 @@ $$
 
 **Recomendación:** Los coeficientes $\\lambda_i$ deben expresarse como fracciones para simplificar el cálculo de $r_i$.
 
-### Asignación Proporcional (Ecuación 5.29)
-
-Si en lugar de optimizar con costos, asignamos las observaciones de forma proporcional a las desviaciones estándar (con $n$ fijo):
-
-$$
-\\tilde{r}_{i} = \\frac{n \\sigma_i}{\\sum_{s=1}^t \\sigma_s}; \\quad i = 1, \\dots, t \\quad \\text{(Ecuación 5.29)}
-$$
-
-**Interpretación:** Los tratamientos con mayor variabilidad ($\\sigma_i$) reciben más réplicas.
 
 ## Referencia
 

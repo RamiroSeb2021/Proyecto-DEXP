@@ -50,11 +50,14 @@ server <- function(input, output, session) {
   show_error <- function(message) {
     showModal(modalDialog(
       title = "Error",
-      paste0("⚠️ ", message),
+      tags$p(
+        style = "white-space: normal; font-size: 15px; line-height: 1.5;",
+        paste0("⚠️ ", message)
+      ),
       easyClose = TRUE,
-      size = "s"
+      size = "s"  # cambia de "s" a "m" o "l" para permitir más espacio
     ))
-    output$resultados_1 <- renderText({ NULL })  # Limpia resultados
+    output$resultados_1 <- renderText({ NULL })
   }
   
   observeEvent(input$calcular_1, {
@@ -97,6 +100,12 @@ server <- function(input, output, session) {
     # Si hubo errores, salir
     if (isFALSE(validados)) return()
     
+    # Validar que los costos no sean negativos o cero antes de proceder
+    if (any(validados$costos <= 0)) {
+      show_error("Los costos no pueden ser negativos ni cero.")
+      return()  # Detener la ejecución si hay costos inválidos
+    }
+    
     # Ejecutar cálculo con manejo de errores
     resultados <- tryCatch(
       proporcionalidad_con_costo_ni_tamaño_de_muestra(
@@ -119,6 +128,7 @@ server <- function(input, output, session) {
       paste("Réplicas asignadas:", paste(resultados, collapse = ", "))
     })
   })
+  
   
   
   

@@ -37,22 +37,21 @@ handle_hhm_error_df2 <- function() {
 handle_hhm_error_alpha <- function() {
   return("Error: α debe estar en (0,1).")
 }
-
+################################## 
 ## Excepciones Diana
 handle_hhm_error_numero_de_tratamientos_positivo_mayor_que_cero <- function() {
-  return("El número de tratamientos debe ser un número entero positivo mayor que cero.")
+  return("El número de tratamientos debe ser un número entero positivo mayor que cero. Por favor, revise los datos ingresados y consulte el ícono ⓘ para más información.")
 }
-
 handle_hhm_error_numero_de_replicas_positivo_mayor_que_cero <- function() {
-  return("El número de réplicas iniciales (r₀) debe ser un número entero positivo mayor que cero.")
+  return("El número de réplicas iniciales debe ser un número entero positivo mayor que cero. Por favor, revise los datos ingresados y consulte el ícono ⓘ para más información.")
 }
 
 handle_hhm_error_desviaciones_separas_por_coma <- function() {
-  return("Debe ingresar las desviaciones estándar (σ) como una lista de números separados por comas.")
+  return("Debes ingresar las desviaciones estándar como una lista de números separados por comas. Por favor, revise los datos ingresados y consulte el ícono ⓘ para más información.")
 }
 
 handle_hhm_error_desviaciones_mal_formateadas <- function() {
-  return("Las desviaciones estándar (σ) contienen valores no numéricos o mal formateados. Por favor, revise la entrada.")
+  return("Las desviaciones estándar contienen valores no numéricos, negativos o con un formato incorrecto. Por favor, revise los datos ingresados y consulte el ícono ⓘ para más información.")
 }
 
 Excepciones_proporcionalidad_sin_costo <- function(a, r0, sigmas_str, show_error) {
@@ -93,22 +92,9 @@ Excepciones_proporcionalidad_sin_costo <- function(a, r0, sigmas_str, show_error
   return(sigmas)
 }
 
-##################################
-
-handle_hhm_error_numero_de_tratamientos_positivo_mayor_que_cero <- function() {
-  return("El número de tratamientos debe ser un número entero positivo mayor que cero.")
-}
-
+################################## 
 handle_hhm_error_presupuesto_total_positivo <- function() {
-  return("El presupuesto total debe ser un número positivo mayor que cero.")
-}
-
-handle_hhm_error_desviaciones_separas_por_coma <- function() {
-  return("Debe ingresar las desviaciones estándar (σ) como una lista de números separados por comas.")
-}
-
-handle_hhm_error_desviaciones_mal_formateadas <- function() {
-  return("Las desviaciones estándar (σ) contienen valores no numéricos, negativos o mal formateados. Por favor, revise la entrada.")
+  return("El presupuesto total debe ser un número positivo mayor que cero.Por favor, revise los datos ingresados y consulte el ícono ⓘ para más información.")
 }
 
 handle_hhm_error_cantidad_de_sigmas_distinta_a_tratamientos <- function(a) {
@@ -121,7 +107,7 @@ handle_hhm_error_costos_separados_por_coma <- function() {
 }
 
 handle_hhm_error_costos_mal_formateados <- function() {
-  return("Los costos contienen valores no numéricos o mal formateados. Por favor, revise la entrada.")
+  return("Los costos contienen valores no numéricos, negativos o mal formateados. Por favor, revise la entrada.")
 }
 
 handle_hhm_error_cantidad_de_costos_distinta_a_tratamientos <- function(a) {
@@ -147,7 +133,8 @@ Excepciones_proporcionalidad_con_costo <- function(a, sigmas_str, costos_str, co
     show_error(handle_hhm_error_desviaciones_separas_por_coma())
     return(FALSE)
   }
-  sigmas <- suppressWarnings(as.numeric(strsplit(sigmas_str, ",")[[1]]))
+  sigmas_raw <- strsplit(sigmas_str, ",")[[1]]
+  sigmas <- suppressWarnings(as.numeric(trimws(sigmas_raw)))
   if (any(is.na(sigmas)) || any(sigmas <= 0)) {
     show_error(handle_hhm_error_desviaciones_mal_formateadas())
     return(FALSE)
@@ -162,17 +149,26 @@ Excepciones_proporcionalidad_con_costo <- function(a, sigmas_str, costos_str, co
     show_error(handle_hhm_error_costos_separados_por_coma())
     return(FALSE)
   }
-  costos <- suppressWarnings(as.numeric(strsplit(costos_str, ",")[[1]]))
-  if (any(is.na(costos))) {
+  costos_raw <- strsplit(costos_str, ",")[[1]]
+  costos <- suppressWarnings(as.numeric(trimws(costos_raw)))
+  
+  # Validar si los costos son negativos o cero
+  if (any(is.na(costos)) || any(costos <= 0)) {
     show_error(handle_hhm_error_costos_mal_formateados())
     return(FALSE)
   }
+  
   if (length(costos) != a) {
     show_error(handle_hhm_error_cantidad_de_costos_distinta_a_tratamientos(a))
     return(FALSE)
   }
   
-  # Todo está bien, devolver lista
+  # Verificación adicional antes de cálculos como sqrt (si es necesario)
+  if (any(costos < 0)) {
+    show_error("Los costos no pueden ser negativos.")
+    return(FALSE)
+  }
+  
+  # Todo válido, devolver lista
   return(list(sigmas))
 }
-

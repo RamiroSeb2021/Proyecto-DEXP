@@ -70,14 +70,20 @@ ui <-tagList(
               fluidRow(
                 column(
                   width = 12,
-                  p("Esta función calcula cuántas repeticiones (tamaño de muestra) se necesitan para cada tratamiento en un experimento científico, considerando dos enfoques:"),
+                  h3("Proporcionalidad sin Costo"),  # Título para "sin costo"
+                  p("Esta herramienta calcula cuántas réplicas son necesarias para cada tratamiento en un diseño experimental, sin tener en cuenta los costos, pero equilibrando la precisión de los tratamientos según su variabilidad. Los tratamientos con mayor variabilidad recibirán más réplicas."),
                   tags$ul(
-                    tags$li("Cuando hay costos variables (donde cada tratamiento tiene un precio diferente), optimiza la distribución del presupuesto para minimizar el error en los resultados, asignando más repeticiones a tratamientos más variables o importantes (usando ecuaciones con multiplicadores matemáticos llamados lagrangianos)."),
-                    tags$li("Cuando el costo no importa pero se quiere equilibrar la precisión, distribuye las repeticiones proporcionalmente a la variabilidad de cada tratamiento (tratamientos más variables reciben más repeticiones).")
+                    tags$li("Cuando los costos no son una preocupación, pero se desea equilibrar la precisión, la herramienta distribuye las réplicas de forma proporcional a la variabilidad de cada tratamiento. Esto significa que los tratamientos más variables recibirán más réplicas para mejorar la precisión de los resultados."),
+                    tags$li("La herramienta toma como entrada el número total de réplicas y la desviación estándar de cada tratamiento para distribuirlas de manera eficiente.")
                   ),
-                  p("Para mayor información acceder a:"),
+                  p(strong("Ejemplo de aplicación:")),  # Ejemplo en negrilla
+                  p("Supongamos que tienes tres tratamientos con diferentes desviaciones estándar y un número total de réplicas de 100. La herramienta calculará cuántas réplicas deben asignarse a cada tratamiento, distribuyendo las réplicas de manera proporcional a la variabilidad de cada tratamiento. Los tratamientos con mayor desviación estándar recibirán más réplicas para mejorar la precisión de los resultados."),
+                  p(strong("Para más información, accede a: "), tags$span("proporcionalidad sin costo"))
                 )
-              ),
+              )
+              
+              
+              ,
               fluidRow(
                 box(
                   title = "Parámetros", width = 6, status = "primary", solidHeader = TRUE,
@@ -149,12 +155,15 @@ ui <-tagList(
               fluidRow(
                 column(
                   width = 12,
-                  p("Esta función calcula cuántas repeticiones (tamaño de muestra) se necesitan para cada tratamiento en un experimento científico, considerando dos enfoques:"),
+                  h3("Proporcionalidad con Costo"),  # Título agregado
+                  p("Esta herramienta calcula cuántas repeticiones (tamaño de muestra) son necesarias para cada tratamiento en un diseño experimental, considerando lo siguiente:"),
                   tags$ul(
-                    tags$li("Cuando hay costos variables (donde cada tratamiento tiene un precio diferente), optimiza la distribución del presupuesto para minimizar el error en los resultados, asignando más repeticiones a tratamientos más variables o importantes (usando ecuaciones con multiplicadores matemáticos llamados lagrangianos)."),
-                    tags$li("Cuando el costo no importa pero se quiere equilibrar la precisión, distribuye las repeticiones proporcionalmente a la variabilidad de cada tratamiento (tratamientos más variables reciben más repeticiones).")
+                    tags$li("Cuando los costos por tratamiento son variables, optimiza la distribución del presupuesto de manera que se minimice el error en los resultados. Esto se logra asignando más repeticiones a los tratamientos más variables o importantes, utilizando ecuaciones con multiplicadores matemáticos llamados lagrangianos."),
                   ),
-                  p("Para mayor información acceder a:"),
+                  p(strong("Ejemplo de aplicación:")),  # Ejemplo en negrilla
+                  p("Supongamos que tienes tres tratamientos con costos y desviaciones estándar diferentes. Si el presupuesto total es de 500 unidades, la herramienta calculará cuántas repeticiones deben realizarse para cada tratamiento, distribuyendo el presupuesto de manera eficiente para maximizar la precisión de los resultados. Los tratamientos con mayor variabilidad o mayor costo recibirán más repeticiones."),
+                  p(strong("Para más información, accede a:")),
+                  p("proporcionalidad con costo")
                 )
               ),
               fluidRow(

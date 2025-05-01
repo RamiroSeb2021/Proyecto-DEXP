@@ -43,11 +43,11 @@ handle_hhm_error_alpha <- function() {
 
 ## Excepciones Diana
 handle_hhm_error_numero_de_tratamientos_positivo_mayor_que_cero <- function() {
-  return("El número de tratamientos debe ser un número entero positivo mayor que cero.")
+  return("El número de tratamientos debe ser un número entero positivo mayor que cero. Por favor, revise los datos ingresados y consulte el ícono ⓘ para más información.")
 }
 
 handle_hhm_error_numero_de_replicas_positivo_mayor_que_cero <- function() {
-  return("El número de réplicas iniciales (r₀) debe ser un número entero positivo mayor que cero.")
+  return(return("El número de réplicas iniciales debe ser un número entero positivo mayor que cero. Por favor, revise los datos ingresados y consulte el ícono ⓘ para más información.")
 }
 
 handle_hhm_error_desviaciones_separas_por_coma <- function() {
