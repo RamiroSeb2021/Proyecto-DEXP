@@ -104,7 +104,7 @@ encontrar_r_minimo_ <- function(t,
     potencia <- simular_potencia(t = t, r = r, sigma2 = sigma2,
                                  rho = rho, alpha = alpha, nsim = nsim)
     # cat("Potencia estimada para r =", r, ":", round(potencia, 4), "\n")
-    resultados <- rbind(resultados, data.frame(r = r, potencia = potencia))
+    resultados <- rbind(resultados, data.frame(r = r, potencia = round(potencia, 2)))
     
     if (potencia >= potencia_objetivo) {
       grafico <- ggplot2::ggplot(resultados, ggplot2::aes(x = r, y = potencia)) +

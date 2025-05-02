@@ -100,10 +100,15 @@ custom_css <- "
   color: #fff;
   border-radius: 4px;
   box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+  
+  text-align: center;
 
   white-space: normal;
   word-wrap: break-word;
-  max-width: 250px;
+  /* 1) Aumenta el ancho máximo */
+  max-width: 350px !important;
+  /* 2) (Opcional) Fija un ancho mínimo para que nunca se encoja demasiado */
+  min-width: 200px !important;
 
   visibility: hidden;
   opacity: 0;

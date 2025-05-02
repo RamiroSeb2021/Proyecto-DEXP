@@ -361,79 +361,108 @@ ui <-tagList(
                 )
               )
       ),
+
+      # POTENCIA YAN ----------------------------------------------------------------
+      
+      
       tabItem(tabName = "potencia",
               fluidRow(
                 box(title = "Parámetros", width = 6, status = "primary", solidHeader = TRUE,
+                    ## t: Tratamientos
                     numericInput(
-                      "r_potencia", 
-                      label = div(
-                        style = "display: inline-flex; align-items: center;",
-                        "Réplicas por tratamiento (r)",
-                        span(
-                          class = "mi-tooltip",
-                          HTML(" ⓘ"),
-                          span(class = "texto-tooltip", "Aquí debes ingresar el número de réplicas por tratamiento, que debe ser un número entero positivo (ejemplo: 15). Por favor, revisa los datos ingresados y consulta el ícono ⓘ para más información."),
-                          style = "margin-left: 5px; color: #3498db; cursor: pointer;"
-                        )
-                      ),
-                      value = 15
-                    ),
-                    numericInput(
-                      "t_potencia", 
+                      inputId = "t_potencia",
                       label = div(
                         style = "display: inline-flex; align-items: center;",
                         "Tratamientos (t)",
                         span(
-                          class = "mi-tooltip",
+                          class = "tooltip-right",
                           HTML(" ⓘ"),
-                          span(class = "texto-tooltip", "Aquí debes ingresar el número de tratamientos, que debe ser un número entero positivo (ejemplo: 4). Por favor, revisa los datos ingresados y consulta el ícono ⓘ para más información."),
-                          style = "margin-left: 5px; color: #3498db; cursor: pointer;"
+                          span(
+                            class = "tooltip-right-content",
+                            tratamiento_message_pot
+                          ),
+                          style = "margin-left: 5px; color: #3498db; cursor: help;"
                         )
                       ),
-                      value = 4
+                      value = 4, min = 2
                     ),
+                    
+                    ## sigma2: Varianza estimada
                     numericInput(
-                      "sigma2_potencia", 
+                      inputId = "sigma2_potencia",
                       label = div(
                         style = "display: inline-flex; align-items: center;",
                         "Varianza estimada (σ²)",
                         span(
                           class = "mi-tooltip",
                           HTML(" ⓘ"),
-                          span(class = "texto-tooltip", "La varianza estimada refleja la dispersión de los datos. Debe ser un número positivo (ejemplo: 10.35). Por favor, revisa los datos ingresados y consulta el ícono ⓘ para más información."),
-                          style = "margin-left: 5px; color: #3498db; cursor: pointer;"
+                          span(
+                            class = "texto-tooltip",
+                            "Aquí debes ingresar tu estimación de varianza residual. Si es decimal, sepáralo con coma (ejemplo: 10,35)."
+                          ),
+                          style = "margin-left: 5px; color: #3498db; cursor: help;"
                         )
                       ),
-                      value = 10.35
+                      value = 10.35, min = 0
                     ),
+                    
+                    ## Delta: Diferencia mínima detectable
                     numericInput(
-                      "Delta_potencia", 
+                      inputId = "Delta_potencia",
                       label = div(
                         style = "display: inline-flex; align-items: center;",
                         "Diferencia mínima detectable (Δ)",
                         span(
                           class = "mi-tooltip",
                           HTML(" ⓘ"),
-                          span(class = "texto-tooltip", "Esta es la diferencia mínima entre tratamientos que se espera detectar con el experimento. Debe ser un número positivo (ejemplo: 3). Por favor, revisa los datos ingresados y consulta el ícono ⓘ para más información."),
-                          style = "margin-left: 5px; color: #3498db; cursor: pointer;"
+                          span(
+                            class = "texto-tooltip",
+                            "Aquí debes ingresar la mínima diferencia que quieres detectar. Si es decimal, sepáralo con coma (ejemplo: 3,0)."
+                          ),
+                          style = "margin-left: 5px; color: #3498db; cursor: help;"
                         )
                       ),
-                      value = 3
+                      value = 3, min = 0
                     ),
+                    
+                    ## alpha: Nivel de significancia
                     numericInput(
-                      "alpha_potencia", 
+                      inputId = "alpha_potencia",
                       label = div(
                         style = "display: inline-flex; align-items: center;",
                         "Nivel de significancia (α)",
                         span(
                           class = "mi-tooltip",
                           HTML(" ⓘ"),
-                          span(class = "texto-tooltip", "Este es el nivel de significancia para la prueba estadística, usualmente se utiliza 0.05 (ejemplo: 0.05). Por favor, revisa los datos ingresados y consulta el ícono ⓘ para más información."),
-                          style = "margin-left: 5px; color: #3498db; cursor: pointer;"
+                          span(
+                            class = "texto-tooltip",
+                            "Aquí debes ingresar el nivel de α, valor entre 0 y 1. Si es decimal, sepáralo con coma (ejemplo: 0,05)."
+                          ),
+                          style = "margin-left: 5px; color: #3498db; cursor: help;"
                         )
                       ),
-                      value = 0.05
+                      value = 0.05, min = 0, max = 1
                     ),
+                    
+                    ## beta: Error tipo II (potencia objetivo)
+                    numericInput(
+                      inputId = "beta_potencia",
+                      label = div(
+                        style = "display: inline-flex; align-items: center;",
+                        "Potencia objetivo (1−β)",
+                        span(
+                          class = "mi-tooltip",
+                          HTML(" ⓘ"),
+                          span(
+                            class = "texto-tooltip",
+                            "Aquí debes ingresar la potencia deseada, valor entre 0 y 1. Si es decimal, sepáralo con coma (ejemplo: 0,80)."
+                          ),
+                          style = "margin-left: 5px; color: #3498db; cursor: help;"
+                        )
+                      ),
+                      value = 0.80, min = 0, max = 1
+                    ),
+                    
                     actionButton("calcular_4", "Calcular", class = "btn btn-success")
                 ),
                 box(title = "Resultados", width = 6, status = "success", solidHeader = TRUE,
@@ -448,18 +477,95 @@ ui <-tagList(
                        actionButton("siguiente_4", "Siguiente", icon = icon("arrow-right"), class = "btn btn-success")
                 )
               )
-      )
-,
+      ),
+      
+      
+      # METODO HHM YAN ----------------------------------------------------------
+      
+      
       tabItem(tabName = "hhm",
               fluidRow(
-                box(title = "Parámetros", width = 6, status = "primary", solidHeader = TRUE,
-                    numericInput("S1_hhm", "Desviación estándar experimental (S₁)", sqrt(141.6)),
-                    numericInput("d_hhm", "Diferencia mínima detectable (d)", 20),
-                    numericInput("df2_hhm", "Grados de libertad (df₂)", 60),
-                    numericInput("K_hhm", "Valor K (tabla A.9)", 0.322),
+                box(title = "Parámetros HHM", width = 6, status = "primary", solidHeader = TRUE,
+                    
+                    ## S2₁: Varianza estimada grupo 1
+                    numericInput(
+                      inputId = "S2_1_hhm",
+                      label = div(
+                        style = "display: inline-flex; align-items: center;",
+                        "Varianza estimada S2₁ (g²)",
+                        span(
+                          class = "tooltip-right",
+                          HTML(" ⓘ"),
+                          span(
+                            class = "tooltip-right-content",
+                            "Aquí debes ingresar la varianza estimada del grupo 1. Si es decimal, sepáralo con coma (ejemplo: 141,6)."
+                          ),
+                          style = "margin-left: 5px; color: #3498db; cursor: help;"
+                        )
+                      ),
+                      value = 141.6
+                    ),
+                    
+                    ## d: Diferencia mínima detectable
+                    numericInput(
+                      inputId = "d_hhm",
+                      label = div(
+                        style = "display: inline-flex; align-items: center;",
+                        "Diferencia mínima detectable (d)",
+                        span(
+                          class = "mi-tooltip",
+                          HTML(" ⓘ"),
+                          span(
+                            class = "texto-tooltip",
+                            "Aquí debes ingresar la diferencia mínima a detectar. Si es decimal, sepáralo con coma (ejemplo: 20,5)."
+                          ),
+                          style = "margin-left: 5px; color: #3498db; cursor: help;"
+                        )
+                      ),
+                      value = 20
+                    ),
+                    
+                    ## df2: Grados de libertad df₂
+                    numericInput(
+                      inputId = "df2_hhm",
+                      label = div(
+                        style = "display: inline-flex; align-items: center;",
+                        "Grados de libertad df₂",
+                        span(
+                          class = "mi-tooltip",
+                          HTML(" ⓘ"),
+                          span(
+                            class = "texto-tooltip",
+                            "Aquí debes ingresar los grados de libertad del error, entero ≥ 1 (ejemplo: 60)."
+                          ),
+                          style = "margin-left: 5px; color: #3498db; cursor: help;"
+                        )
+                      ),
+                      value = 60, min = 1
+                    ),
+                    
+                    ## alpha: Nivel de significancia
+                    numericInput(
+                      inputId = "alpha_hhm",
+                      label = div(
+                        style = "display: inline-flex; align-items: center;",
+                        "Nivel de significancia (α)",
+                        span(
+                          class = "mi-tooltip",
+                          HTML(" ⓘ"),
+                          span(
+                            class = "texto-tooltip",
+                            "Aquí debes ingresar el nivel de α, valor entre 0 y 1. Si es decimal, sepáralo con coma (ejemplo: 0,05)."
+                          ),
+                          style = "margin-left: 5px; color: #3498db; cursor: help;"
+                        )
+                      ),
+                      value = 0.05, min = 0, max = 1
+                    ),
+                    
                     actionButton("calcular_5", "Calcular", class = "btn btn-success")
                 ),
-                box(title = "Resultados", width = 6, status = "success", solidHeader = TRUE,
+                box(title = "Resultados HHM", width = 6, status = "success", solidHeader = TRUE,
                     verbatimTextOutput("resultados_5")
                 )
               ),
@@ -473,14 +579,14 @@ ui <-tagList(
               )
       ), 
 
-# metodo tukey ------------------------------------------------------------
+# METODO DE TUKEY ------------------------------------------------------------
 
 
       tabItem(tabName = "metodo_tukey",
               fluidRow(
+                # Panel de parámetros
                 box(
                   title = "Parámetros Método de Tukey", status = "primary", solidHeader = TRUE, width = 6,
-                  
                   numericInput(
                     inputId = "mt_T",
                     label = div(
@@ -494,11 +600,8 @@ ui <-tagList(
                         )
                       )
                     ),
-                    value = 6,
-                    min = 2
-                  )
-                  ,
-                  
+                    value = 6, min = 2
+                  ),
                   numericInput(
                     inputId = "mt_D",
                     label = div(
@@ -512,7 +615,6 @@ ui <-tagList(
                     ),
                     value = 20
                   ),
-                  
                   numericInput(
                     inputId = "mt_ro",
                     label = div(
@@ -526,7 +628,6 @@ ui <-tagList(
                     ),
                     value = 5, min = 1
                   ),
-                  
                   numericInput(
                     inputId = "mt_S1",
                     label = div(
@@ -540,12 +641,11 @@ ui <-tagList(
                     ),
                     value = sqrt(141.6)
                   ),
-                  
                   numericInput(
                     inputId = "mt_df1",
                     label = div(
                       style = "display: inline-flex; align-items: center;",
-                      "Grados de libertad del tratamiento (entre grupos)",
+                      "Grados de libertad (entre grupos)",
                       span(
                         class = "mi-tooltip", HTML(" ⓘ"),
                         span(class = "texto-tooltip", df1_),
@@ -554,7 +654,6 @@ ui <-tagList(
                     ),
                     value = 40, min = 1
                   ),
-                  
                   numericInput(
                     inputId = "mt_alfa",
                     label = div(
@@ -568,7 +667,6 @@ ui <-tagList(
                     ),
                     value = 0.05, step = 0.01
                   ),
-                  
                   numericInput(
                     inputId = "mt_Beta",
                     label = div(
@@ -582,13 +680,32 @@ ui <-tagList(
                     ),
                     value = 0.10, step = 0.01
                   ),
-                  
                   actionButton("calcular_mt", "Calcular", class = "btn btn-success")
+                ),
+                
+                # Panel de resultados
+                box(
+                  title = "Resultados Método de Tukey", status = "success", solidHeader = TRUE, width = 6,
+                  verbatimTextOutput("resultados_mt")
+                )
+              ),
+              
+              # Botones de navegación
+              fluidRow(
+                column(6, align = "left",
+                       actionButton("anterior_6", "Anterior", icon = icon("arrow-left"), class = "btn btn-secondary")
+                ),
+                column(6, align = "right",
+                       actionButton("siguiente_6", "Siguiente", icon = icon("arrow-right"), class = "btn btn-success")
                 )
               )
-      ),
+      )
+      ,
       
-      # +2: simulación de potencia / encontrar r mínimo
+
+# SIMULACION DE POTENCIA --------------------------------------------------
+
+
       tabItem(tabName = "sim_potencia",
               fluidRow(
                 # tus parámetros siguen igual…

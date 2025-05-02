@@ -1,20 +1,16 @@
-#
-# This is the server logic of a Shiny web application. You can run the
-# application by clicking 'Run App' above.
-#
+# SERVER.R
+
+# This is the server logic of a Shiny web application.
+# You can run the application by clicking 'Run App' above.
 # Find out more about building applications with Shiny here:
-#
 #    https://shiny.posit.co/
-#
-
-
 
 # Cargar funciones
 source("Code/metodo_tukey.R")
 source("Code/Costos.R")
-source("Code/Potencia_Efectos_Aleatorios.R")
-source("Code/Potencia.R")
-source("Code/metodo_Harris_Hurvitz_Mood.R")
+source("Code/Potencia_Efectos_Aleatorios.R")    # conserva sólo efectos aleatorios
+source("Code/Potencia.R")                      # nuevo: calcular_r_teorica()
+source("Code/metodo_Harris_Hurvitz_Mood.R")     # nuevo: obtener_K_A9() + calcular_r_HHM()
 source("Code/control_bienvenida.R")
 source("Code/errores.R")
 
@@ -37,7 +33,7 @@ server <- function(input, output, session) {
   observeEvent(input$anterior_2, updateTabItems(session, "tabs", selected = "sin_costo"))
   observeEvent(input$siguiente_2, updateTabItems(session, "tabs", selected = "efectos"))
   observeEvent(input$anterior_3, updateTabItems(session, "tabs", selected = "con_costo"))
-  observeEvent(input$siguiente_3, updateTabItems(session, "tabs", selected = "potencia"))
+  observeEvent(input$siguiente_3, updateTabItems(session, "tabs", selected = "metodo_tukey"))
   observeEvent(input$anterior_4, updateTabItems(session, "tabs", selected = "efectos"))
   observeEvent(input$siguiente_4, updateTabItems(session, "tabs", selected = "hhm"))
   observeEvent(input$anterior_5, updateTabItems(session, "tabs", selected = "potencia"))
@@ -60,15 +56,11 @@ server <- function(input, output, session) {
     output$resultados_1 <- renderText({ NULL })
   }
   
+  # --- Proporcionalidad sin Costo ---
   observeEvent(input$calcular_1, {
-    # Limpia resultados previos
     output$resultados_1 <- renderText({ NULL })
-    
-    # Validar y obtener sigmas con función externa que llama a show_error si hay problema
     sigmas <- Excepciones_proporcionalidad_sin_costo(input$a, input$r0, input$sigmas, show_error)
-    if (isFALSE(sigmas) || is.null(sigmas)) return()  # Si hay error, salir
-    
-    # Ejecutar cálculo con manejo de errores
+    if (isFALSE(sigmas) || is.null(sigmas)) return()
     resultados <- tryCatch(
       proporcionalidad_sin_costo_ni_tamaño_de_muestra(a = input$a, r0 = input$r0, sigmas = sigmas),
       error = function(e) {
@@ -77,8 +69,6 @@ server <- function(input, output, session) {
       }
     )
     if (is.null(resultados)) return()
-    
-    # Mostrar resultados
     output$resultados_1 <- renderText({
       paste("Réplicas asignadas:", paste(resultados, collapse = ", "))
     })
@@ -141,64 +131,40 @@ server <- function(input, output, session) {
     })
   })
   
-  # Observador para calcular los resultados
-  observeEvent(input$calcular_3, {
-    
-    # Validando los parámetros de entrada
-    validado <- validar_parametros_funcion_disenio(
-      input$costo_tratamiento, input$costo_ue, input$sigma_cuadrado, input$rho, input$v_max, show_error
-    )
-    
-    # Si la validación falla, no continuamos con el cálculo
-    if (!validado) {
-      return(NULL)
-    }
-    
-    # Si la validación es exitosa, calculamos los resultados
-    resultados <- numero_de_tratamientos_y_replicas_con_efectos_aleatorios(
-      input$costo_tratamiento, input$costo_ue, input$sigma_cuadrado, input$rho, input$v_max
-    )
-    
-    # Actualizando el output con los resultados
-    output$resultados_3 <- renderText({
-      paste("Tratamientos:", resultados$num_de_tratamientos,
-            "\nRéplicas por tratamiento:", resultados$num_de_replicas)
-    })
-  })
-  
-  
-  
-  
-  
-  
   
   
   
   
   # Cálculos
   #observeEvent(input$calcular_1, {
-    #sigmas <- as.numeric(unlist(strsplit(input$sigmas, ",")))
-    #resultados <- proporcionalidad_sin_costo_ni_tamaño_de_muestra(input$a, input$r0, sigmas)
-    #output$resultados_1 <- renderText({ paste("Réplicas asignadas:", paste(resultados, collapse = ", ")) })
+  #sigmas <- as.numeric(unlist(strsplit(input$sigmas, ",")))
+  #resultados <- proporcionalidad_sin_costo_ni_tamaño_de_muestra(input$a, input$r0, sigmas)
+  #output$resultados_1 <- renderText({ paste("Réplicas asignadas:", paste(resultados, collapse = ", ")) })
   #})
   
   #observeEvent(input$calcular_2, {
-    #sigmas <- as.numeric(unlist(strsplit(input$sigmas_2, ",")))
-    #costos <- as.numeric(unlist(strsplit(input$costos, ",")))
-    #resultados <- proporcionalidad_con_costo_ni_tamaño_de_muestra(input$a_2, sigmas, costos, input$costo_total)
-    #output$resultados_2 <- renderText({ paste("Réplicas asignadas:", paste(resultados, collapse = ", ")) })
+  #sigmas <- as.numeric(unlist(strsplit(input$sigmas_2, ",")))
+  #costos <- as.numeric(unlist(strsplit(input$costos, ",")))
+  #resultados <- proporcionalidad_con_costo_ni_tamaño_de_muestra(input$a_2, sigmas, costos, input$costo_total)
+  #output$resultados_2 <- renderText({ paste("Réplicas asignadas:", paste(resultados, collapse = ", ")) })
   #})
   
-  #observeEvent(input$calcular_3, {
-    #resultados <- numero_de_tratamientos_y_replicas_con_efectos_aleatorios(
-      #input$costo_tratamiento, input$costo_ue, input$sigma_cuadrado, input$rho, input$v_max)
-    #output$resultados_3 <- renderText({ paste("Tratamientos:", resultados$num_de_tratamientos,
-                                              #"\nRéplicas por tratamiento:", resultados$num_de_replicas) })
-  #})
-
+  # --- Efectos Aleatorios ---
+  observeEvent(input$calcular_3, {
+    resultados <- numero_de_tratamientos_y_replicas_con_efectos_aleatorios(
+      input$costo_tratamiento, input$costo_ue,
+      input$sigma_cuadrado, input$rho, input$v_max
+    )
+    output$resultados_3 <- renderText({
+      paste0(
+        "Tratamientos: ", resultados$num_de_tratamientos,
+        "\nRéplicas por tratamiento: ", resultados$num_de_replicas
+      )
+    })
+  })
   # Cálculo de Potencia con power_target y manejo de comas ------------------
   observeEvent(input$calcular_4, {
-    
+
     # 0) Leer y convertir entradas (reemplazando comas por puntos)
     t_val        <- as.numeric(gsub(",", ".", input$t_potencia))
     sigma2_val   <- as.numeric(gsub(",", ".", input$sigma2_potencia))
@@ -288,9 +254,9 @@ server <- function(input, output, session) {
   })
   
   
-  
-  # Método Harris-Hurvitz-Mood con validaciones y mensajes de error ---------
-  
+
+# Método Harris-Hurvitz-Mood con validaciones y mensajes de error ---------
+
   observeEvent(input$calcular_5, {
     
     # 1) Validaciones de entrada
@@ -368,8 +334,8 @@ server <- function(input, output, session) {
     })
   })
   
-
-# Calcular metodo de tukey ------------------------------------------------
+  
+  # Calcular metodo de tukey ------------------------------------------------
   # reactiveVal para almacenar el resultado
   resultado_mt <- reactiveVal(NULL)
   
@@ -382,7 +348,7 @@ server <- function(input, output, session) {
   observeEvent(input$calcular_mt, {
     # Limpiar cualquier modal / output previo
     resultado_mt(NULL)
-
+    
     # 1) t >= 2 y entero
     if (is.null(input$mt_T) || is.na(input$mt_T) || length(input$mt_T) != 1 ||
         input$mt_T < 2 || input$mt_T != floor(input$mt_T)) {
@@ -446,9 +412,9 @@ server <- function(input, output, session) {
     
     resultado_mt(resultados)
   })
-
-# Simulación de potencia / r mínimo ---------------------------------------
-
+  
+  # Simulación de potencia / r mínimo ---------------------------------------
+  
   # 1) reactiveVal para almacenar el resultado
   resultado_sim <- reactiveVal(NULL)
   
@@ -541,6 +507,5 @@ server <- function(input, output, session) {
     # 3.5) Todo OK: almacena el resultado y dispara los render
     resultado_sim(res)
   })
-
+  
 }
-

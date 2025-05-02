@@ -18,3 +18,7 @@ var_2_ <- "Varianza del error, resultado de investigaciones pasadas, debe de ser
 
 r_max_sim <- "Tamaño máximo del tamaño de muestra a simular, debe de ser un número entero posivo"
 
+
+# Potencia_Yan ------------------------------------------------------------
+
+tratamiento_message_pot <- "Aquí debes ingresar el número de niveles de tratamiento, debe ser entero ≥ 2 (ejemplo: 4)."
