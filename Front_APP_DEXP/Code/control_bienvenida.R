@@ -23,7 +23,7 @@ show_bienvenida_modal <- function() {
             <img src='1361b70b-cd7c-4150-aa30-e3f659f15fba.png' style='width:120px;margin-bottom:20px;'/>
             <h1>Bienvenido a la App de Diseño de Experimentos</h1>
             <p>Explora datos, modelos experimentales y calcula tamaños muestrales.</p>
-            <<p><strong>Estudiantes:</strong> Juan Sebastián Ramírez Ayala, Diana Catalina Hernández Rojas, Yan Carlos Moreno Guerra</p>
+            <p><strong>Estudiantes:</strong> Juan Sebastián Ramírez Ayala, Diana Catalina Hernández Rojas, Yan Carlos Moreno Guerra</p>
             <p><strong>Profesor:</strong> Wilmer Dario Pineda Rios</p>
 
 
