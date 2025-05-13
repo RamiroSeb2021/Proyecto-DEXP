@@ -1,0 +1,81 @@
+/* Estilo inicial del TOC */
+#TOC {
+  position: fixed;
+  left: -250px; /* Mueve el TOC fuera de la vista */
+  top: 0;
+  bottom: 0;
+  width: auto; /* Ancho del TOC */
+  overflow-y: auto; /* Permite el desplazamiento si el TOC es más largo que la pantalla */
+  overflow-x: visible; /* Oculta el desplazamiento horizontal */
+  background-color: #f4f4f4; /* Fondo del TOC */
+  transition: left 0.3s ease, width 0.3s ease; /* Animación suave */
+  z-index: 1000; /* Asegura que el TOC esté por encima de otros elementos */
+  padding: 10px; /* Padding interno */
+}
+
+/* Estilo para mostrar el TOC cuando se activa la clase visible */
+#TOC.visible {
+  left: 0;
+}
+
+body {
+  font-family: "Times New Roman", sans-serif; /* Tipo de letra */
+  font-size: 17px; /* Tamaño de la letra */
+  color: #333; /* Color del texto */
+  background-color: #f9f9f9; /* Color de fondo */
+  line-height: 1.6; /* Altura de línea */
+  margin: 0; /* Margen alrededor del contenido */
+  padding: 20px; /* Espacio interno alrededor del contenido */
+  text-align: justify;
+  text-justify: inter-word;
+  overflow-x: hidden; /* Ocultar desplazamiento horizontal */
+  margin-left: -200px; /* Mueve el contenido hacia la izquierda */
+}
+
+html {
+  overflow-x: hidden; /* Ocultar desplazamiento horizontal */
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-family: "Times New Roman", sans-serif;
+  color: #333;
+}
+
+.dataTables_wrapper {
+  overflow-x: auto; /* Permitir desplazamiento horizontal en las tablas */
+}
+
+.custom-table .justify-text {
+  text-align: justify;
+  text-justify: inter-word;
+}
+
+/* Reduce el padding y margin alrededor de las celdas de la tabla */
+.custom-table th, 
+.custom-table td {
+  padding: 1px 2px !important; /* Reducir el padding */
+  line-height: 1.42857143;
+  vertical-align: top;
+  border-top: 1px solid #dddddd;
+}
+
+/* Ajustar el tamaño del content de las celdas */
+.custom-table td img {
+  max-width: 100%; /* Asegura que las imágenes no excedan el ancho de la celda */
+  height: auto;
+}
+
+.custom-table td {
+  width: auto; /* Ajusta automáticamente el tamaño de las celdas basado en el contenido */
+}
+
+/* Asegúrate de que la tabla tenga un ancho adecuado */
+.custom-table {
+  width: 100%;
+}
+
+/* Adicional: ajustar el padding específico para las imágenes */
+.custom-table td img {
+  padding: 0; /* Eliminar padding adicional en las imágenes */
+  margin: 0; /* Eliminar margen adicional en las imágenes */
+}

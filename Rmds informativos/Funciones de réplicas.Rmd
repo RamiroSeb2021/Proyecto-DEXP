@@ -1,0 +1,222 @@
+---
+title: |
+  ![](Logo.png){width=1.5in}  
+  App Diseño de experimentos
+author:
+  - name: Juan Sebastian Ramirez Ayala
+  - name: Diana
+  - name: Yan Carlos   
+date: '`r format(Sys.Date())`'
+output: 
+  html_document:
+    self_contained: true
+    number_sections: false
+    toc: true
+    toc_depth: 2
+    toc_float:
+      collapsed: True
+      smooth_scroll: true
+      align: "left"
+    df_print: !expr pander::pander 
+    theme: spacelab
+    highlight: pygments
+editor_options: 
+  chunk_output_type: inline
+---
+
+<!-- Referenciar el archivo CSS -->
+
+<link rel="stylesheet" type="text/css" href="styles.css">
+
+<!-- Referenciar el archivo JavaScript -->
+
+```{=html}
+<script src="script.js"></script>
+```
+
+```{r set_up,include=FALSE}
+knitr::opts_chunk$set(echo = FALSE, warning = FALSE, message = FALSE, comment = "") 
+
+#knitr::opts_chunk$set(engine.opts=list(python=list(echo = FALSE, warning = FALSE, message = FALSE, comment = "")))
+```
+
+# Funciones calculo tamaño réplicas
+
+Descripción 
+
+## Determinación del Tamaño de Muestra con Costo Variable por Tratamiento
+
+### Teoría
+
+Asumiendo que los costos por tratamiento ($c_i > 0$) son variables, bajo la restricción:
+
+$$
+\sum_{i=1}^t c_i r_i = C \quad \text{(Restricción presupuestaria)}
+$$
+
+y considerando que:
+
+$$
+Var(\text{MELI}(L)) = \sum_{i=1}^t \frac{\lambda_i^2 \sigma_i^2}{r_i} \quad \text{(Ecuación 5.25)}
+$$
+
+donde $L = \sum_{i=1}^t \lambda_i \mu_i$ y 
+
+$$
+\text{MELI}(L) = \sum_{i=1}^t \lambda_i \bar{y}_i \quad \text{(Ecuación 5.26)}
+$$ 
+
+### Minimización Lagrangiana
+
+Para minimizar $Var(\text{MELI}(L))$ sujeto a la restricción presupuestaria, construimos el lagrangiano:
+
+$$
+Q = \sum_{i=1}^t \frac{\lambda_i^2 \sigma_i^2}{r_i} + \phi \left( \sum_{i=1}^t c_i r_i - C \right) \quad \text{(Ecuación 5.27)}
+$$
+
+Al resolver lo anterior, obtenemos:
+
+$$
+r_i = \frac{|\lambda_i| \sigma_i}{\sqrt{\phi c_i}} \quad \text{(Ecuación 5.28)}
+$$
+
+donde el multiplicador de Lagrange es:
+
+$$
+\phi = \frac{\left( \sum_{i=1}^t |\lambda_i| \sigma_i \sqrt{c_i} \right)^2}{C^2}
+$$
+
+**Recomendación:** Los coeficientes $\lambda_i$ deben expresarse como fracciones para simplificar el cálculo de $r_i$.
+
+### Referencia
+
+**Referencia Bibliográfica**
+
+> Melo M., O. O., López P., L. A., & Melo M., S. E. (2007). *Diseño de Experimentos: Métodos y Aplicaciones* (1a ed.). Pro-Oﬀset Editorial S.A.. Capítulo 5, Sección 5.7.5, pp. 204-205.
+
+---
+
+## Determinación del Tamaño de Muestra sin Costo Variable por Tratamiento
+
+### Teoría
+
+Asumiendo que los costos por tratamiento ($c_i > 0$) son variables, bajo la restricción:
+
+$$
+\sum_{i=1}^t c_i r_i = C \quad \text{(Restricción presupuestaria)}
+$$
+
+y considerando que:
+
+$$
+Var(\text{MELI}(L)) = \sum_{i=1}^t \frac{\lambda_i^2 \sigma_i^2}{r_i} \quad \text{(Ecuación 5.25)}
+$$
+
+donde $L = \sum_{i=1}^t \lambda_i \mu_i$ y 
+
+$$
+\text{MELI}(L) = \sum_{i=1}^t \lambda_i \bar{y}_i \quad \text{(Ecuación 5.26)}
+$$ 
+
+### Minimización Lagrangiana
+
+Para minimizar $Var(\text{MELI}(L))$ sujeto a la restricción presupuestaria, construimos el lagrangiano:
+
+$$
+Q = \sum_{i=1}^t \frac{\lambda_i^2 \sigma_i^2}{r_i} + \phi \left( \sum_{i=1}^t c_i r_i - C \right) \quad \text{(Ecuación 5.27)}
+$$
+
+Al resolver lo anterior, obtenemos:
+
+$$
+r_i = \frac{|\lambda_i| \sigma_i}{\sqrt{\phi c_i}} \quad \text{(Ecuación 5.28)}
+$$
+
+donde el multiplicador de Lagrange es:
+
+$$
+\phi = \frac{\left( \sum_{i=1}^t |\lambda_i| \sigma_i \sqrt{c_i} \right)^2}{C^2}
+$$
+
+**Recomendación:** Los coeficientes $\lambda_i$ deben expresarse como fracciones para simplificar el cálculo de $r_i$.
+
+### Asignación Proporcional (Ecuación 5.29)
+
+Si en lugar de optimizar con costos, asignamos las observaciones de forma proporcional a las desviaciones estándar (con $n$ fijo):
+
+$$
+\tilde{r}_{i} = \frac{n \sigma_i}{\sum_{s=1}^t \sigma_s}; \quad i = 1, \dots, t \quad \text{(Ecuación 5.29)}
+$$
+
+**Interpretación:** Los tratamientos con mayor variabilidad ($\sigma_i$) reciben más réplicas.
+
+### Referencia
+
+**Referencia Bibliográfica**
+
+> Melo M., O. O., López P., L. A., & Melo M., S. E. (2007). *Diseño de Experimentos: Métodos y Aplicaciones* (1a ed.). Pro-Oﬀset Editorial S.A.. Capítulo 5, Sección 5.7.5, pp. 204-205.
+')
+
+---
+
+## Asignación de tratamientos y réplicas con Función de Costos y Varianza Máxima
+
+
+## Teoría
+
+En el modelo de componentes de varianza tanto el número de tratamientos $t$ como el número de réplicas $r$ son variables y sus estimaciones están ligadas con el control de dichas varianzas. Un criterio usual para elegir los valores de $r$ y $t$ es el de minimizar los costos en la estimación de la media $\mu$. Una medida de la cantidad de información disponible para estimar $\mu$ es la varianza de la media muestral dada por:
+
+$$
+v(\bar{y}..) = \frac{\sigma^2}{rt} + \frac{\sigma_A^2}{t}
+$$
+
+En el caso de un diseño C.A. (Completamente Aleatorizado).
+
+El problema se reduce a encontrar los valores de $r$ y $t$ que minimicen la función de costos dada por:
+
+$$
+C = C_1 t + C_2 t r
+$$
+
+para una varianza $v(\bar{y}..)$ fija, donde $C_1$ es el costo por unidad de tratamiento y $C_2$ es el costo por unidad experimental. La solución matemática es, según Mendenhall (1968):
+
+$$
+t = \frac{1}{v(\bar{y}..)} \left( \hat{\sigma}_A^2 + \frac{(\hat{\sigma}_A)^2}{\sigma^2} C_2 / C_1 \right)
+$$
+
+y
+
+$$
+r = \frac{(\hat{\sigma})_A^2 C_1}{\hat{\sigma}^2 C_2}
+$$
+
+## Ejemplo 
+
+En este ejemplo, se busca determinar el número óptimo de toros y terneros necesarios para un experimento genético, considerando restricciones de costo y precisión. La varianza máxima permitida para la media muestral es de 43,49, lo que establece un límite sobre la variabilidad aceptable en los resultados. Además, se tienen en cuenta los costos experimentales, siendo de $150.000 por cada toro y $50.000 por cada ternero. A partir de estos valores y las estimaciones de varianza obtenidas en el ejemplo anterior (como la varianza entre toros y el error experimental), se concluye que para cumplir con las condiciones establecidas se deben seleccionar 7 toros y 3 terneros por cada toro. Este diseño permite mantener el equilibrio entre el costo total del experimento y la precisión estadística deseada.
+
+## Referencia
+
+**Referencia Bibliográfica**
+
+> Melo M., O. O., López P., L. A., & Melo M., S. E. (2007). *Diseño de Experimentos: Métodos y Aplicaciones* (1a ed.). Pro-Oﬀset Editorial S.A.. Capítulo 5, Sección 5.7.5, pp. 204-205.
+
+## Metodo de tukey
+
+El método de Tukey para el cálculo del tamaño muestral de las réplicas por tratamiento tiene como objetivo asegurar que, al momento de realizar el diseño experimental, sea posible detectar una diferencia mínima significativa entre los tratamientos en la variable de interés al aplicar comparaciones pareadas mediante pruebas *post-hoc*. 
+
+En otras palabras, si al aplicar estas pruebas no se detecta una diferencia significativa, se debe a que la diferencia establecida previamente como mínima detectable no se logró identificar, lo que está directamente relacionado con el tamaño muestral calculado inicialmente.
+
+Para aplicar esta prueba es necesario contar con información a priori sobre la varianza del error experimental. Si no se dispone de dicha información, y por lo tanto tampoco de los grados de libertad asociados, se procede a estimarla mediante la función `calcular_S1_df1()`. 
+
+Parámetros:
+
+### Teoría
+
+## Número de réplicas en el modelo de efectos aleatorios
+
+El cálculo del número de réplicas en un diseño experimental con modelo de efectos aleatorios es fundamental cuando se desea asegurar una potencia estadística adecuada en pruebas ANOVA. En este contexto, el objetivo es determinar cuántas observaciones por tratamiento son necesarias para detectar diferencias significativas entre niveles de un factor aleatorio, considerando la variabilidad inherente del experimento.
+
+Aunque la potencia de la prueba se basa en la distribución *F*, su determinación puede simplificarse mediante el uso de curvas características de operación (*OC curves*), que permiten visualizar la probabilidad de cometer errores tipo II ($\beta$) en función de diferentes configuraciones del diseño.
+
+Este enfoque es especialmente útil en estudios donde los factores no son controlados directamente sino seleccionados aleatoriamente de una población más amplia (por ejemplo, lotes, sujetos, ubicaciones), y se requiere garantizar que el diseño tenga suficiente sensibilidad para detectar efectos reales entre tratamientos o unidades experimentales.
+
