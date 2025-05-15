@@ -52,8 +52,8 @@ ui <-tagList(
     )
   ),
   dashboardBody(
-    useShinyjs(),       # <<--- aquí
-    useShinyFeedback(), # <<--- aquí
+    useShinyjs(),       
+    useShinyFeedback(), 
     tabItems(
       tabItem(tabName = "intro",
               fluidRow(
