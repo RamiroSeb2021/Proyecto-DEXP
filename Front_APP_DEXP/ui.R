@@ -59,7 +59,7 @@ ui <-tagList(
               fluidRow(
                 box(title = "Bienvenido", width = 12, status = "primary", solidHeader = TRUE,
                     p("A continuación podrás realizar cálculos para determinar el número de réplicas en diferentes contextos de diseño experimental. Estos incluyen métodos con y sin costos, con efectos aleatorios, cálculos de potencia, y el método de Harris-Hurvitz-Mood (HHM)."),
-                    p("Haz clic en 'Continuar' para comenzar con el primer cálculo: Proporcionalidad sin Costo."),
+                    p("Haz clic en 'Continuar' para comenzar con el primer cálculo: Réplicas por variabilidad."),
                     actionButton("continuar", "Continuar", class = "btn btn-success")
                 )
               )
