@@ -5,9 +5,9 @@ title: |
 author:
   - name: Juan Sebastian Ramirez Ayala
   - name: Diana
-  - name: Yan Carlos   
-date: '`r format(Sys.Date())`'
-output: 
+  - name: Yan Carlos
+date: "`r format(Sys.Date())`"
+output:
   html_document:
     self_contained: true
     number_sections: false
@@ -17,10 +17,10 @@ output:
       collapsed: True
       smooth_scroll: true
       align: "left"
-    df_print: !expr pander::pander 
+    df_print: !expr pander::pander
     theme: spacelab
     highlight: pygments
-editor_options: 
+editor_options:
   chunk_output_type: inline
 ---
 
@@ -35,18 +35,14 @@ editor_options:
 ```
 
 ```{r set_up,include=FALSE}
-knitr::opts_chunk$set(echo = FALSE, warning = FALSE, message = FALSE, comment = "") 
+knitr::opts_chunk$set(echo = FALSE, warning = FALSE, message = FALSE, comment = "")
 
 #knitr::opts_chunk$set(engine.opts=list(python=list(echo = FALSE, warning = FALSE, message = FALSE, comment = "")))
 ```
 
-# Funciones calculo tamaño réplicas
+# Determinación del Tamaño de Muestra sin Costo Variable por Tratamiento
 
-Descripción 
-
-## Determinación del Tamaño de Muestra con Costo Variable por Tratamiento
-
-### Teoría
+## Teoría
 
 Asumiendo que los costos por tratamiento ($c_i > 0$) son variables, bajo la restricción:
 
@@ -60,13 +56,13 @@ $$
 Var(\text{MELI}(L)) = \sum_{i=1}^t \frac{\lambda_i^2 \sigma_i^2}{r_i} \quad \text{(Ecuación 5.25)}
 $$
 
-donde $L = \sum_{i=1}^t \lambda_i \mu_i$ y 
+donde $L = \sum_{i=1}^t \lambda_i \mu_i$ y
 
 $$
 \text{MELI}(L) = \sum_{i=1}^t \lambda_i \bar{y}_i \quad \text{(Ecuación 5.26)}
-$$ 
+$$
 
-### Minimización Lagrangiana
+## Minimización Lagrangiana
 
 Para minimizar $Var(\text{MELI}(L))$ sujeto a la restricción presupuestaria, construimos el lagrangiano:
 
@@ -88,59 +84,7 @@ $$
 
 **Recomendación:** Los coeficientes $\lambda_i$ deben expresarse como fracciones para simplificar el cálculo de $r_i$.
 
-### Referencia
-
-**Referencia Bibliográfica**
-
-> Melo M., O. O., López P., L. A., & Melo M., S. E. (2007). *Diseño de Experimentos: Métodos y Aplicaciones* (1a ed.). Pro-Oﬀset Editorial S.A.. Capítulo 5, Sección 5.7.5, pp. 204-205.
-
----
-
-## Determinación del Tamaño de Muestra sin Costo Variable por Tratamiento
-
-### Teoría
-
-Asumiendo que los costos por tratamiento ($c_i > 0$) son variables, bajo la restricción:
-
-$$
-\sum_{i=1}^t c_i r_i = C \quad \text{(Restricción presupuestaria)}
-$$
-
-y considerando que:
-
-$$
-Var(\text{MELI}(L)) = \sum_{i=1}^t \frac{\lambda_i^2 \sigma_i^2}{r_i} \quad \text{(Ecuación 5.25)}
-$$
-
-donde $L = \sum_{i=1}^t \lambda_i \mu_i$ y 
-
-$$
-\text{MELI}(L) = \sum_{i=1}^t \lambda_i \bar{y}_i \quad \text{(Ecuación 5.26)}
-$$ 
-
-### Minimización Lagrangiana
-
-Para minimizar $Var(\text{MELI}(L))$ sujeto a la restricción presupuestaria, construimos el lagrangiano:
-
-$$
-Q = \sum_{i=1}^t \frac{\lambda_i^2 \sigma_i^2}{r_i} + \phi \left( \sum_{i=1}^t c_i r_i - C \right) \quad \text{(Ecuación 5.27)}
-$$
-
-Al resolver lo anterior, obtenemos:
-
-$$
-r_i = \frac{|\lambda_i| \sigma_i}{\sqrt{\phi c_i}} \quad \text{(Ecuación 5.28)}
-$$
-
-donde el multiplicador de Lagrange es:
-
-$$
-\phi = \frac{\left( \sum_{i=1}^t |\lambda_i| \sigma_i \sqrt{c_i} \right)^2}{C^2}
-$$
-
-**Recomendación:** Los coeficientes $\lambda_i$ deben expresarse como fracciones para simplificar el cálculo de $r_i$.
-
-### Asignación Proporcional (Ecuación 5.29)
+## Asignación Proporcional (Ecuación 5.29)
 
 Si en lugar de optimizar con costos, asignamos las observaciones de forma proporcional a las desviaciones estándar (con $n$ fijo):
 
@@ -150,17 +94,168 @@ $$
 
 **Interpretación:** Los tratamientos con mayor variabilidad ($\sigma_i$) reciben más réplicas.
 
-### Referencia
+## Ejemplo
 
-**Referencia Bibliográfica**
+Supongamos que un agricultor tiene los siguientes datos referentes
+a la producción en toneladas por hectárea de cuatro variedades de caña de
+azúcar:
 
-> Melo M., O. O., López P., L. A., & Melo M., S. E. (2007). *Diseño de Experimentos: Métodos y Aplicaciones* (1a ed.). Pro-Oﬀset Editorial S.A.. Capítulo 5, Sección 5.7.5, pp. 204-205.
-')
+```{r}
+# Crear el data frame con los datos
+datos <- data.frame(
+  V1 = c(78.82, 86.80, 68.65, 77.76, 75.80),
+  V2 = c(56.60, 63.82, 58.71, 70.59, 81.74),
+  V3 = c(105.126, 112.940, 108.118, 121.105, 115.870),
+  V4 = c(96.89, 90.91, 92.97, 97.98, 95.93)
+)
 
----
+# Calcular media y desviación estándar con redondeo como en la imagen
+media <- c(76.7, 67.40, 109.100, 92.80)
+desviacion <- c(6.27, 9.57, 12.0, 3.32)
 
-## Asignación de tratamientos y réplicas con Función de Costos y Varianza Máxima
+# Añadir nombres de fila
+rownames(datos) <- c("1", "2", "3", "4", "5")
 
+# Añadir filas de media y desviación
+datos["Media", ] <- media
+datos["Desviación", ] <- desviacion
+
+# Mostrar la tabla
+DT::datatable(datos)
+```
+
+Se observa que hay una proporcionalidad en las desviaciones estándar, entonces por (5.29) los tamaños de muestra adecuados para cada variedad
+serían:
+
+$$
+\tilde{r}_1=\frac{(5*4)*(6.27)}{6.27+ 9.57+ 12+ 3.32}= 4.0243\approx4
+$$
+
+$$
+\tilde{r}_2=\frac{(5*4)*(9.57)}{6.27+ 9.57+ 12+ 3.32}= 6.1424\approx6
+$$
+
+$$
+\tilde{r}_3=\frac{(5*4)*(12)}{6.27+ 9.57+ 12+ 3.32}= 7.7021\approx8
+$$
+
+$$
+\tilde{r}_4=\frac{(5*4)*(3.32)}{6.27+ 9.57+ 12+ 3.32}= 2.1309\approx2
+$$
+
+Las réplicas asignadas por cada uno de los tratamientos son $4,6,8,2$ respectivamente.
+
+# Determinación del Tamaño de Muestra con Costo Variable por Tratamiento
+
+## Teoría
+
+Asumiendo que los costos por tratamiento ($c_i > 0$) son variables, bajo la restricción:
+
+$$
+\sum_{i=1}^t c_i r_i = C \quad \text{(Restricción presupuestaria)}
+$$
+
+y considerando que:
+
+$$
+Var(\text{MELI}(L)) = \sum_{i=1}^t \frac{\lambda_i^2 \sigma_i^2}{r_i} \quad \text{(Ecuación 5.25)}
+$$
+
+donde $L = \sum_{i=1}^t \lambda_i \mu_i$ y
+
+$$
+\text{MELI}(L) = \sum_{i=1}^t \lambda_i \bar{y}_i \quad \text{(Ecuación 5.26)}
+$$
+
+## Minimización Lagrangiana
+
+Para minimizar $Var(\text{MELI}(L))$ sujeto a la restricción presupuestaria, construimos el lagrangiano:
+
+$$
+Q = \sum_{i=1}^t \frac{\lambda_i^2 \sigma_i^2}{r_i} + \phi \left( \sum_{i=1}^t c_i r_i - C \right) \quad \text{(Ecuación 5.27)}
+$$
+
+Al resolver lo anterior, obtenemos:
+
+$$
+r_i = \frac{|\lambda_i| \sigma_i}{\sqrt{\phi c_i}} \quad \text{(Ecuación 5.28)}
+$$
+
+donde el multiplicador de Lagrange es:
+
+$$
+\phi = \frac{\left( \sum_{i=1}^t |\lambda_i| \sigma_i \sqrt{c_i} \right)^2}{C^2}
+$$
+
+**Recomendación:** Los coeficientes $\lambda_i$ deben expresarse como fracciones para simplificar el cálculo de $r_i$.
+
+## Ejemplo
+
+Supongamos que un agricultor tiene los siguientes datos referentes
+a la producción en toneladas por hectárea de cuatro variedades de caña de
+azúcar y sus respectivos costos:
+
+```{r}
+library(DT)
+
+# Datos principales
+datos <- data.frame(
+  V1 = c(78.82, 86.80, 68.65, 77.76, 75.80),
+  V2 = c(56.60, 63.82, 58.71, 70.59, 81.74),
+  V3 = c(105.126, 112.940, 108.118, 121.105, 115.870),
+  V4 = c(96.89, 90.91, 92.97, 97.98, 95.93)
+)
+
+# Agregar filas
+media <- c(76.7, 67.40, 109.100, 92.80)
+desviacion <- c(6.27, 9.57, 12.0, 3.32)
+costos <- c(1000, 200, 700, 1100)
+
+rownames(datos) <- c("1", "2", "3", "4", "5")
+datos["Media", ] <- media
+datos["Desviación", ] <- desviacion
+datos["Costos", ] <- costos
+
+# Crear tabla del presupuesto como otro data.frame
+presupuesto <- data.frame(
+  Concepto = "Presupuesto total del experimento",
+  Valor_COP = format(50000, big.mark = ".", decimal.mark = ",")
+)
+
+# Mostrar ambas tablas en pestañas
+htmltools::tagList(
+  DT::datatable(datos, caption = htmltools::tags$strong("Tabla de datos del experimento")),
+  DT::datatable(presupuesto, caption = htmltools::tags$strong("Presupuesto"))
+)
+```
+
+Se observa que hay tenemos un costo por cada tratamiento y un presupuesto total, entonces por (5.28) los tamaños de muestra adecuados para cada variedad serían:
+
+Iniciando por el calculo de $\Phi$
+
+$$
+\Phi= \sqrt{\frac{\left(\left(\frac{1}{4}*6.27*\sqrt{1000}\right)+\left(\frac{1}{4}*9.57*\sqrt{200}\right)+\left(\frac{1}{4}*12*\sqrt{700}\right)+\left(\frac{1}{4}*3.32*\sqrt{1100}\right)\right)^2}{50000^2}}=1.448629\times10^{-05}
+$$
+
+$$
+r_1=\frac{\frac{1}{4}*6.27}{\sqrt{1.448629\times10^{-05}*1000}}=13.0235\approx13
+$$
+
+$$
+r_2=\frac{\frac{1}{4}*9.57}{\sqrt{1.448629\times10^{-05}*200}}=44.4486\approx44
+$$
+
+$$
+r_3=\frac{\frac{1}{4}*12}{\sqrt{1.448629\times10^{-05}*700}}=29.7915\approx30
+$$
+
+$$
+r_4=\frac{\frac{1}{4}*3.32}{\sqrt{1.448629\times10^{-05}*1100}}=6.5751\approx7
+$$
+
+Las réplicas asignadas por cada uno de los tratamientos son $13,44,30,7$ respectivamente.
+
+# Asignación de tratamientos y réplicas con Función de Costos y Varianza Máxima
 
 ## Teoría
 
@@ -181,32 +276,99 @@ $$
 para una varianza $v(\bar{y}..)$ fija, donde $C_1$ es el costo por unidad de tratamiento y $C_2$ es el costo por unidad experimental. La solución matemática es, según Mendenhall (1968):
 
 $$
-t = \frac{1}{v(\bar{y}..)} \left( \hat{\sigma}_A^2 + \frac{(\hat{\sigma}_A)^2}{\sigma^2} C_2 / C_1 \right)
+t = \frac{1}{v(\bar{y}..)} \left( \hat{\sigma}_A^2 + \sqrt{\frac{\hat{\sigma}_A^2\hat\sigma^2C^2}{C^1}}  \right)
 $$
 
 y
 
 $$
-r = \frac{(\hat{\sigma})_A^2 C_1}{\hat{\sigma}^2 C_2}
+r = \sqrt{\frac{\hat\sigma^2 C_1}{\hat{\sigma}_A^2 C_2}}
 $$
 
-## Ejemplo 
+## Ejemplo
 
-En este ejemplo, se busca determinar el número óptimo de toros y terneros necesarios para un experimento genético, considerando restricciones de costo y precisión. La varianza máxima permitida para la media muestral es de 43,49, lo que establece un límite sobre la variabilidad aceptable en los resultados. Además, se tienen en cuenta los costos experimentales, siendo de $150.000 por cada toro y $50.000 por cada ternero. A partir de estos valores y las estimaciones de varianza obtenidas en el ejemplo anterior (como la varianza entre toros y el error experimental), se concluye que para cumplir con las condiciones establecidas se deben seleccionar 7 toros y 3 terneros por cada toro. Este diseño permite mantener el equilibrio entre el costo total del experimento y la precisión estadística deseada.
+Un estudio genético en ganado, consistió en seleccionar aleatoriamente varios machos (toros) apareados con grupos separados de hembras. Cuando nacieron los terneros, se midieron los pesos iniciales como
+medida en un estudio de pesos hereditarios (estudios de progene). En la tabla a continuación se presentan los pesos al nacer de los terneros de cada uno de cinco grupos de apareamiento.
 
-## Referencia
+```{r}
+# Crear el data frame
+datos <- data.frame(
+  `Macho_número_85` = c(61, 71, 56, 75, 99, 80, 75, 62),
+  `Macho_número_113` = c(75, 102, 95, 103, 98, 115, NA, NA),
+  `Macho_número_134` = c(58, 60, 59, 65, 54, 57, NA, NA),
+  `Macho_número_158` = c(57, 121, 56, 58, 101, 110, 67, NA),
+  `Macho_número_165` = c(59, 46, 120, 115, 93, 105, 75, 115)
+)
 
-**Referencia Bibliográfica**
+# Mostrar la tabla
+DT::datatable(datos)
+```
 
-> Melo M., O. O., López P., L. A., & Melo M., S. E. (2007). *Diseño de Experimentos: Métodos y Aplicaciones* (1a ed.). Pro-Oﬀset Editorial S.A.. Capítulo 5, Sección 5.7.5, pp. 204-205.
+Obteniendo la tabla ANOVA
+
+```{r}
+# Crear los datos en formato largo
+replicacion <- rep(1:8, times = 5)
+toro <- rep(c(85, 113, 134, 158, 165), each = 8)
+respuesta <- c(
+  61, 71, 56, 75, 99, 80, 75, 62,  # Toro 85
+  75, 102, 95, 103, 98, 115, NA, NA,  # Toro 113
+  58, 60, 59, 65, 54, 57, NA, NA,  # Toro 134
+  57, 121, 56, 58, 101, 110, 67, NA,  # Toro 158
+  59, 46, 120, 115, 93, 105, 75, 115  # Toro 165
+)
+
+# Crear el data frame
+datos <- data.frame(
+  Toro = as.factor(toro),
+  Respuesta = respuesta
+)
+
+# Eliminar filas con NA
+datos <- na.omit(datos)
+
+# ANOVA
+modelo <- aov(Respuesta ~ Toro, data = datos)
+summary(modelo)
+```
+
+De la anterior tabal pondemos obtener los valores de $\hat\sigma_e^2$ y de $\hat\sigma_A^2$
+
+$$
+\hat\sigma_e^2=\text{CME}=416.2
+$$
+
+$$
+\hat\sigma_A^2=\frac{\text{CMA}-\text{CME}}{r_0}=\frac{(1517.6-416.2)}{6.97}=158.02
+$$
+
+Donde,
+
+$$
+r_0=\frac{\left(35-\frac{\left(8^2+6^2+6^2+7^2+8^2\right)}{35}\right)}{4}=6.97
+$$
+
+Suponiendo una varianza máxima $V(\bar{y}_{..})=43.49$, $C1 = 150000$ y $C2 = 50000$, se encuentra que:
+
+$$
+t = \frac{1}{43.49} \left( 158.015 + \sqrt{\frac{(158.015)(416.21409)(50000)}{150000}}  \right)=7.04
+$$
+
+y
+
+$$
+r = \sqrt{\frac{(416.21409) (150000)}{(158.015) (50000)}}=3.35
+$$
+
+Para una varianza de la media muestral no mayor de 43,49, deberían seleccionarse 7 toros y 3 terneros por cada toro, asumiendo que el costo experimental de cada toro es de $150000$ y el de cada ternero es de $50000$.
 
 ## Metodo de tukey
 
-El método de Tukey para el cálculo del tamaño muestral de las réplicas por tratamiento tiene como objetivo asegurar que, al momento de realizar el diseño experimental, sea posible detectar una diferencia mínima significativa entre los tratamientos en la variable de interés al aplicar comparaciones pareadas mediante pruebas *post-hoc*. 
+El método de Tukey para el cálculo del tamaño muestral de las réplicas por tratamiento tiene como objetivo asegurar que, al momento de realizar el diseño experimental, sea posible detectar una diferencia mínima significativa entre los tratamientos en la variable de interés al aplicar comparaciones pareadas mediante pruebas _post-hoc_.
 
 En otras palabras, si al aplicar estas pruebas no se detecta una diferencia significativa, se debe a que la diferencia establecida previamente como mínima detectable no se logró identificar, lo que está directamente relacionado con el tamaño muestral calculado inicialmente.
 
-Para aplicar esta prueba es necesario contar con información a priori sobre la varianza del error experimental. Si no se dispone de dicha información, y por lo tanto tampoco de los grados de libertad asociados, se procede a estimarla mediante la función `calcular_S1_df1()`. 
+Para aplicar esta prueba es necesario contar con información a priori sobre la varianza del error experimental. Si no se dispone de dicha información, y por lo tanto tampoco de los grados de libertad asociados, se procede a estimarla mediante la función `calcular_S1_df1()`.
 
 Parámetros:
 
@@ -216,7 +378,12 @@ Parámetros:
 
 El cálculo del número de réplicas en un diseño experimental con modelo de efectos aleatorios es fundamental cuando se desea asegurar una potencia estadística adecuada en pruebas ANOVA. En este contexto, el objetivo es determinar cuántas observaciones por tratamiento son necesarias para detectar diferencias significativas entre niveles de un factor aleatorio, considerando la variabilidad inherente del experimento.
 
-Aunque la potencia de la prueba se basa en la distribución *F*, su determinación puede simplificarse mediante el uso de curvas características de operación (*OC curves*), que permiten visualizar la probabilidad de cometer errores tipo II ($\beta$) en función de diferentes configuraciones del diseño.
+Aunque la potencia de la prueba se basa en la distribución _F_, su determinación puede simplificarse mediante el uso de curvas características de operación (_OC curves_), que permiten visualizar la probabilidad de cometer errores tipo II ($\beta$) en función de diferentes configuraciones del diseño.
 
 Este enfoque es especialmente útil en estudios donde los factores no son controlados directamente sino seleccionados aleatoriamente de una población más amplia (por ejemplo, lotes, sujetos, ubicaciones), y se requiere garantizar que el diseño tenga suficiente sensibilidad para detectar efectos reales entre tratamientos o unidades experimentales.
 
+# Referencia
+
+**Referencia Bibliográfica**
+
+> Melo M., O. O., López P., L. A., & Melo M., S. E. (2007). _Diseño de Experimentos: Métodos y Aplicaciones_ (1a ed.). Pro-Oﬀset Editorial S.A.. Capítulo 5, Sección 5.7.5, pp. 204-205.

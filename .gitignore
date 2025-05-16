@@ -2,3 +2,7 @@
 .Rhistory
 .RData
 .Ruserdata
+.DS_Store
+styles.css
+script.js
+Proyecto_DEXP.Rproj

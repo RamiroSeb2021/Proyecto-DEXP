@@ -16,11 +16,11 @@ source("Presentation/custom_styles.R")
 source("Presentation/function_description.R")
 source("Code/message_tooltips.R")
 
-ui <-tagList(
+ui <- tagList(
   # 1) Inyectamos el CSS para personalizar tonos de verde
   tags$head(
     tags$style(HTML(custom_css)),
-    ),
+  ),
   dashboardPage(
   skin = "green",
   dashboardHeader(title = "Diseño Experimental",
@@ -53,14 +53,14 @@ ui <-tagList(
     )
   ),
   dashboardBody(
-    useShinyjs(),       # <<--- aquí
-    useShinyFeedback(), # <<--- aquí
+    useShinyjs(),       
+    useShinyFeedback(), 
     tabItems(
       tabItem(tabName = "intro",
               fluidRow(
                 box(title = "Bienvenido", width = 12, status = "primary", solidHeader = TRUE,
                     p("A continuación podrás realizar cálculos para determinar el número de réplicas en diferentes contextos de diseño experimental. Estos incluyen métodos con y sin costos, con efectos aleatorios, cálculos de potencia, y el método de Harris-Hurvitz-Mood (HHM)."),
-                    p("Haz clic en 'Continuar' para comenzar con el primer cálculo: Proporcionalidad sin Costo."),
+                    p("Haz clic en 'Continuar' para comenzar con el primer cálculo: Réplicas por variabilidad."),
                     actionButton("continuar", "Continuar", class = "btn btn-success")
                 )
               )
@@ -76,14 +76,7 @@ ui <-tagList(
                   width = 12,
                   h3("Asignación de réplicas por variabilidad"),
                   p("Esta herramienta calcula cuántas réplicas son necesarias para cada tratamiento en un diseño experimental, sin tener en cuenta los costos, pero equilibrando la precisión de los tratamientos según su variabilidad. Los tratamientos con mayor variabilidad recibirán más réplicas."),
-                  tags$ul(
-                    tags$li("Cuando los costos no son una preocupación, pero se desea equilibrar la precisión, la herramienta distribuye las réplicas de forma proporcional a la variabilidad de cada tratamiento. Esto significa que los tratamientos más variables recibirán más réplicas para mejorar la precisión de los resultados."),
-                    tags$li("La herramienta toma como entrada el número de tratamientos, el número total de réplicas iniciales y la desviación estándar de cada tratamiento para distribuirlas de manera eficiente.")
-                  ),
-                  br(),
-                  p(strong("Ejemplo de aplicación:")),
-                  p("Supongamos que tienes cuatro tratamientos con diferentes desviaciones estándar dadas por (6.27, 9.57, 12, 3.32) y un número total de réplicas iniciales de 5. La herramienta calculará cuántas réplicas deben asignarse a cada tratamiento, distribuyendo las réplicas de manera proporcional a la variabilidad de cada tratamiento. Los tratamientos con mayor desviación estándar recibirán más réplicas para mejorar la precisión de los resultados."),
-                  p("Para mayor información accede a:", a("hola", href = "https://escuelaing.s3.amazonaws.com/production/documents/Programación_Académica_Pregrado_Periodo_2025-i.pdf?AWSAccessKeyId=AKIAWFY3NGTFJHVI634A&Signature=FNQU9BVTAGB1mt0WKOCEy2BHUMA%3D&Expires=1748480035"))
+                  p("Para mayor información accede a:", a("Info dexp app", href = "https://escuelaing.s3.amazonaws.com/production/documents/Programación_Académica_Pregrado_Periodo_2025-i.pdf?AWSAccessKeyId=AKIAWFY3NGTFJHVI634A&Signature=FNQU9BVTAGB1mt0WKOCEy2BHUMA%3D&Expires=1748480035"))
                 )
               )
               
@@ -168,15 +161,7 @@ ui <-tagList(
                   width = 12,
                   h3("Asignación de réplicas con restricción presupuestaria"),
                   p("Esta herramienta calcula cuántas réplicas son necesarias para cada tratamiento en un diseño experimental, considerando los costos por tratamiento y el presupuesto para llevarlo a cabo, con el objetivo de optimizar la precisión de los resultados dentro de un presupuesto limitado."),
-                  tags$ul(
-                    tags$li("Cuando el presupuesto es una restricción y los tratamientos tienen diferentes costos y niveles de variabilidad, la herramienta distribuye las réplicas de manera eficiente utilizando un enfoque basado en multiplicadores de Lagrange."),
-                    tags$li("Esto permite asignar más réplicas a los tratamientos más variables teniendo en cuenta el presupuesto total disponible, maximizando así la precisión del diseño experimental."),
-                    tags$li("La herramienta toma como entrada el número de tratamientos, la desviación estándar de cada tratamiento, el costo por unidad experimental de cada tratamiento y el presupuesto total disponible.")
-                  ),
-                  br(),
-                  p(strong("Ejemplo de aplicación:")),
-                  p("Supongamos que tienes cuatro tratamientos con desviaciones estándar dadas por (6.27, 9.57, 12, 3.32), los costos por tratamiento son de (1000, 200, 700, 1100) y un presupuesto total de $50.000. La herramienta calculará cuántas réplicas deben asignarse a cada tratamiento, distribuyendo los recursos disponibles de forma que se mejore la precisión teniendo en cuenta el presupuesto disponible."),
-                  p("Para mayor información accede a:", a("hola", href = "https://escuelaing.s3.amazonaws.com/production/documents/Programación_Académica_Pregrado_Periodo_2025-i.pdf?AWSAccessKeyId=AKIAWFY3NGTFJHVI634A&Signature=FNQU9BVTAGB1mt0WKOCEy2BHUMA%3D&Expires=1748480035"))
+                  p("Para mayor información accede a:", a("Info app dexp", href = "https://escuelaing.s3.amazonaws.com/production/documents/Programación_Académica_Pregrado_Periodo_2025-i.pdf?AWSAccessKeyId=AKIAWFY3NGTFJHVI634A&Signature=FNQU9BVTAGB1mt0WKOCEy2BHUMA%3D&Expires=1748480035"))
                 )
               )
               
@@ -269,9 +254,6 @@ ui <-tagList(
                   br(),
                   p("Para mayor información accede a:", a("Info app dexp", href = "https://escuelaing.s3.amazonaws.com/production/documents/Programación_Académica_Pregrado_Periodo_2025-i.pdf?AWSAccessKeyId=AKIAWFY3NGTFJHVI634A&Signature=FNQU9BVTAGB1mt0WKOCEy2BHUMA%3D&Expires=1748480035"))
                 ),
-                
-
-                
               ),
               fluidRow(
                 box(title = "Parámetros", width = 6, status = "primary", solidHeader = TRUE,
