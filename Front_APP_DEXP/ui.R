@@ -265,7 +265,7 @@ ui <- tagList(
                         span(
                           class = "mi-tooltip",
                           HTML(" ⓘ"),
-                          span(class = "texto-tooltip", "Este es el costo de cada tratamiento, debe ser un número positivo mayor que cero (ejemplo: 150000). Por favor, revisa los datos ingresados y consulta el ícono ⓘ para más información."),
+                          span(class = "texto-tooltip", "Este es el costo de cada tratamiento, debe ser un número positivo mayor que cero (ejemplo: 150000)."),
                           style = "margin-left: 5px; color: #3498db; cursor: pointer;"
                         )
                       ),
@@ -279,7 +279,7 @@ ui <- tagList(
                         span(
                           class = "mi-tooltip",
                           HTML(" ⓘ"),
-                          span(class = "texto-tooltip", "Este es el costo de cada unidad experimental, debe ser un número positivo mayor que cero (ejemplo: 50000). Por favor, revisa los datos ingresados y consulta el ícono ⓘ para más información."),
+                          span(class = "texto-tooltip", "Este es el costo de cada unidad experimental, debe ser un número positivo mayor que cero (ejemplo: 50000)."),
                           style = "margin-left: 5px; color: #3498db; cursor: pointer;"
                         )
                       ),
@@ -293,7 +293,7 @@ ui <- tagList(
                         span(
                           class = "mi-tooltip",
                           HTML(" ⓘ"),
-                          span(class = "texto-tooltip", "La varianza σ² refleja la dispersión dentro de los tratamientos. Debe ser un número positivo (ejemplo: 416.21). Por favor, revisa los datos ingresados y consulta el ícono ⓘ para más información."),
+                          span(class = "texto-tooltip", "La varianza σ² refleja la dispersión dentro de los tratamientos. Debe ser un número positivo (ejemplo: 416.21)."),
                           style = "margin-left: 5px; color: #3498db; cursor: pointer;"
                         )
                       ),
@@ -307,7 +307,7 @@ ui <- tagList(
                         span(
                           class = "mi-tooltip",
                           HTML(" ⓘ"),
-                          span(class = "texto-tooltip", "Este parámetro representa la proporción de la varianza total atribuida a los tratamientos. Debe estar entre 0 y 1 (ejemplo: 0.3796). Por favor, revisa los datos ingresados y consulta el ícono ⓘ para más información."),
+                          span(class = "texto-tooltip", "Este parámetro representa la proporción de la varianza total atribuida a los tratamientos. Debe estar entre 0 y 1 (ejemplo: 0.3796)."),
                           style = "margin-left: 5px; color: #3498db; cursor: pointer;"
                         )
                       ),
@@ -321,7 +321,7 @@ ui <- tagList(
                         span(
                           class = "mi-tooltip",
                           HTML(" ⓘ"),
-                          span(class = "texto-tooltip", "Este es el valor máximo aceptable para la varianza de la media muestral. Debe ser un número positivo mayor que cero (ejemplo: 43.49). Por favor, revisa los datos ingresados y consulta el ícono ⓘ para más información."),
+                          span(class = "texto-tooltip", "Este es el valor máximo aceptable para la varianza de la media muestral. Debe ser un número positivo mayor que cero (ejemplo: 43.49). "),
                           style = "margin-left: 5px; color: #3498db; cursor: pointer;"
                         )
                       ),
