@@ -451,40 +451,12 @@ server <- function(input, output, session) {
 
   # 1) reactiveVal para almacenar el resultado
   resultado_sim <- reactiveVal(NULL)
-  mostrargift <- reactiveVal(FALSE)
   
   # 2) Define los outputs UNA sola vez, fuera del observeEvent:
-  output$grafico_sim_ui <- renderUI({
-    if (is.null(resultado_sim()) && mostrargift()) {
-      tags$div(
-        style = "text-align: center; padding: 40px;",
-        tags$img(src = "loading.gif", height = "100px"),
-        tags$p("Calculando resultados, por favor espera...")
-      )
-    } else if (!is.null(resultado_sim())){
-      plotOutput("grafico_sim", height = "400px")
-    }else{
-      NULL
-    }
-  })
-
   output$grafico_sim <- renderPlot({
     req(resultado_sim())
     resultado_sim()$grafico
   })
-
-  output$tabla_sim_ui <- renderUI({
-    if (is.null(resultado_sim())) {
-      tags$div(
-        style = "text-align: center; padding: 40px;",
-        tags$img(src = "loading.gif", height = "100px"),
-        tags$p("Calculando resultados, por favor espera...")
-      )
-    } else {
-      DT::DTOutput("tabla_sim")  # se mostrará cuando el cálculo haya terminado
-    }
-  })
-
   output$tabla_sim <- DT::renderDT({
     req(resultado_sim())
     resultado_sim()$tabla
@@ -494,7 +466,6 @@ server <- function(input, output, session) {
     scrollCollapse  = TRUE,
     paging          = FALSE
   ))
-
   output$mensaje_sim <- renderText({
     req(resultado_sim())
     paste0(
@@ -505,14 +476,22 @@ server <- function(input, output, session) {
   
   # 3) El observeEvent con todo el control de errores:
   observeEvent(input$calcular_sim, {
+    
+    # Cuando empiezas el cálculo:
+    show("loading_sim_plot")
+    hide("plot_sim_container")
+    show("loading_sim_table")
+    hide("table_sim_container")
+    
+
+    
+    
     # 3.1) Deshabilita el botón mientras corre
     disable("calcular_sim")
     on.exit(enable("calcular_sim"), add = TRUE)
     
     # 3.2) Limpia resultado previo
     resultado_sim(NULL)
-    mostrargift(TRUE)
-    print(mostrargift())
     
     # 3.3) Validaciones de formato y rango
     #   a) t ≥ 2 entero
@@ -567,13 +546,16 @@ server <- function(input, output, session) {
         NULL
       }
     )
-    if (is.null(res)) {
-      mostrargift(FALSE)
-      return()         # si hubo error, no continúa
-    }
+    if (is.null(res)) return()         # si hubo error, no continúa
+    
     # 3.5) Todo OK: almacena el resultado y dispara los render
     resultado_sim(res)
-    mostrargift(FALSE)
+    
+   
+    hide("loading_sim_plot")
+    show("plot_sim_container")
+    hide("loading_sim_table")
+    show("table_sim_container")
   })
 
 }

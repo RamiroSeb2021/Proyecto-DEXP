@@ -844,23 +844,49 @@ ui <- tagList(
               actionButton("calcular_sim", "Calcular", class = "btn btn-success")
             ),
             # Aquí reemplazamos el box de resultados por un tabBox de 2 pestañas
+            # en tu UI, pon el tabBox así (fijo, sin renderUI)
             shinydashboard::tabBox(
               title = "Resultados Simulación",
-              id = "sim_res_tabs",
+              id    = "sim_res_tabs",
               width = 6,
-              # pestaña 1: Gráfico
-              tabPanel(
-                "Gráfico",
-                uiOutput("grafico_sim_ui"),
-                br(),
-                div(style = "padding: 8px;", textOutput("mensaje_sim"))
+              
+              tabPanel("Gráfico",
+                       # Loading placeholder para el gráfico
+                       hidden(
+                         div(
+                           id    = "loading_sim_plot",
+                           style = "text-align:center; padding:20px;",
+                           img(src = "loading.gif", height = "100px"),
+                           p("Calculando gráfico…")
+                       )),
+                       # Contenedor del plot, inicialmente oculto
+                       hidden(
+                         div(
+                           id = "plot_sim_container",
+                           plotOutput("grafico_sim", height = "400px")
+                         )
+                       )
               ),
-              # pestaña 2: Tabla
-              tabPanel(
-                "Tabla",
-                uiOutput("tabla_sim_ui")
+              
+              tabPanel("Tabla",
+                       # Loading placeholder para la tabla
+                       hidden(
+                         div(
+                           id    = "loading_sim_table",
+                           style = "text-align:center; padding:20px;",
+                           img(src = "loading.gif", height = "100px"),
+                           p("Calculando tabla…")
+                       )),
+                       # Contenedor de la DT, inicialmente oculto
+                       hidden(
+                         div(
+                           id = "table_sim_container",
+                           DT::DTOutput("tabla_sim")
+                         )
+                       )
               )
             )
+            
           ),
           fluidRow(
             column(12,
