@@ -453,10 +453,31 @@ server <- function(input, output, session) {
   resultado_sim <- reactiveVal(NULL)
   
   # 2) Define los outputs UNA sola vez, fuera del observeEvent:
+output$grafico_sim_ui <- renderUI({
+    if (is.null(resultado_sim())) {
+      tags$img(src = "loading.gif", height = "400px", style = "display:block; margin:auto;")
+    } else {
+      plotOutput("grafico_sim", height = "400px")
+    }
+  })
+
   output$grafico_sim <- renderPlot({
     req(resultado_sim())
     resultado_sim()$grafico
   })
+
+  output$tabla_sim_ui <- renderUI({
+    if (is.null(resultado_sim())) {
+      tags$div(
+        style = "text-align: center; padding: 40px;",
+        tags$img(src = "loading.gif", height = "100px"),
+        tags$p("Calculando resultados, por favor espera...")
+      )
+    } else {
+      DT::DTOutput("tabla_sim")  # se mostrará cuando el cálculo haya terminado
+    }
+  })
+
   output$tabla_sim <- DT::renderDT({
     req(resultado_sim())
     resultado_sim()$tabla
@@ -466,6 +487,7 @@ server <- function(input, output, session) {
     scrollCollapse  = TRUE,
     paging          = FALSE
   ))
+
   output$mensaje_sim <- renderText({
     req(resultado_sim())
     paste0(

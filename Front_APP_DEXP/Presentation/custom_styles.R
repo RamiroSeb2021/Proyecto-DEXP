@@ -100,7 +100,7 @@ custom_css <- "
   color: #fff;
   border-radius: 4px;
   box-shadow: 0 2px 6px rgba(0,0,0,0.2);
-  
+
   text-align: center;
 
   white-space: normal;
@@ -127,6 +127,11 @@ custom_css <- "
   color: #3498db !important;       /* color azul para el icono */
 }
 
-
+/*Sroll contenido*/
+.content-wrapper {
+  overflow-y: auto;
+  height: calc(100vh - 50px); /* 50px es la altura aproximada del header */
+  padding-bottom: 20px;
+}
 
 "
