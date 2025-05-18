@@ -15,6 +15,7 @@ library(dplyr)
 source("Presentation/custom_styles.R")
 source("Presentation/function_description.R")
 source("Code/message_tooltips.R")
+source("Presentation/header_functions.R")
 
 ui <- tagList(
   # 1) Inyectamos el CSS para personalizar tonos de verde
@@ -371,6 +372,14 @@ ui <- tagList(
         tabItem(
           tabName = "potencia",
           fluidRow(
+            column(
+              width = 12,
+              h3("Cálculo del tamaño muestral a partir de la potencia"),
+              p(head_potencia),
+              p("Para mayor información accede a:", a("Info dexp app", href = "https://escuelaing.s3.amazonaws.com/production/documents/Programación_Académica_Pregrado_Periodo_2025-i.pdf?AWSAccessKeyId=AKIAWFY3NGTFJHVI634A&Signature=FNQU9BVTAGB1mt0WKOCEy2BHUMA%3D&Expires=1748480035"))
+            )
+          ),
+          fluidRow(
             box(
               title = "Parámetros", width = 6, status = "primary", solidHeader = TRUE,
               ## t: Tratamientos
@@ -493,6 +502,14 @@ ui <- tagList(
         tabItem(
           tabName = "hhm",
           fluidRow(
+            column(
+              width = 12,
+              h3("Método de Harris–Hurvitz–Mood (HHM)"),
+              p(head_HHM),
+              p("Para mayor información accede a:", a("Info dexp app", href = "https://escuelaing.s3.amazonaws.com/production/documents/Programación_Académica_Pregrado_Periodo_2025-i.pdf?AWSAccessKeyId=AKIAWFY3NGTFJHVI634A&Signature=FNQU9BVTAGB1mt0WKOCEy2BHUMA%3D&Expires=1748480035"))
+            )
+          ),
+          fluidRow(
             box(
               title = "Parámetros HHM", width = 6, status = "primary", solidHeader = TRUE,
 
@@ -605,7 +622,8 @@ ui <- tagList(
               tags$ul(
                 tags$li("El objetivo es garantizar que, al aplicar pruebas post-hoc entre tratamientos, sea posible detectar una diferencia mínima significativa previamente establecida en la variable de interés."),
                 tags$li("Si dicha diferencia no se detecta en el análisis, se asume que el tamaño muestral inicial no fue suficiente para evidenciarla estadísticamente.")
-              )
+              ),
+              p("Para mayor información accede a:", a("Info dexp app", href = "https://escuelaing.s3.amazonaws.com/production/documents/Programación_Académica_Pregrado_Periodo_2025-i.pdf?AWSAccessKeyId=AKIAWFY3NGTFJHVI634A&Signature=FNQU9BVTAGB1mt0WKOCEy2BHUMA%3D&Expires=1748480035"))
             )
           ),
           fluidRow(
@@ -727,7 +745,7 @@ ui <- tagList(
             )
           )
         ),
-        # SIMULACION DE POTENCIA --------------------------------------------------
+# SIMULACION DE POTENCIA --------------------------------------------------
 
 
         tabItem(
@@ -738,7 +756,8 @@ ui <- tagList(
               h3("Número de réplicas para modelos de efectos aleatorios"),
               p("Calcula el número de réplicas necesarias por tratamiento en un diseño experimental con efectos aleatorios,
               asegurando una potencia adecuada para detectar diferencias entre niveles del factor."),
-              p("Utiliza curvas características de operación (OC) para evaluar la probabilidad de error tipo II según la configuración del diseño.")
+              p("Utiliza curvas características de operación (OC) para evaluar la probabilidad de error tipo II según la configuración del diseño."),
+              p("Para mayor información accede a:", a("Info dexp app", href = "https://escuelaing.s3.amazonaws.com/production/documents/Programación_Académica_Pregrado_Periodo_2025-i.pdf?AWSAccessKeyId=AKIAWFY3NGTFJHVI634A&Signature=FNQU9BVTAGB1mt0WKOCEy2BHUMA%3D&Expires=1748480035"))
             )
           ),
           fluidRow(
@@ -863,7 +882,11 @@ ui <- tagList(
                        hidden(
                          div(
                            id = "plot_sim_container",
-                           plotOutput("grafico_sim", height = "400px")
+                           plotOutput("grafico_sim", height = "400px"),
+                           br(),
+                           div(style="padding: 8px;",
+                               textOutput("mensaje_sim"))
+
                          )
                        )
               ),
