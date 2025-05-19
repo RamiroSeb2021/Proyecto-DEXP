@@ -87,7 +87,7 @@ ui <- tagList(
               width = 12,
               h3("Asignación de réplicas por variabilidad"),
               p("Esta herramienta calcula cuántas réplicas son necesarias para cada tratamiento en un diseño experimental, sin tener en cuenta los costos, pero equilibrando la precisión de los tratamientos según su variabilidad. Los tratamientos con mayor variabilidad recibirán más réplicas."),
-              p("Para mayor información accede a:", a("Info dexp app", href = "https://escuelaing.s3.amazonaws.com/production/documents/Programación_Académica_Pregrado_Periodo_2025-i.pdf?AWSAccessKeyId=AKIAWFY3NGTFJHVI634A&Signature=FNQU9BVTAGB1mt0WKOCEy2BHUMA%3D&Expires=1748480035"))
+              p("Para mayor información accede a:", a("Info dexp app", href = "https://rpubs.com/juanayaramiro/1312041"))
             )
           ),
           fluidRow(
@@ -176,7 +176,7 @@ ui <- tagList(
               width = 12,
               h3("Asignación de réplicas con restricción presupuestaria"),
               p("Esta herramienta calcula cuántas réplicas son necesarias para cada tratamiento en un diseño experimental, considerando los costos por tratamiento y el presupuesto para llevarlo a cabo, con el objetivo de optimizar la precisión de los resultados dentro de un presupuesto limitado."),
-              p("Para mayor información accede a:", a("Info app dexp", href = "https://escuelaing.s3.amazonaws.com/production/documents/Programación_Académica_Pregrado_Periodo_2025-i.pdf?AWSAccessKeyId=AKIAWFY3NGTFJHVI634A&Signature=FNQU9BVTAGB1mt0WKOCEy2BHUMA%3D&Expires=1748480035"))
+              p("Para mayor información accede a:", a("Info app dexp", href = "https://rpubs.com/juanayaramiro/1312041"))
             )
           ),
           fluidRow(
@@ -271,7 +271,7 @@ ui <- tagList(
               h3("Asignación de tratamientos y réplicas con Función de Costos y Varianza Máxima"),
               p("La asignación de tratamientos y réplicas en un diseño experimental se basa en un modelo de componentes de varianza, donde tanto el número de tratamientos como el número de réplicas son variables. Estos valores se ajustan de acuerdo con la necesidad de controlar las varianzas y minimizar los costos en la estimación de la media de los tratamientos. La varianza de la media muestral es una medida clave en este proceso y está determinada por las varianzas asociadas a los tratamientos y las réplicas. El desafío es encontrar los valores óptimos de tratamientos y réplicas que minimicen una función de costos dada, que incluye tanto el costo por unidad de tratamiento como el costo por unidad experimental. Este proceso matemático, descrito por Mendenhall (1968), busca la distribución eficiente de los recursos experimentales, ajustando el número de tratamientos y réplicas de manera que se mantenga constante la varianza de la media muestral, maximizando así la precisión del diseño teniendo en cuenta el presupuesto disponible."),
               br(),
-              p("Para mayor información accede a:", a("Info app dexp", href = "https://escuelaing.s3.amazonaws.com/production/documents/Programación_Académica_Pregrado_Periodo_2025-i.pdf?AWSAccessKeyId=AKIAWFY3NGTFJHVI634A&Signature=FNQU9BVTAGB1mt0WKOCEy2BHUMA%3D&Expires=1748480035"))
+              p("Para mayor información accede a:", a("Info app dexp", href = "https://rpubs.com/juanayaramiro/1312041"))
             ),
           ),
           fluidRow(
@@ -376,7 +376,7 @@ ui <- tagList(
               width = 12,
               h3("Cálculo del tamaño muestral a partir de la potencia"),
               p(head_potencia),
-              p("Para mayor información accede a:", a("Info dexp app", href = "https://escuelaing.s3.amazonaws.com/production/documents/Programación_Académica_Pregrado_Periodo_2025-i.pdf?AWSAccessKeyId=AKIAWFY3NGTFJHVI634A&Signature=FNQU9BVTAGB1mt0WKOCEy2BHUMA%3D&Expires=1748480035"))
+              p("Para mayor información accede a:", a("Info dexp app", href = "https://rpubs.com/juanayaramiro/1312041"))
             )
           ),
           fluidRow(
@@ -506,7 +506,7 @@ ui <- tagList(
               width = 12,
               h3("Método de Harris–Hurvitz–Mood (HHM)"),
               p(head_HHM),
-              p("Para mayor información accede a:", a("Info dexp app", href = "https://escuelaing.s3.amazonaws.com/production/documents/Programación_Académica_Pregrado_Periodo_2025-i.pdf?AWSAccessKeyId=AKIAWFY3NGTFJHVI634A&Signature=FNQU9BVTAGB1mt0WKOCEy2BHUMA%3D&Expires=1748480035"))
+              p("Para mayor información accede a:", a("Info dexp app", href = "https://rpubs.com/juanayaramiro/1312041"))
             )
           ),
           fluidRow(
@@ -623,7 +623,7 @@ ui <- tagList(
                 tags$li("El objetivo es garantizar que, al aplicar pruebas post-hoc entre tratamientos, sea posible detectar una diferencia mínima significativa previamente establecida en la variable de interés."),
                 tags$li("Si dicha diferencia no se detecta en el análisis, se asume que el tamaño muestral inicial no fue suficiente para evidenciarla estadísticamente.")
               ),
-              p("Para mayor información accede a:", a("Info dexp app", href = "https://escuelaing.s3.amazonaws.com/production/documents/Programación_Académica_Pregrado_Periodo_2025-i.pdf?AWSAccessKeyId=AKIAWFY3NGTFJHVI634A&Signature=FNQU9BVTAGB1mt0WKOCEy2BHUMA%3D&Expires=1748480035"))
+              p("Para mayor información accede a:", a("Info dexp app", href = "https://rpubs.com/juanayaramiro/1312041"))
             )
           ),
           fluidRow(
@@ -757,7 +757,7 @@ ui <- tagList(
               p("Calcula el número de réplicas necesarias por tratamiento en un diseño experimental con efectos aleatorios,
               asegurando una potencia adecuada para detectar diferencias entre niveles del factor."),
               p("Utiliza curvas características de operación (OC) para evaluar la probabilidad de error tipo II según la configuración del diseño."),
-              p("Para mayor información accede a:", a("Info dexp app", href = "https://escuelaing.s3.amazonaws.com/production/documents/Programación_Académica_Pregrado_Periodo_2025-i.pdf?AWSAccessKeyId=AKIAWFY3NGTFJHVI634A&Signature=FNQU9BVTAGB1mt0WKOCEy2BHUMA%3D&Expires=1748480035"))
+              p("Para mayor información accede a:", a("Info dexp app", href = "https://rpubs.com/juanayaramiro/1312041"))
             )
           ),
           fluidRow(

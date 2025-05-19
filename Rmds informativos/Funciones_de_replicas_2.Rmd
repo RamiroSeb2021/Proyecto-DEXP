@@ -1,7 +1,5 @@
 ---
-title: |
-  ![](Logo.png){width=1.5in}  
-  App Diseño de experimentos
+title: "App Diseño de experimentos"
 author:
   - name: Juan Sebastian Ramirez Ayala
   - name: Diana
@@ -12,12 +10,12 @@ output:
     self_contained: true
     number_sections: false
     toc: true
-    toc_depth: 2
+    toc_depth: 4
     toc_float:
       collapsed: True
       smooth_scroll: true
       align: "left"
-    df_print: !expr pander::pander
+#    df_print: !expr pander::pander
     theme: spacelab
     highlight: pygments
 editor_options:
@@ -40,9 +38,14 @@ knitr::opts_chunk$set(echo = FALSE, warning = FALSE, message = FALSE, comment = 
 #knitr::opts_chunk$set(engine.opts=list(python=list(echo = FALSE, warning = FALSE, message = FALSE, comment = "")))
 ```
 
-# Determinación del Tamaño de Muestra sin Costo Variable por Tratamiento
+# Cálculo de tamaño muestral 
 
-## Teoría
+El cálculo del tamaño muestral es una etapa clave en el diseño experimental, ya que permite determinar cuántas réplicas son necesarias por tratamiento para garantizar que los resultados del estudio sean estadísticamente significativos y tengan suficiente potencia para detectar efectos relevantes. Dependiendo del enfoque adoptado, puede buscarse minimizar la varianza de un estimador, maximizar la eficiencia bajo restricciones presupuestarias o garantizar la detección de diferencias mínimas entre tratamientos con un nivel de confianza preestablecido. A continuación se presentan distintos métodos para la determinación del tamaño muestral, adaptados a escenarios con o sin costos variables por tratamiento, así como modelos con componentes de varianza y métodos basados en pruebas post-hoc.
+
+
+##  Determinación del Tamaño de Muestra sin Costo Variable por Tratamiento  {.tabset .tabset-fade .tabset-pills}
+
+### Teoría
 
 Asumiendo que los costos por tratamiento ($c_i > 0$) son variables, bajo la restricción:
 
@@ -62,7 +65,7 @@ $$
 \text{MELI}(L) = \sum_{i=1}^t \lambda_i \bar{y}_i \quad \text{(Ecuación 5.26)}
 $$
 
-## Minimización Lagrangiana
+#### Minimización Lagrangiana
 
 Para minimizar $Var(\text{MELI}(L))$ sujeto a la restricción presupuestaria, construimos el lagrangiano:
 
@@ -84,7 +87,7 @@ $$
 
 **Recomendación:** Los coeficientes $\lambda_i$ deben expresarse como fracciones para simplificar el cálculo de $r_i$.
 
-## Asignación Proporcional (Ecuación 5.29)
+#### Asignación Proporcional (Ecuación 5.29)
 
 Si en lugar de optimizar con costos, asignamos las observaciones de forma proporcional a las desviaciones estándar (con $n$ fijo):
 
@@ -94,7 +97,7 @@ $$
 
 **Interpretación:** Los tratamientos con mayor variabilidad ($\sigma_i$) reciben más réplicas.
 
-## Ejemplo
+### Ejemplo
 
 Supongamos que un agricultor tiene los siguientes datos referentes
 a la producción en toneladas por hectárea de cuatro variedades de caña de
@@ -145,9 +148,9 @@ $$
 
 Las réplicas asignadas por cada uno de los tratamientos son $4,6,8,2$ respectivamente.
 
-# Determinación del Tamaño de Muestra con Costo Variable por Tratamiento
+## Determinación del Tamaño de Muestra con Costo Variable por Tratamiento {.tabset .tabset-fade .tabset-pills}
 
-## Teoría
+### Teoría
 
 Asumiendo que los costos por tratamiento ($c_i > 0$) son variables, bajo la restricción:
 
@@ -167,7 +170,7 @@ $$
 \text{MELI}(L) = \sum_{i=1}^t \lambda_i \bar{y}_i \quad \text{(Ecuación 5.26)}
 $$
 
-## Minimización Lagrangiana
+#### Minimización Lagrangiana
 
 Para minimizar $Var(\text{MELI}(L))$ sujeto a la restricción presupuestaria, construimos el lagrangiano:
 
@@ -189,7 +192,7 @@ $$
 
 **Recomendación:** Los coeficientes $\lambda_i$ deben expresarse como fracciones para simplificar el cálculo de $r_i$.
 
-## Ejemplo
+### Ejemplo
 
 Supongamos que un agricultor tiene los siguientes datos referentes
 a la producción en toneladas por hectárea de cuatro variedades de caña de
@@ -255,9 +258,9 @@ $$
 
 Las réplicas asignadas por cada uno de los tratamientos son $13,44,30,7$ respectivamente.
 
-# Asignación de tratamientos y réplicas con Función de Costos y Varianza Máxima
+## Asignación de tratamientos y réplicas con Función de Costos y Varianza Máxima {.tabset .tabset-fade .tabset-pills}
 
-## Teoría
+### Teoría
 
 En el modelo de componentes de varianza tanto el número de tratamientos $t$ como el número de réplicas $r$ son variables y sus estimaciones están ligadas con el control de dichas varianzas. Un criterio usual para elegir los valores de $r$ y $t$ es el de minimizar los costos en la estimación de la media $\mu$. Una medida de la cantidad de información disponible para estimar $\mu$ es la varianza de la media muestral dada por:
 
@@ -285,7 +288,7 @@ $$
 r = \sqrt{\frac{\hat\sigma^2 C_1}{\hat{\sigma}_A^2 C_2}}
 $$
 
-## Ejemplo
+### Ejemplo
 
 Un estudio genético en ganado, consistió en seleccionar aleatoriamente varios machos (toros) apareados con grupos separados de hembras. Cuando nacieron los terneros, se midieron los pesos iniciales como
 medida en un estudio de pesos hereditarios (estudios de progene). En la tabla a continuación se presentan los pesos al nacer de los terneros de cada uno de cinco grupos de apareamiento.
@@ -362,7 +365,7 @@ $$
 
 Para una varianza de la media muestral no mayor de 43,49, deberían seleccionarse 7 toros y 3 terneros por cada toro, asumiendo que el costo experimental de cada toro es de $150000$ y el de cada ternero es de $50000$.
 
-## Metodo de tukey
+## Metodo de tukey {.tabset .tabset-fade .tabset-pills}
 
 El método de Tukey para el cálculo del tamaño muestral de las réplicas por tratamiento tiene como objetivo asegurar que, al momento de realizar el diseño experimental, sea posible detectar una diferencia mínima significativa entre los tratamientos en la variable de interés al aplicar comparaciones pareadas mediante pruebas _post-hoc_.
 
@@ -374,7 +377,95 @@ Parámetros:
 
 ### Teoría
 
-## Número de réplicas en el modelo de efectos aleatorios
+Un intervalo de confianza de $(1 - \alpha) \cdot 100$ de longitud $\leq 2d$ para la diferencia de cualquier par de medias, cuando se tiene un conjunto de $t$ tratamientos, se obtiene a partir de la expresión del siguiente proceso:
+
+Si hay $t$ medias (asociadas con los tratamientos), se hacen comparaciones dos a dos, es decir:
+
+$$
+\frac{\bar{Y}_{\max} - \bar{Y}_{\min}}{\sqrt{CME/r}} \sim q_{t;df_2}
+$$
+
+Sea $P_0 \leq P$ la longitud del intervalo que cubre todas las diferencias $\leq 2d$, entonces:
+
+$$
+P_0 = P\left(2S q_{1 - \alpha}/\sqrt{r} \leq 2d\right)
+$$
+
+donde $S = \sqrt{CME}$ y $q_{1 - \alpha}$ es el límite en la tabla A.12 del apéndice de rangos studentizados. Desde esta expresión se encuentra que:
+
+$$
+P_0 = P\left(S^2 \leq \frac{d^2 r}{q_{(1 - \alpha)}^2}\right)
+$$
+
+En esta expresión, al dividir por un $S^2$ previo, $S_1^2$, para obtener una $F$, se sigue:
+
+$$
+P_0 = P\left(\frac{S^2}{S_1^2} \leq \frac{d^2 r}{q_{(1 - \alpha)}^2 S_1^2}\right)
+$$
+
+Con $\frac{S^2}{S_1^2} \sim F(df_2, df_1)$, se obtiene finalmente:
+
+$$
+r = F_{(df_2, df_1; 1 - \alpha)} \cdot \frac{q^2_{t; df_2; 1 - \alpha/2}}{d^2}
+$$
+
+### Ejemplo
+
+Retomando el ejemplo del libro 5.11, sea $S_1^2 = 141{,}6$, $df_1 = 40$ y $d = 20$.  
+Los valores de $gl_E$ y $q_{t; df_2; 1 - \alpha}$ dependen del diseño y de los valores de $1 - \beta$.  
+Si se supone $S_1$ como en el diseño completamente aleatorizado con $r = 6$, $1 - \beta = 0{,}9$ y $df_2 = 30$, entonces:
+
+\[
+\begin{align*}
+gl(\text{Total}) &= 35, \\
+gl(\text{Tratamientos}) &= 5, \\
+gl(\text{Error}) &= 30.
+\end{align*}
+\]
+
+Así, $F_{(30;40;0{,}10)} = 1{,}54$ y $q_{(5;30;0{,}10)} = 4{,}30$, donde $q$ corresponde al valor apropiado en la tabla A.12 de rangos studentizados.
+
+Con estos resultados y de la ecuación (5.24), se obtiene:
+
+$$
+r = \frac{(141{,}6)(4{,}30)^2(1{,}54)}{400} = 10{,}08
+$$
+
+---
+
+Para este caso, el estimador es sesgado. Si se desea garantizar que la longitud del intervalo sea $2A$, entonces de (5.18) se encuentra:
+
+$$
+r = \frac{2\sigma^2 t_{1-\alpha}^2 \Gamma^2\left( \frac{r}{2} \right)}{A^2 (r - 1) \Gamma^2\left( \frac{r - 1}{2} \right)}
+$$
+
+---
+
+Como el valor de $df_2$ fue subestimado, se toma $r = 9$, entonces $df_2 = 48$,  
+$q_{(5;48;0{,}90)} = 4{,}2$, $F_{(48;40;0{,}10)} = 1{,}48$ y $r = 9{,}2$.
+
+Como el valor de $r > 9$, entonces con $r = 10$, va a ser lo suficientemente grande para esta propuesta,  
+se puede obtener un intervalo de confianza con **10 réplicas** y el **95 % de confianza**, el cual es mayor que $2d$ en longitud en el 90 % de los experimentos.
+
+Ahora vamos a usar la [librería](https://github.com/RamiroSeb2021/package-dexp) que creamos:
+
+```{r, echo=TRUE}
+library(dexp)
+calcular_r_MT(
+  T_ = 6,
+  D = 20,
+  ro = 6,
+  S1 = sqrt(141.6),
+  df1 = 40
+)
+```
+
+El valor `r` representa el tamaño de réplica calculado mediante el **método de Tukey**, siendo `A` la diferencia mínima que se desea detectar con dicho tamaño. Por otro lado, `r_i` es el tamaño de réplica cuyo valor se aproxima más a lograr la diferencia mínima requerida, denominada `A_i`. Las listas `lista_r` y `valores_A` contienen valores de tamaño de réplica y las correspondientes diferencias mínimas detectables (`A`), calculadas tomando como referencia el valor de `r`.
+
+Según el método de Tukey, se concluye que para detectar una diferencia mínima de 20 unidades se necesita un tamaño de réplica de 10. No obstante, esto implica que la diferencia real podría estar subestimada, por ejemplo, en un valor como 9.48. Esto puede interpretarse también como que, al emplear un tamaño de 10 réplicas, el contraste será más estricto para rechazar la hipótesis nula $H_0$. En cambio, utilizar el valor `r_i` proporciona un enfoque ligeramente más flexible, lo que puede facilitar la detección de la diferencia deseada con un balance adecuado entre error tipo I y tipo II.
+
+
+## Número de réplicas en el modelo de efectos aleatorios 
 
 El cálculo del número de réplicas en un diseño experimental con modelo de efectos aleatorios es fundamental cuando se desea asegurar una potencia estadística adecuada en pruebas ANOVA. En este contexto, el objetivo es determinar cuántas observaciones por tratamiento son necesarias para detectar diferencias significativas entre niveles de un factor aleatorio, considerando la variabilidad inherente del experimento.
 
@@ -382,8 +473,172 @@ Aunque la potencia de la prueba se basa en la distribución _F_, su determinaci�
 
 Este enfoque es especialmente útil en estudios donde los factores no son controlados directamente sino seleccionados aleatoriamente de una población más amplia (por ejemplo, lotes, sujetos, ubicaciones), y se requiere garantizar que el diseño tenga suficiente sensibilidad para detectar efectos reales entre tratamientos o unidades experimentales.
 
+### Teoría
+
+En el caso del ANOVA de una vía de clasificación:
+
+$$
+Y_{ij} = \mu + T_i + \varepsilon_{ij}
+$$
+
+- $\mu$: media general  
+- $T_i$: efecto diferencial del tratamiento  
+- $\varepsilon_{ij}$: error de la unidad observacional
+
+Nosotros estimábamos a $T_i$ como si fuera un valor fijo, pero cuando tenemos efectos aleatorios:
+
+$$
+\varepsilon_{ij} \sim \mathcal{N}(0, \sigma^2_\varepsilon)
+$$
+
+Ahora $T_i$ va a ser aleatorio de individuo a individuo:
+
+$$
+T_j \sim \mathcal{N}(0, \sigma^2_T)
+$$
+
+Así tendremos dos efectos de varianza, entonces la idea se hace grande cuando vemos el diseño completamente al azar desde el punto de vista de los efectos aleatorios, ya no nos va a interesar evaluar la misma hipótesis.
+
+**Hipótesis en efectos fijos:**
+
+$$
+H_0: \; T_1 = T_2 = \dots = T_K = 0
+$$
+
+Si no que:
+
+**Hipótesis en efectos aleatorios:**
+
+$$
+H_0: \; \sigma^2_T = 0 \quad \text{(La varianza de los efectos aleatorios sea estadísticamente cero)}
+$$
+
+El cálculo es el mismo, solo que la hipótesis cambia.
+
+> **Aclaración:**  
+Que $T_k = 0 \Rightarrow \sigma^2_T = 0$, pero no al revés.  
+Es decir, si $\sigma^2_T = 0$ implica que $T_k$ son iguales, pero no a cero.
+
+**¿Cuándo decidimos usar cuál?**
+
+En efectos fijos, los $T$ decimos que son parámetros fijos, que se espera que afecten a la variable dependiente de forma directa.  
+En cambio, los efectos aleatorios me ayudan para explicar la variabilidad no explicada de las explicativas (punto de vista aleatorio).
+
+**Ejemplo:**  
+Si se tiene un estudio de diferentes fertilizantes y queremos evaluar el rendimiento en una cosecha, el investigador está pensando en elegir solo tres tipos de fertilizante.  
+Para él, es un valor fijo dado que lo decidió bajo experiencia y quiere evaluar entre esos tres.  
+→ **Efecto fijo**
+
+Ahora, si en el mismo ejercicio se tiene un grupo más amplio de fertilizantes (20, 30, ..., X) y elijo aleatoriamente 3 por medio de un muestreo, entonces estoy pensando en efectos aleatorios.  
+En ese caso, me interesa estimar la variabilidad del rendimiento de lo que estamos midiendo, causado por los diferentes tipos de fertilizantes.
+
+Y en ese intento, la varianza asociada a los fertilizantes no se ve influenciada por la manera en que se eligen aleatoriamente los fertilizantes que se iban a usar en el estudio.
+
+→ La diferencia de un modelo a otro reside en la concepción del experimento, pero en el contraste de las diferencias, o desde el punto de vista estadístico, es exactamente la misma tanto en efectos fijos como en efectos aleatorios.
+
+Otra diferencia es que en E.F. a mí me interesa comparar niveles específicos, i.e., el fertilizante 1 vs. el 2, se comparan niveles específicos.
+
+En cambio, en E.A. es controlar o evaluar qué tanto podrían cambiar la variabilidad en el rendimiento, o en la variable de respuesta por efecto del tratamiento.
+
+→ Para contrastar el ejercicio se calcula el estadístico $F$ ya sea visto en E.F. o E.A.:
+
+$$
+F = \frac{CM_{Trat}}{CM_{Res}}
+$$
+
+Una cosa importante a tener en cuenta es que en el numerador de $F$ hay una combinación entre los $\sigma^2_T$ (variabilidad de tratamientos) y $\sigma^2_\varepsilon$ (variabilidad del error experimental).  
+En cambio, en $CM_{Res}$ solo se tiene $\sigma^2_\varepsilon$.
+
+
+→ Eso sería lo primero.
+
+Ahora el ejercicio para calcular $CM_{Trat}$ para E.A. es el siguiente:
+
+Suponemos que:
+
+$$
+SC_{Tot} = SC_{Trat} + SC_{Res}
+$$
+
+Sabemos que son chi-cuadrados, entonces:
+
+$$
+CM_{Trat} = \frac{SC_{Trat}}{K - 1} \sim \chi^2 \Rightarrow \mathbb{E}(CM_{Trat}) = \sigma^2_\varepsilon + r \cdot \sigma^2_T
+$$
+
+Donde $K$ es el número de tratamientos.  
+Y para $CM_{Res}$:
+
+$$
+\mathbb{E}(CM_{Res}) = \sigma^2_\varepsilon
+$$
+
+Al final, va a pasar que la estadística $F$ bajo la hipótesis nula estará a tener distribución $F$, pero cuando no estoy bajo elsupuesto de la hipótesis nula, i.e., si $\sigma^2_T \neq 0$, el resultado de $F$ va a depender obligatoriamente de $\sigma^2_T$.
+
+→ Las curvas características de operación (curvas OC) para el anterior escenario me dicen que a partir de la distribución exacta de la estadística $F$, cuando el $F$ no es centrado o no central, me dice que va a haber un cambio proporcional entre $F$ y $\sigma^2_T$.  
+Entonces, lo que uno hace es una suerte de cociente:
+
+$$
+\rho = \frac{\sigma^2_T}{\sigma^2_\varepsilon}
+$$
+
+→ Para el ejercicio uno hace lo siguiente:
+
+1. Simulación de cómo va a ser la potencia.  
+   Hace el cálculo por el ANOVA:
+
+   - Fijamos el número de tratamientos ($t$)  
+   - Fijamos el número de réplicas ($r$)  
+   - Fijamos $\sigma^2_\varepsilon$  
+   - Fijamos $\beta$
+   
+Supongamos que ya tenemos claro el modelo:
+
+$$
+y_{ij} = \mu + T_j + \varepsilon_{ij}
+$$
+
+→ De $\sigma^2_\varepsilon$ y $\beta$ se puede recuperar $\sigma^2_T$.  
+$T_j$ tiene que ser aleatorio, entonces se simula vía `rnorm()` al igual que $\varepsilon_{ij}$:
+
+- $T_j \sim \mathcal{N}(0, \sigma^2_T)$  
+- $\varepsilon_{ij} \sim \mathcal{N}(0, \sigma^2_\varepsilon)$
+
+Se fija el valor de $\mu$.
+
+Con estas asignaciones generamos un ANOVA:
+
+```r
+anova(y ~ trt)
+```
+
+- Luego se calcula $F$-stat  
+- Se mira si se rechaza  
+- Se supone que $H_0$ es falso para saber
+
+La potencia de la prueba según $r$:
+
+
+
+
+```{r}
+r <- seq(1, 20, length.out = 100)
+potencia <- 1 - exp(-0.3 * r)
+
+plot(r, potencia, type = "l", lwd = 2, col = "orange",
+     xlab = "r", ylab = "Potencia",
+     main = "La potencia de la prueba según r")
+abline(h = 0.8, lty = 2)
+abline(v = 5.36, lty = 2)
+text(8.2, 0.1, "r")
+text(0.5, 0.85, "0.8")
+text(8.2, 0.82, "1 - \\beta")
+```
+
+
+
 # Referencia
 
 **Referencia Bibliográfica**
 
-> Melo M., O. O., López P., L. A., & Melo M., S. E. (2007). _Diseño de Experimentos: Métodos y Aplicaciones_ (1a ed.). Pro-Oﬀset Editorial S.A.. Capítulo 5, Sección 5.7.5, pp. 204-205.
+> Melo M., O. O., López P., L. A., & Melo M., S. E. (2007). _Diseño de Experimentos: Métodos y Aplicaciones_ (1a ed.). Pro-Oﬀset Editorial S.A.. Capítulo 5, pp. 189-207.
