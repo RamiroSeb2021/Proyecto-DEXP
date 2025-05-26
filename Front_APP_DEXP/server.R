@@ -37,14 +37,17 @@ server <- function(input, output, session) {
   observeEvent(input$anterior_2, updateTabItems(session, "tabs", selected = "sin_costo"))
   observeEvent(input$siguiente_2, updateTabItems(session, "tabs", selected = "efectos"))
   observeEvent(input$anterior_3, updateTabItems(session, "tabs", selected = "con_costo"))
-  observeEvent(input$siguiente_3, updateTabItems(session, "tabs", selected = "potencia"))
-  observeEvent(input$anterior_4, updateTabItems(session, "tabs", selected = "efectos"))
+  observeEvent(input$siguiente_3, updateTabItems(session, "tabs", selected = "estimacion_s1_df1"))
+  observeEvent(input$anterior_4, updateTabItems(session, "tabs", selected = "estimacion_s1_df1"))
   observeEvent(input$siguiente_4, updateTabItems(session, "tabs", selected = "hhm"))
   observeEvent(input$anterior_5, updateTabItems(session, "tabs", selected = "potencia"))
   observeEvent(input$siguiente_5, updateTabItems(session, "tabs", selected = "metodo_tukey"))
   observeEvent(input$anterior_6, updateTabItems(session, "tabs", selected = "hhm"))
   observeEvent(input$siguiente_6, updateTabItems(session, "tabs", selected = "sim_potencia"))
   observeEvent(input$anterior_7, updateTabItems(session, "tabs", selected = "metodo_tukey"))
+  
+  observeEvent(input$siguiente_3.5, updateTabItems(session, "tabs", selected = "potencia"))
+  observeEvent(input$anterior_3.5, updateTabItems(session, "tabs", selected = "efectos"))
   
   # Función para mostrar errores en modal y limpiar output
   show_error <- function(message) {
@@ -557,6 +560,68 @@ server <- function(input, output, session) {
     hide("loading_sim_table")
     show("table_sim_container")
   })
+  
+
+# Estimacion S1 y df1 -----------------------------------------------------
+
+  observeEvent(input$calcular_s1_df1, {
+    
+    tryCatch({
+      
+      # a) Validar desviación estándar
+      if (is.na(input$s1_est_sd) || length(input$s1_est_sd) != 1 || input$s1_est_sd <= 0) {
+        show_error(Formato_S1())
+        return()
+      }
+      
+      # b) Validar Si
+      if (is.na(input$s1_est_Si) || length(input$s1_est_Si) != 1 || input$s1_est_Si <= 0) {
+        show_error(Formato_Si())
+        return()
+      }
+      
+      # c) Validar Ss
+      if (is.na(input$s1_est_Ss) || length(input$s1_est_Ss) != 1 || input$s1_est_Ss <= 0) {
+        show_error(Formato_Ss())
+        return()
+      }
+      
+      # d) Validar relación lógica Ss > Si
+      if (input$s1_est_Ss <= input$s1_est_Si) {
+        show_error(Formato_intervalo_relativo())
+        return()
+      }
+      
+      # e) Ejecutar función
+      res <- calcular_S1_df1(
+        desviacion_estandar = input$s1_est_sd,
+        Si = input$s1_est_Si,
+        Ss = input$s1_est_Ss
+      )
+      
+      # f) Validación de resultado
+      if (is.null(res)) {
+        output$resultado_s1_df1 <- renderText({
+          "⚠️ No se encontró un número de grados de libertad que cumpla el criterio."
+        })
+      } else {
+        output$resultado_s1_df1 <- renderPrint({
+          list(
+            `S1 estimado` = round(res$S1, 3),
+            `Grados de libertad (df1)` = res$grados_libertad,
+            `Cociente crítico` = round(res$valor_x, 4),
+            `Error relativo Grados de libertad` = paste0(round(res$error_relativo * 100, 2), " %")
+          )
+        })
+      }
+      
+    }, error = function(e) {
+      show_error(paste0("❌ Error inesperado: ", e$message))
+      output$resultado_s1_df1 <- renderText({ "" })
+    })
+  })
+  
+  
 
 }
 

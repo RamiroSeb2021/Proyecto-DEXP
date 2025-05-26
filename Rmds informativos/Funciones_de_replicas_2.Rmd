@@ -34,6 +34,7 @@ editor_options:
 
 ```{r set_up,include=FALSE}
 knitr::opts_chunk$set(echo = FALSE, warning = FALSE, message = FALSE, comment = "")
+library(dexp)
 
 #knitr::opts_chunk$set(engine.opts=list(python=list(echo = FALSE, warning = FALSE, message = FALSE, comment = "")))
 ```
@@ -365,13 +366,45 @@ $$
 
 Para una varianza de la media muestral no mayor de 43,49, deberían seleccionarse 7 toros y 3 terneros por cada toro, asumiendo que el costo experimental de cada toro es de $150000$ y el de cada ternero es de $50000$.
 
+## Estimación S1 y df1 {.tabset .tabset-fade .tabset-pills}
+
+### Teoría
+
+Ocasionalmente el experimentador no define estimadores de varianza en la forma $S_1^2$, pero conoce “algo” acerca de los órdenes de magnitud para relacionar la información con los límites superior e inferior de la desviación estándar dentro de las cantidades máximas $S_1$ y $df_1$.
+
+Harris, Horvitz & Mood (1948) proponen un procedimiento simple: Primero el experimentador se cuestiona por los límites inferior y superior ($S_I$, $S_S$) de la desviación estándar, suponiendo que él desea estimar 7\% y 12\% de la media para los límites superior e inferior, y la desviación estándar de la media es 30, entonces $S_I = (0{,}7)(30) = 2{,}1$ y $S_S = (0{,}12)(30) = 3{,}6$.
+
+La estimación de la desviación estándar es el promedio de los dos estimadores:
+
+$$
+S_1 = \frac{S_I + S_S}{2} = 2{,}85
+$$
+
+Para obtener $df_1$ es necesario que el investigador tenga alguna “confianza” sobre los estimadores. Se calculan los valores de 
+$\sqrt{\chi^2_{(0{,}1)} / \chi^2_{(0{,}9)}}$ para varios grados de libertad, el valor más cercano al cociente $S_S / S_I$ se considera como los grados de libertad asociados con $S_1$ ($df_1$). Para el ejemplo $S_S / S_I = 1{,}72$ y de la tabla 
+$\sqrt{\chi^2_{(12;0{,}1)} / \chi^2_{(12;0{,}9)}} = 1{,}72$, de donde se asume que $S_1$ tiene asociados 12 grados de libertad, con este valor se estima $r$.
+
+
+### Ejemplo 
+
+En este caso usaremos la función `calcular_S1_df1` para hacer el cálculo del ejemplo anterior.
+
+```{r, echo=TRUE}
+library(dexp)
+set.seed(123)
+calcular_S1_df1(desviacion_estandar = 30, Si = 0.07, Ss = 0.12)
+```
+
+
+
+
 ## Metodo de tukey {.tabset .tabset-fade .tabset-pills}
 
 El método de Tukey para el cálculo del tamaño muestral de las réplicas por tratamiento tiene como objetivo asegurar que, al momento de realizar el diseño experimental, sea posible detectar una diferencia mínima significativa entre los tratamientos en la variable de interés al aplicar comparaciones pareadas mediante pruebas _post-hoc_.
 
 En otras palabras, si al aplicar estas pruebas no se detecta una diferencia significativa, se debe a que la diferencia establecida previamente como mínima detectable no se logró identificar, lo que está directamente relacionado con el tamaño muestral calculado inicialmente.
 
-Para aplicar esta prueba es necesario contar con información a priori sobre la varianza del error experimental. Si no se dispone de dicha información, y por lo tanto tampoco de los grados de libertad asociados, se procede a estimarla mediante la función `calcular_S1_df1()`.
+Para aplicar esta prueba es necesario contar con información a priori sobre la varianza del error experimental. Si no se dispone de dicha información, y por lo tanto tampoco de los grados de libertad asociados, se procede a estimarla mediante la función `calcular_S1_df1()`. 
 
 Parámetros:
 

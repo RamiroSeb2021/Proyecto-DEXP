@@ -274,3 +274,21 @@ Formato_r_max <- function() {
 }
 
 
+# Estimacion S1 y df1  ----------------------------------------------------
+
+
+Formato_S1 <- function() {
+  paste0("El formato de la desviación estándar estimada es incorrecto. ", frase_pred)
+}
+
+Formato_Si <- function() {
+  paste0("El formato del porcentaje inferior relativo (Si) es incorrecto. ", frase_pred)
+}
+
+Formato_Ss <- function() {
+  paste0("El formato del porcentaje superior relativo (Ss) es incorrecto. ", frase_pred)
+}
+
+Formato_intervalo_relativo <- function() {
+  paste0("El porcentaje superior relativo (Ss) debe ser mayor que el inferior (Si). ", frase_pred)
+}

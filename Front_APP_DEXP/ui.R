@@ -42,6 +42,7 @@ ui <- tagList(
           menuSubItem("Réplicas por variabilidad", tabName = "sin_costo"),
           menuSubItem("Réplicas con presupuesto", tabName = "con_costo"),
           menuSubItem("Tratamientos y réplicas", tabName = "efectos"),
+          menuSubItem("Estimación S1 y df1", tabName = "estimacion_s1_df1"),
           menuSubItem("Cálculo de Potencia", tabName = "potencia"),
           menuSubItem("Método HHM", tabName = "hhm"),
           menuSubItem("Método de Tukey", tabName = "metodo_tukey"),
@@ -365,6 +366,91 @@ ui <- tagList(
             )
           )
         ),
+        
+
+# Estimacion varianza -----------------------------------------------------
+
+        
+        tabItem(
+          tabName = "estimacion_s1_df1",
+          
+          fluidRow(
+            column(
+              width = 12,
+              h3("Estimación de S1 y df1"),
+              p("Esta herramienta permite estimar el valor desviación estándar (S1) y los grados de libertad (df1) necesarios para construir un intervalo de confianza en torno a la media estimada, usando márgenes relativos y distribuciones chi-cuadrado. Lo anterior 
+                llegado el caso que no se tenga información previa de esta."),
+              p("Para mayor información accede a:", a("Info app dexp", href = "https://rpubs.com/juanayaramiro/1312041"))
+            )
+          ),
+          
+          fluidRow(
+            box(
+              title = "Parámetros", width = 6, status = "primary", solidHeader = TRUE,
+              
+              numericInput(
+                inputId = "s1_est_sd",
+                label = div(
+                  style = "display: inline-flex; align-items: center;",
+                  "Desviación estándar estimada",
+                  span(
+                    class = "mi-tooltip", HTML(" ⓘ"),
+                    span(class = "texto-tooltip", "Desviación estandar de la media, esta debe de ser myor a cero"),
+                    style = "margin-left: 5px; color: #3498db; cursor: pointer;"
+                  )
+                ),
+                value = 30, min = 0
+              ),
+              
+              numericInput(
+                inputId = "s1_est_Si",
+                label = div(
+                  style = "display: inline-flex; align-items: center;",
+                  "Porcentaje inferior relativo (Si)",
+                  span(
+                    class = "mi-tooltip", HTML(" ⓘ"),
+                    span(class = "texto-tooltip", "Porentaje el cual se desea que se desvíe por abajo la desviación estandar. Debe de ser un valor entre cero y uno"),
+                    style = "margin-left: 5px; color: #3498db; cursor: pointer;"
+                  )
+                ),
+                value = 0.07, min = 0
+              ),
+              
+              numericInput(
+                inputId = "s1_est_Ss",
+                label = div(
+                  style = "display: inline-flex; align-items: center;",
+                  "Porcentaje superior relativo (Ss)",
+                  span(
+                    class = "mi-tooltip", HTML(" ⓘ"),
+                    span(class = "texto-tooltip", "Porentaje el cual se desea que se desvíe por arriba la desviación estandar. Debe de ser un valor entre cero y uno"),
+                    style = "margin-left: 5px; color: #3498db; cursor: pointer;"
+                  )
+                ),
+                value = 0.12, min = 0
+              ),
+              
+              actionButton("calcular_s1_df1", "Calcular", class = "btn btn-success")
+            ),
+            
+            box(
+              title = "Resultados", width = 6, status = "success", solidHeader = TRUE,
+              verbatimTextOutput("resultado_s1_df1")
+            )
+          ),
+          fluidRow(
+            column(6,
+                   align = "left",
+                   actionButton("anterior_3.5", "Anterior", icon = icon("arrow-left"), class = "btn btn-secondary")
+            ),
+            column(6,
+                   align = "right",
+                   actionButton("siguiente_3.5", "Siguiente", icon = icon("arrow-right"), class = "btn btn-success")
+            )
+          )
+        )
+        ,
+        
 
         # POTENCIA YAN ----------------------------------------------------------------
 
