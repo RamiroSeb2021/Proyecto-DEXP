@@ -147,10 +147,4 @@ encontrar_r_minimo_Potencia <- function(t,
 }
 
 
-resultado <- encontrar_r_minimo_Potencia(t = 4, 
-                                         rho = 0.5, 
-                                         dif = 3, 
-                                         potencia_objetivo = 0.8, 
-                                         sigma2_ = 10.35)
 
-resultado$grafico

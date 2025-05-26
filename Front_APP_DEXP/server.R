@@ -37,8 +37,8 @@ server <- function(input, output, session) {
   observeEvent(input$anterior_2, updateTabItems(session, "tabs", selected = "sin_costo"))
   observeEvent(input$siguiente_2, updateTabItems(session, "tabs", selected = "efectos"))
   observeEvent(input$anterior_3, updateTabItems(session, "tabs", selected = "con_costo"))
-  observeEvent(input$siguiente_3, updateTabItems(session, "tabs", selected = "estimacion_s1_df1"))
-  observeEvent(input$anterior_4, updateTabItems(session, "tabs", selected = "estimacion_s1_df1"))
+  observeEvent(input$siguiente_3, updateTabItems(session, "tabs", selected = "potencia"))
+  observeEvent(input$anterior_4, updateTabItems(session, "tabs", selected = "efectos"))
   observeEvent(input$siguiente_4, updateTabItems(session, "tabs", selected = "hhm"))
   observeEvent(input$anterior_5, updateTabItems(session, "tabs", selected = "potencia"))
   observeEvent(input$siguiente_5, updateTabItems(session, "tabs", selected = "metodo_tukey"))
@@ -46,8 +46,8 @@ server <- function(input, output, session) {
   observeEvent(input$siguiente_6, updateTabItems(session, "tabs", selected = "sim_potencia"))
   observeEvent(input$anterior_7, updateTabItems(session, "tabs", selected = "metodo_tukey"))
   
-  observeEvent(input$siguiente_3.5, updateTabItems(session, "tabs", selected = "potencia"))
-  observeEvent(input$anterior_3.5, updateTabItems(session, "tabs", selected = "efectos"))
+  observeEvent(input$anterior_3.5, updateTabItems(session, "tabs", selected = "metodo_tukey"))
+  observeEvent(input$anterior_3.5, updateTabItems(session, "tabs", selected = "metodo_tukey"))
   
   # Función para mostrar errores en modal y limpiar output
   show_error <- function(message) {
@@ -169,125 +169,112 @@ server <- function(input, output, session) {
     })
   })
   
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  # Cálculos
-  #observeEvent(input$calcular_1, {
-    #sigmas <- as.numeric(unlist(strsplit(input$sigmas, ",")))
-    #resultados <- proporcionalidad_sin_costo_ni_tamaño_de_muestra(input$a, input$r0, sigmas)
-    #output$resultados_1 <- renderText({ paste("Réplicas asignadas:", paste(resultados, collapse = ", ")) })
-  #})
-  
-  #observeEvent(input$calcular_2, {
-    #sigmas <- as.numeric(unlist(strsplit(input$sigmas_2, ",")))
-    #costos <- as.numeric(unlist(strsplit(input$costos, ",")))
-    #resultados <- proporcionalidad_con_costo_ni_tamaño_de_muestra(input$a_2, sigmas, costos, input$costo_total)
-    #output$resultados_2 <- renderText({ paste("Réplicas asignadas:", paste(resultados, collapse = ", ")) })
-  #})
-  
-  #observeEvent(input$calcular_3, {
-    #resultados <- numero_de_tratamientos_y_replicas_con_efectos_aleatorios(
-      #input$costo_tratamiento, input$costo_ue, input$sigma_cuadrado, input$rho, input$v_max)
-    #output$resultados_3 <- renderText({ paste("Tratamientos:", resultados$num_de_tratamientos,
-                                              #"\nRéplicas por tratamiento:", resultados$num_de_replicas) })
-  #})
 
-  # Cálculo de Potencia con power_target y manejo de comas ------------------
+  # Cálculo de Potencia  ------------------
+  # 1) reactiveVal para almacenar el resultado
+  resultado_pot <- reactiveVal(NULL)
+  
+  # 2) Define los outputs UNA sola vez, fuera del observeEvent:
+  output$grafico_pot <- renderPlot({
+    req(resultado_pot())
+    resultado_pot()$grafico
+  })
+  output$tabla_pot <- DT::renderDT({
+    req(resultado_pot())
+    resultado_pot()$tabla
+  }, options = list(
+    pageLength      = 5,
+    scrollY         = "300px",
+    scrollCollapse  = TRUE,
+    paging          = FALSE
+  ))
+  output$mensaje_pot <- renderText({
+    req(resultado_pot())
+    paste0(
+      "Para alcanzar una potencia de ", input$beta_potencia,
+      ", necesitas un tamaño muestral de ", resultado_pot()$r_optimo, "."
+    )
+  })
+  
+  # 3) El observeEvent con todo el control de errores:
   observeEvent(input$calcular_4, {
     
-    # 0) Leer y convertir entradas (reemplazando comas por puntos)
-    t_val        <- as.numeric(gsub(",", ".", input$t_potencia))
-    sigma2_val   <- as.numeric(gsub(",", ".", input$sigma2_potencia))
-    Delta_val    <- as.numeric(gsub(",", ".", input$Delta_potencia))
-    alpha_val    <- as.numeric(gsub(",", ".", input$alpha_potencia))
-    power_target <- as.numeric(gsub(",", ".", input$beta_potencia))
+    # Cuando empiezas el cálculo:
+    show("loading_pot_plot")
+    hide("plot_pot_container")
+    show("loading_pot_table")
+    hide("table_pot_container")
     
-    # 1) Validaciones de entrada
-    if (is.na(t_val) || t_val %% 1 != 0 || t_val < 2) {
-      showModal(modalDialog(
-        title = "Error",
-        tags$p("⚠️ El número de tratamientos debe ser un entero ≥ 2. Por favor, revisa los datos ingresados y consulta el ícono ⓘ para más información."),
-        easyClose = TRUE, size = "s"
-      )); return()
+    # 3.1) Deshabilita el botón mientras corre
+    disable("calcular_4")
+    on.exit(enable("calcular_4"), add = TRUE)
+    
+    # 3.2) Limpia resultado previo
+    resultado_pot(NULL)
+    
+    # 1) t >= 2 y entero
+    if (is.null(input$t_potencia) || is.na(input$t_potencia) || length(input$t_potencia) != 1 ||
+        input$t_potencia < 2 || input$t_potencia != floor(input$t_potencia)) {
+      show_error(Formato_tatamiento())
+      return()
     }
-    if (is.na(sigma2_val) || sigma2_val <= 0) {
-      showModal(modalDialog(
-        title = "Error",
-        tags$p("⚠️ σ² debe ser un número positivo mayor que cero. Por favor, revisa los datos ingresados y consulta el ícono ⓘ para más información."),
-        easyClose = TRUE, size = "s"
-      )); return()
+    # 2) D > 0, numérico escalar
+    if (is.null(input$Delta_potencia) || is.na(input$Delta_potencia) || length(input$Delta_potencia) != 1 ||
+        !is.numeric(input$Delta_potencia) || input$Delta_potencia <= 0) {
+      show_error(Formato_diferencia())
+      return()
     }
-    if (is.na(Delta_val) || Delta_val <= 0) {
-      showModal(modalDialog(
-        title = "Error",
-        tags$p("⚠️ La diferencia mínima detectable (Δ) debe ser mayor que cero. Por favor, revisa los datos ingresados y consulta el ícono ⓘ para más información."),
-        easyClose = TRUE, size = "s"
-      )); return()
+    # 3) ro ≥ 1 entero
+    if (is.null(input$pot_rho) || is.na(input$pot_rho) || length(input$pot_rho) != 1 ||
+        input$pot_rho < 1 || input$pot_rho != floor(input$pot_rho)) {
+      show_error(Formato_rho())
+      return()
     }
-    if (is.na(alpha_val) || alpha_val <= 0 || alpha_val >= 1) {
-      showModal(modalDialog(
-        title = "Error",
-        tags$p("⚠️ El nivel de significancia (α) debe estar entre 0 y 1. Por favor, revisa los datos ingresados y consulta el ícono ⓘ para más información."),
-        easyClose = TRUE, size = "s"
-      )); return()
+    # 4) S1 > 0
+    if (is.null(input$sigma2_potencia) || is.na(input$sigma2_potencia) || length(input$sigma2_potencia) != 1 ||
+        input$sigma2_potencia <= 0) {
+      show_error(Formato_sigma())
+      return()
     }
-    if (is.na(power_target) || power_target <= 0 || power_target >= 1) {
-      showModal(modalDialog(
-        title = "Error",
-        tags$p("⚠️ La potencia objetivo (1−β) debe estar entre 0 y 1. Por favor, revisa los datos ingresados y consulta el ícono ⓘ para más información."),
-        easyClose = TRUE, size = "s"
-      )); return()
+    # 6) alfa ∈ (0,1)
+    if (is.null(input$alpha_potencia) || is.na(input$alpha_potencia) || length(input$alpha_potencia) != 1 ||
+        input$alpha_potencia <= 0 || input$alpha_potencia >= 1) {
+      show_error(Formato_significancia())
+      return()
+    }
+    # 7) Beta ∈ (0,1)
+    if (is.null(input$beta_potencia) || is.na(input$beta_potencia) || length(input$beta_potencia) != 1 ||
+        input$beta_potencia < 0 || input$beta_potencia >= 1) {
+      show_error(Formato_Potencia())
+      return()
     }
     
-    # 2) Llamada a calcular_r_teorica, ahora pasando power_target
-    resultado_pot <- tryCatch(
-      calcular_r_teorica(
-        t            = t_val,
-        sigma2       = sigma2_val,
-        Delta        = Delta_val,
-        alpha        = alpha_val,
-        power_target = power_target
+    # 3.4) Invocar la función con tryCatch()
+    res_pot <- tryCatch(
+      encontrar_r_minimo_Potencia(
+        t   = input$t_potencia,
+        rho   = input$pot_rho,
+        dif    = input$Delta_potencia,
+        potencia_objetivo = input$beta_potencia,
+        sigma2_   = input$sigma2_potencia,
+        alpha = input$alpha_potencia,
+        
       ),
       error = function(e) {
-        showModal(modalDialog(
-          title = "Error",
-          tags$p(paste0("⚠️ No se pudo calcular la potencia: ", e$message,
-                        " Por favor, revisa los datos ingresados y consulta el ícono ⓘ para más información.")),
-          easyClose = TRUE, size = "s"
-        ))
-        return(NULL)
+        show_error(paste0("Error en simulación: ", e$message))
+        NULL
       }
     )
-    if (is.null(resultado_pot)) return()
+    if (is.null(res_pot)) return()         # si hubo error, no continúa
     
-    # 3) Preparar resultados (φ = sqrt(phi2))
-    phi_val  <- sqrt(resultado_pot$phi2)
-    phi2_val <- resultado_pot$phi2
-    df1      <- resultado_pot$df1
-    df2      <- resultado_pot$df2
-    r_ent    <- resultado_pot$r
-    potencia <- resultado_pot$potencia
+    # 3.5) Todo OK: almacena el resultado y dispara los render
+    resultado_pot(res_pot)
     
-    # 4) Mostrar resultados
-    output$resultados_4 <- renderText({
-      paste0(
-        "📝 Resultado según teoría (libro):\n",
-        "Número de réplicas (r): ", r_ent, "\n",
-        "φ: ", round(phi_val, 3), "\n",
-        "φ²: ", round(phi2_val, 3), "\n",
-        "df₁ (t−1): ", df1, "\n",
-        "df₂ (t⋅(r−1)): ", df2, "\n",
-        "Potencia alcanzada (1−β): ", round(potencia, 2)
-      )
-    })
     
+    hide("loading_pot_plot")
+    show("plot_pot_container")
+    hide("loading_pot_table")
+    show("table_pot_container")
   })
   
   

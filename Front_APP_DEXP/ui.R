@@ -452,9 +452,7 @@ ui <- tagList(
         ,
         
 
-        # POTENCIA YAN ----------------------------------------------------------------
-
-
+        # POTENCIA ----------------------------------------------------------------
         tabItem(
           tabName = "potencia",
           fluidRow(
@@ -466,6 +464,7 @@ ui <- tagList(
             )
           ),
           fluidRow(
+            # tus parámetros siguen igual…
             box(
               title = "Parámetros", width = 6, status = "primary", solidHeader = TRUE,
               ## t: Tratamientos
@@ -486,7 +485,7 @@ ui <- tagList(
                 ),
                 value = 4, min = 2
               ),
-
+              
               ## sigma2: Varianza estimada
               numericInput(
                 inputId = "sigma2_potencia",
@@ -505,7 +504,7 @@ ui <- tagList(
                 ),
                 value = 10.35, min = 0
               ),
-
+              
               ## Delta: Diferencia mínima detectable
               numericInput(
                 inputId = "Delta_potencia",
@@ -524,7 +523,23 @@ ui <- tagList(
                 ),
                 value = 3, min = 0
               ),
-
+              numericInput(
+                inputId = "pot_rho",
+                label = div(
+                  style = "display: inline-flex; align-items: center;",
+                  "Suerte de cociente (ρ)",
+                  span(
+                    class = "mi-tooltip", HTML(" ⓘ"),
+                    span(
+                      class = "texto-tooltip",
+                      rho_
+                    ),
+                    style = "margin-left: 5px; color: #3498db; cursor: help;"
+                  )
+                ),
+                value = 0.4, min = 0, step = 0.01
+              ),
+              
               ## alpha: Nivel de significancia
               numericInput(
                 inputId = "alpha_potencia",
@@ -543,7 +558,7 @@ ui <- tagList(
                 ),
                 value = 0.05, min = 0, max = 1
               ),
-
+              
               ## beta: Error tipo II (potencia objetivo)
               numericInput(
                 inputId = "beta_potencia",
@@ -564,23 +579,66 @@ ui <- tagList(
               ),
               actionButton("calcular_4", "Calcular", class = "btn btn-success")
             ),
-            box(
-              title = "Resultados", width = 6, status = "success", solidHeader = TRUE,
-              verbatimTextOutput("resultados_4")
+            # Aquí reemplazamos el box de resultados por un tabBox de 2 pestañas
+            # en tu UI, pon el tabBox así (fijo, sin renderUI)
+            shinydashboard::tabBox(
+              title = "Resultados Simulación",
+              id    = "pot_res_tabs",
+              width = 6,
+              
+              tabPanel("Gráfico",
+                       # Loading placeholder para el gráfico
+                       hidden(
+                         div(
+                           id    = "loading_pot_plot",
+                           style = "text-align:center; padding:20px;",
+                           img(src = "loading.gif", height = "100px"),
+                           p("Calculando gráfico…")
+                         )),
+                       # Contenedor del plot, inicialmente oculto
+                       hidden(
+                         div(
+                           id = "plot_pot_container",
+                           plotOutput("grafico_pot", height = "400px"),
+                           br(),
+                           div(style="padding: 8px;",
+                               textOutput("mensaje_pot"))
+                           
+                         )
+                       )
+              ),
+              
+              tabPanel("Tabla",
+                       # Loading placeholder para la tabla
+                       hidden(
+                         div(
+                           id    = "loading_pot_table",
+                           style = "text-align:center; padding:20px;",
+                           img(src = "loading.gif", height = "100px"),
+                           p("Calculando tabla…")
+                         )),
+                       # Contenedor de la DT, inicialmente oculto
+                       hidden(
+                         div(
+                           id = "table_pot_container",
+                           DT::DTOutput("tabla_pot")
+                         )
+                       )
+              )
             )
+            
           ),
           fluidRow(
             column(6,
-              align = "left",
-              actionButton("anterior_4", "Anterior", icon = icon("arrow-left"), class = "btn btn-secondary")
+                   align = "left",
+                   actionButton("anterior_4", "Anterior", icon = icon("arrow-left"), class = "btn btn-secondary")
             ),
             column(6,
-              align = "right",
-              actionButton("siguiente_4", "Siguiente", icon = icon("arrow-right"), class = "btn btn-success")
+                   align = "right",
+                   actionButton("siguiente_4", "Siguiente", icon = icon("arrow-right"), class = "btn btn-success")
             )
           )
         ),
-
 
         # METODO HHM YAN ----------------------------------------------------------
 
@@ -617,6 +675,25 @@ ui <- tagList(
                 ),
                 value = 141.6
               ),
+              
+              ## df1: Grados de libertad de S1
+              numericInput(
+                inputId = "df2_hhm",
+                label = div(
+                  style = "display: inline-flex; align-items: center;",
+                  "Grados de libertad df1",
+                  span(
+                    class = "mi-tooltip",
+                    HTML(" ⓘ"),
+                    span(
+                      class = "texto-tooltip",
+                      "Aquí debes ingresar los grados de libertad de S1, entero ≥ 1 (ejemplo: 60)."
+                    ),
+                    style = "margin-left: 5px; color: #3498db; cursor: help;"
+                  )
+                ),
+                value = 60, min = 1
+              ),
 
               ## d: Diferencia mínima detectable
               numericInput(
@@ -637,25 +714,6 @@ ui <- tagList(
                 value = 20
               ),
 
-              ## df2: Grados de libertad df₂
-              numericInput(
-                inputId = "df2_hhm",
-                label = div(
-                  style = "display: inline-flex; align-items: center;",
-                  "Grados de libertad df₂",
-                  span(
-                    class = "mi-tooltip",
-                    HTML(" ⓘ"),
-                    span(
-                      class = "texto-tooltip",
-                      "Aquí debes ingresar los grados de libertad del error, entero ≥ 1 (ejemplo: 60)."
-                    ),
-                    style = "margin-left: 5px; color: #3498db; cursor: help;"
-                  )
-                ),
-                value = 60, min = 1
-              ),
-
               ## alpha: Nivel de significancia
               numericInput(
                 inputId = "alpha_hhm",
@@ -673,6 +731,24 @@ ui <- tagList(
                   )
                 ),
                 value = 0.05, min = 0, max = 1
+              ),
+              ## beta: Error tipo II (potencia objetivo)
+              numericInput(
+                inputId = "beta_potencia_HHM",
+                label = div(
+                  style = "display: inline-flex; align-items: center;",
+                  "Potencia objetivo (1−β)",
+                  span(
+                    class = "mi-tooltip",
+                    HTML(" ⓘ"),
+                    span(
+                      class = "texto-tooltip",
+                      "Aquí debes ingresar la potencia deseada, valor entre 0 y 1. Si es decimal, sepáralo con coma (ejemplo: 0,80)."
+                    ),
+                    style = "margin-left: 5px; color: #3498db; cursor: help;"
+                  )
+                ),
+                value = 0.80, min = 0, max = 1
               ),
               actionButton("calcular_5", "Calcular", class = "btn btn-success")
             ),
