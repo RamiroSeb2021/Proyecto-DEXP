@@ -5,7 +5,7 @@ account: ramirsebs-200325-js
 server: shinyapps.io
 hostUrl: https://api.shinyapps.io/v1
 appId: 14659356
-bundleId: 10276667
+bundleId: 10303812
 url: https://ramirsebs-200325-js.shinyapps.io/front_app_dexp/
 version: 1
 asMultiple: FALSE

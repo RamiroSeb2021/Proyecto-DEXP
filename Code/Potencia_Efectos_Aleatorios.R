@@ -15,7 +15,7 @@ NULL
 #'
 #' @param t Número de tratamientos \eqn{t}.
 #' @param r Número de réplicas por tratamiento \eqn{r}.
-#' @param sigma2 Varianza intratratamiento \eqn{\sigma^2}. (default: 1)
+#' @param sigma2 Varianza del error \eqn{\sigma^2}. (default: 1)
 #' @param rho Razón de varianzas \eqn{\rho = \sigma_\tau^2 / \sigma^2}. (default: 0.5)
 #' @param alpha Nivel de significancia. (default: 0.05)
 #' @param nsim Número de simulaciones de Monte Carlo. (default: 1000)

@@ -41,3 +41,5 @@ calcular_r_HHM <- function(S2_1, d, df2, alpha = 0.05) {
     r   = r_val
   )
 }
+
+
