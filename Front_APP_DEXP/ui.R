@@ -537,7 +537,7 @@ ui <- tagList(
                     style = "margin-left: 5px; color: #3498db; cursor: help;"
                   )
                 ),
-                value = 0.4, min = 0, step = 0.01
+                value = 0.5, min = 0, step = 0.01
               ),
               
               ## alpha: Nivel de significancia
@@ -640,7 +640,7 @@ ui <- tagList(
           )
         ),
 
-        # METODO HHM YAN ----------------------------------------------------------
+        # METODO HHM ----------------------------------------------------------
 
 
         tabItem(
@@ -656,13 +656,32 @@ ui <- tagList(
           fluidRow(
             box(
               title = "Parámetros HHM", width = 6, status = "primary", solidHeader = TRUE,
+              
+              ## t: Tratamientos
+              numericInput(
+                inputId = "t_hhm",
+                label = div(
+                  style = "display: inline-flex; align-items: center;",
+                  "Tratamientos (t)",
+                  span(
+                    class = "tooltip-right",
+                    HTML(" ⓘ"),
+                    span(
+                      class = "tooltip-right-content",
+                      tratamiento_message_pot
+                    ),
+                    style = "margin-left: 5px; color: #3498db; cursor: help;"
+                  )
+                ),
+                value = 6, min = 2
+              ),
 
               ## S2₁: Varianza estimada grupo 1
               numericInput(
                 inputId = "S2_1_hhm",
                 label = div(
                   style = "display: inline-flex; align-items: center;",
-                  "Varianza estimada S2₁ (g²)",
+                  "Varianza estimada S1", tags$sup("2"),
                   span(
                     class = "tooltip-right",
                     HTML(" ⓘ"),
@@ -692,7 +711,7 @@ ui <- tagList(
                     style = "margin-left: 5px; color: #3498db; cursor: help;"
                   )
                 ),
-                value = 60, min = 1
+                value = 40, min = 1
               ),
 
               ## d: Diferencia mínima detectable
@@ -712,6 +731,19 @@ ui <- tagList(
                   )
                 ),
                 value = 20
+              ),
+              numericInput(
+                inputId = "hhm_ro",
+                label = div(
+                  style = "display: inline-flex; align-items: center;",
+                  "Tamaño de muestra inicial",
+                  span(
+                    class = "mi-tooltip", HTML(" ⓘ"),
+                    span(class = "texto-tooltip", r_0),
+                    style = "margin-left: 5px; color: #3498db; cursor: pointer;"
+                  )
+                ),
+                value = 3, min = 1
               ),
 
               ## alpha: Nivel de significancia
@@ -754,7 +786,22 @@ ui <- tagList(
             ),
             box(
               title = "Resultados HHM", width = 6, status = "success", solidHeader = TRUE,
-              verbatimTextOutput("resultados_5")
+              # GIF de carga (oculto al inicio)
+              hidden(
+                div(
+                  id = "loading_hhm",
+                  style = "text-align: center; padding: 20px;",
+                  img(src = "loading.gif", height = "80px"),
+                  p("Calculando...")
+                )
+              ),
+              # Contenedor de resultados (oculto al inicio)
+              hidden(
+                div(
+                  id = "hhm_results_container",
+                  verbatimTextOutput("resultados_5")
+                )
+              )
             )
           ),
           fluidRow(
@@ -907,8 +954,8 @@ ui <- tagList(
             )
           )
         ),
-# SIMULACION DE POTENCIA --------------------------------------------------
 
+        # SIMULACION DE POTENCIA --------------------------------------------------
 
         tabItem(
           tabName = "sim_potencia",

@@ -107,6 +107,7 @@ k_tabla_mc <- function(n, m, beta = 0.80, alpha = 0.05,
 #'   \item{alfa}{Nivel de significancia.}
 #'   \item{iteraciones}{Número de iteraciones realizadas.}
 #'   \item{convergencia}{\code{TRUE} si se alcanzó convergencia; \code{FALSE} si se alcanzó el límite de iteraciones.}
+#'   \item{K_}{Valor de \(k = a / s_1\) que garantiza la potencia deseada, obtenido por simulación Monte Carlo mediante \code{k_tabla_mc()}.}
 #' }
 #'
 #' @details
@@ -127,8 +128,9 @@ k_tabla_mc <- function(n, m, beta = 0.80, alpha = 0.05,
 #'   beta_ = 0.8
 #' )
 #'
-#' resultados$r   # número de réplicas
-#' resultados$df2 # grados de libertad finales
+#' resultados$r      # número estimado de réplicas
+#' resultados$K_     # valor de K = a / s1 obtenido por simulación
+#' resultados$df2    # grados de libertad del error final
 #'
 #' @export
 
@@ -168,7 +170,8 @@ calcular_r_minimo_HHM <- function(t,
     dif = d,
     alfa = alpha_,
     iteraciones = iter,
-    convergencia = error <= max_error
+    convergencia = error <= max_error,
+    K_ = K 
   ))
 }
 

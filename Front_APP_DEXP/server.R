@@ -37,8 +37,10 @@ server <- function(input, output, session) {
   observeEvent(input$anterior_2, updateTabItems(session, "tabs", selected = "sin_costo"))
   observeEvent(input$siguiente_2, updateTabItems(session, "tabs", selected = "efectos"))
   observeEvent(input$anterior_3, updateTabItems(session, "tabs", selected = "con_costo"))
-  observeEvent(input$siguiente_3, updateTabItems(session, "tabs", selected = "potencia"))
-  observeEvent(input$anterior_4, updateTabItems(session, "tabs", selected = "efectos"))
+  observeEvent(input$siguiente_3, updateTabItems(session, "tabs", selected = "estimacion_s1_df1"))
+  observeEvent(input$anterior_3.5, updateTabItems(session, "tabs", selected = "efectos"))
+  observeEvent(input$siguiente_3.5, updateTabItems(session, "tabs", selected = "potencia"))
+  observeEvent(input$anterior_4, updateTabItems(session, "tabs", selected = "estimacion_s1_df1"))
   observeEvent(input$siguiente_4, updateTabItems(session, "tabs", selected = "hhm"))
   observeEvent(input$anterior_5, updateTabItems(session, "tabs", selected = "potencia"))
   observeEvent(input$siguiente_5, updateTabItems(session, "tabs", selected = "metodo_tukey"))
@@ -46,8 +48,7 @@ server <- function(input, output, session) {
   observeEvent(input$siguiente_6, updateTabItems(session, "tabs", selected = "sim_potencia"))
   observeEvent(input$anterior_7, updateTabItems(session, "tabs", selected = "metodo_tukey"))
   
-  observeEvent(input$anterior_3.5, updateTabItems(session, "tabs", selected = "metodo_tukey"))
-  observeEvent(input$anterior_3.5, updateTabItems(session, "tabs", selected = "metodo_tukey"))
+
   
   # Función para mostrar errores en modal y limpiar output
   show_error <- function(message) {
@@ -171,6 +172,7 @@ server <- function(input, output, session) {
   
 
   # Cálculo de Potencia  ------------------
+  
   # 1) reactiveVal para almacenar el resultado
   resultado_pot <- reactiveVal(NULL)
   
@@ -199,18 +201,7 @@ server <- function(input, output, session) {
   # 3) El observeEvent con todo el control de errores:
   observeEvent(input$calcular_4, {
     
-    # Cuando empiezas el cálculo:
-    show("loading_pot_plot")
-    hide("plot_pot_container")
-    show("loading_pot_table")
-    hide("table_pot_container")
-    
-    # 3.1) Deshabilita el botón mientras corre
-    disable("calcular_4")
-    on.exit(enable("calcular_4"), add = TRUE)
-    
-    # 3.2) Limpia resultado previo
-    resultado_pot(NULL)
+    #resultado_pot(NULL)
     
     # 1) t >= 2 y entero
     if (is.null(input$t_potencia) || is.na(input$t_potencia) || length(input$t_potencia) != 1 ||
@@ -224,9 +215,9 @@ server <- function(input, output, session) {
       show_error(Formato_diferencia())
       return()
     }
-    # 3) ro ≥ 1 entero
+    # Ahora: ρ tiene que ser > 0
     if (is.null(input$pot_rho) || is.na(input$pot_rho) || length(input$pot_rho) != 1 ||
-        input$pot_rho < 1 || input$pot_rho != floor(input$pot_rho)) {
+        input$pot_rho <= 0) {
       show_error(Formato_rho())
       return()
     }
@@ -248,6 +239,19 @@ server <- function(input, output, session) {
       show_error(Formato_Potencia())
       return()
     }
+    
+    # Cuando empiezas el cálculo:
+    show("loading_pot_plot")
+    hide("plot_pot_container")
+    show("loading_pot_table")
+    hide("table_pot_container")
+    
+    # 3.1) Deshabilita el botón mientras corre
+    disable("calcular_4")
+    on.exit(enable("calcular_4"), add = TRUE)
+    
+    # 3.2) Limpia resultado previo
+    resultado_pot(NULL)
     
     # 3.4) Invocar la función con tryCatch()
     res_pot <- tryCatch(
@@ -279,9 +283,16 @@ server <- function(input, output, session) {
   
   
   
-  # Método Harris-Hurvitz-Mood con validaciones y mensajes de error ---------
+  # Método Harris-Hurvitz-Mood ---------
   
   observeEvent(input$calcular_5, {
+    
+    # 1) t >= 2 y entero
+    if (is.null(input$t_hhm) || is.na(input$t_hhm) || length(input$t_hhm) != 1 ||
+        input$t_hhm < 2 || input$t_hhm != floor(input$t_hhm)) {
+      show_error(Formato_tatamiento())
+      return()
+    }
     
     # 1) Validaciones de entrada
     if (is.na(input$S2_1_hhm) || input$S2_1_hhm <= 0) {
@@ -324,14 +335,30 @@ server <- function(input, output, session) {
       ))
       return()
     }
+    # hhm_ro
+    if (is.null(input$hhm_ro) || is.na(input$hhm_ro) || length(input$hhm_ro) != 1 ||
+        input$hhm_ro < 1 || input$hhm_ro != floor(input$hhm_ro)) {
+      show_error(Formato_rho())
+      return()
+    }
+    
+    show("loading_hhm")
+    hide("hhm_results_container")
+    
+    # 3.1) Deshabilita el botón mientras corre
+    disable("calcular_5")
+    on.exit(enable("calcular_5"), add = TRUE)
     
     # 2) Ejecutar cálculo
     resultado_hhm <- tryCatch(
-      calcular_r_HHM(
-        S2_1 = input$S2_1_hhm,
+      calcular_r_minimo_HHM(
+        t = input$t_hhm,
         d    = input$d_hhm,
-        df2  = input$df2_hhm,
-        alpha= input$alpha_hhm
+        r_inicial  = input$hhm_ro,
+        S1_sq= input$S2_1_hhm,
+        df1 = input$df2_hhm, 
+        alpha_ = input$alpha_hhm, 
+        beta_ = input$beta_potencia_HHM, 
       ),
       error = function(e) {
         showModal(modalDialog(
@@ -345,17 +372,29 @@ server <- function(input, output, session) {
         return(NULL)
       }
     )
-    if (is.null(resultado_hhm)) return()
+    if (is.null(resultado_hhm)) {
+      hide("loading_hhm")  
+      return()
+    }
     
     # 3) Mostrar resultados
     output$resultados_5 <- renderText({
       paste0(
         "Resultados HHM:\n",
-        "S₁ (desv. estándar redondeada): ", round(resultado_hhm$S1, 2), "\n",
-        "K (tabla A.9): ", round(resultado_hhm$K, 3), "\n",
-        "Número de réplicas (r): ", round(resultado_hhm$r, 2)
+        "Número de réplicas: ", round(resultado_hhm$r, 2), "\n",
+        "S₁: ", round(resultado_hhm$S1, 2), "\n",
+        "df1: ", resultado_hhm$df1, "\n",
+        "df2: ", resultado_hhm$df2, "\n",
+        "K: ", round(resultado_hhm$K, 3), "\n",
+        "Número de iteraciones: ", resultado_hhm$iter, "\n",
+        "Convergencia: ", resultado_hhm$convergencia
+        
       )
     })
+    
+    hide("loading_hhm")
+    show("hhm_results_container")
+    
   })
   
 
@@ -416,6 +455,9 @@ server <- function(input, output, session) {
       return()
     }
     
+    disable("calcular_mt")
+    on.exit(enable("calcular_mt"), add = TRUE)
+    
     # Si todo pasó, ejecutamos y capturamos errores de la función
     resultados <- tryCatch(
       calcular_r_MT(
@@ -467,21 +509,7 @@ server <- function(input, output, session) {
   # 3) El observeEvent con todo el control de errores:
   observeEvent(input$calcular_sim, {
     
-    # Cuando empiezas el cálculo:
-    show("loading_sim_plot")
-    hide("plot_sim_container")
-    show("loading_sim_table")
-    hide("table_sim_container")
-    
 
-    
-    
-    # 3.1) Deshabilita el botón mientras corre
-    disable("calcular_sim")
-    on.exit(enable("calcular_sim"), add = TRUE)
-    
-    # 3.2) Limpia resultado previo
-    resultado_sim(NULL)
     
     # 3.3) Validaciones de formato y rango
     #   a) t ≥ 2 entero
@@ -520,6 +548,22 @@ server <- function(input, output, session) {
       show_error(Formato_r_max())
       return()
     }
+    
+    # Cuando empiezas el cálculo:
+    show("loading_sim_plot")
+    hide("plot_sim_container")
+    show("loading_sim_table")
+    hide("table_sim_container")
+    
+    
+    
+    
+    # 3.1) Deshabilita el botón mientras corre
+    disable("calcular_sim")
+    on.exit(enable("calcular_sim"), add = TRUE)
+    
+    # 3.2) Limpia resultado previo
+    resultado_sim(NULL)
     
     # 3.4) Invocar la función con tryCatch()
     res <- tryCatch(
